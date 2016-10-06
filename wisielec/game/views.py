@@ -3,19 +3,32 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from models import Game
 import uuid
+import random
+import requests
+
+
+# ugh, you should totally get that from wikiquotes
+quotes = [
+    u"Czy nie wygląda to, jakby istnienie było pomyłką, której skutki ujawniają się stopniowo coraz bardziej?",
+    u"Każde pożegnanie ma coś ze śmierci, każde ponowne spotkanie – coś ze zmartwychwstania.",
+    u"Na świecie ma się do wyboru tylko samotność albo pospolitość.",
+    u"Nieustanne starania obliczone na usunięcie cierpienia nie dają nic poza zmianą jego postaci.",
+    u"Prostytutki to ludzkie ofiary złożone na ołtarzu monogamii.",
+    u"Suma cierpień przewyższa u człowieka znacznie sumę rozkoszy.",
+]
 
 
 def new_game(request, template="game/new.html"):
-    # TODO: get that from wikiquotes in randomized fashion
-    phrase = u"Czy nie wygląda to, jakby istnienie było pomyłką, której skutki ujawniają się stopniowo coraz bardziej?"
-    game_progress = ""
-    for x in phrase:
-        if x.isalpha():
-            game_progress += "_"
-        else:
-            game_progress += x
-
     if request.POST:
+        # TODO: get that from wikiquotes in randomized fashion
+        phrase = quotes[random.randint(0, len(quotes)-1)]
+        game_progress = ""
+        for x in phrase:
+            if x.isalpha():
+                game_progress += "_"
+            else:
+                game_progress += x
+
         game = Game.objects.create(session_id=uuid.uuid1().hex, phrase=phrase, progress=game_progress,
                                    used_characters="")
         return HttpResponseRedirect("%s" % game.session_id)
@@ -25,7 +38,7 @@ def new_game(request, template="game/new.html"):
 
 def current_game(request, session_id, template="game/game.html"):
     game = get_object_or_404(Game, session_id=session_id)
-    alphabet = u"aąbcćdeęfghijklłmnoprstuówyzżź"
+    alphabet = u"aąbcćdeęfghijklłmnoprsśtuówyzżź"
 
     return render(request, template, locals())
 

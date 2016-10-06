@@ -1,12 +1,18 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
     <h3>{{ game.progress }}</h3>
 
+    <div class="pull-right">
+        <img src="{% static 'img/wis' %}0{{ game.mistakes|add:"1" }}.png">
+    </div>
+
     <div>
+        {% if game.mistakes < 5 %}
         {% for x in alphabet %}
         <a href="guess?letter={{ x }}">{{ x }}</a>
-        {% endfor %}
+        {% endfor %}{% else %}PRZEGRALES ZYCIE LOL{% endif %}
         <p>
             Wykorzystane literki: {% if game.used_characters %}{% for x in game.used_characters %}{{ x }}{% if not forloop.last %},{% endif %} {% endfor %}{% else %}nie ma{% endif %}
         </p>

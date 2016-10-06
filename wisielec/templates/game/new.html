@@ -1,12 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h3>wisielec szopenhałera</h3>
-    <div>
-        <form action="" method="post">
-            {% csrf_token %}
-            <h4>{{ phrase }}</h4>
-            <input type="submit" value="tak chce cierpiec" />
-        </form>
+    <div style="text-align: center;">
+        <div>
+            <form action="" method="post">
+                {% csrf_token %}
+                {% comment %}<h3 style="color: #aaa">wylosowana fraza</h3>
+                <h2 style="width: 70%; margin: 40px auto;">{{ phrase }}</h2>{% endcomment %}
+                <input type="submit" class="btn btn-info btn-lg" value="Zaczynamy" />
+            </form>
+        </div>
     </div>
 {% endblock %}
