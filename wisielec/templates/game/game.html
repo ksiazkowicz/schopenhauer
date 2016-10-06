@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h3>{{ game.progress }}</h3>
+
+    <div>
+        {% for x in alphabet %}
+        <a href="guess?letter={{ x }}">{{ x }}</a>
+        {% endfor %}
+        <p>
+            Wykorzystane literki: {% if game.used_characters %}{% for x in game.used_characters %}{{ x }}{% if not forloop.last %},{% endif %} {% endfor %}{% else %}nie ma{% endif %}
+        </p>
+    </div>
+    <div>
+        <label>Punkty</label> <p>{{ game.score }}</p>
+        <label>Błędy</label> <p>{{ game.mistakes }}</p>
+    </div>
+{% endblock %}

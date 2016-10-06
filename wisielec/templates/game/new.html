@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h3>wisielec szopenhałera</h3>
+    <div>
+        <form action="" method="post">
+            {% csrf_token %}
+            <h4>{{ phrase }}</h4>
+            <input type="submit" value="tak chce cierpiec" />
+        </form>
+    </div>
+{% endblock %}
