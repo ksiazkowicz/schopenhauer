@@ -7,10 +7,11 @@ Page {
         id: game_client
     }
 
-    Label {
+    Text {
         id: progress_label
         font.family: "Segoe UI Light"
         font.pixelSize: 20
+        wrapMode: Text.WordWrap
         text: game_client.progress
         anchors {
             horizontalCenter: parent.horizontalCenter;
@@ -41,8 +42,64 @@ Page {
         }
     }
 
-    Button {
-        text: "Guess A"
-        onClicked: game_client.guess_letter("a")
+    Rectangle {
+        height: 200
+        anchors {
+            bottom: parent.bottom
+            left: parent.left
+            right: parent.right
+        }
+        GridView {
+            anchors.fill: parent
+            model: letters
+            cellWidth: 40
+            cellHeight: 50
+            delegate: Item {
+                width: 40
+                height: 50
+                Button {
+                    text: letter
+                    width: 30
+                    height: 40
+                    onClicked: game_client.guess_letter(letter.toLowerCase())
+                    anchors { fill: parent; margins: 5 }
+                }
+            }
+        }
+    }
+
+
+    ListModel {
+        id: letters
+        ListElement { letter: "Q" }
+        ListElement { letter: "W" }
+        ListElement { letter: "E" }
+        ListElement { letter: "R" }
+        ListElement { letter: "T" }
+        ListElement { letter: "Y" }
+        ListElement { letter: "U" }
+        ListElement { letter: "I" }
+        ListElement { letter: "O" }
+        ListElement { letter: "P" }
+        ListElement { letter: "A" }
+        ListElement { letter: "Ą" }
+        ListElement { letter: "S" }
+        ListElement { letter: "D" }
+        ListElement { letter: "F" }
+        ListElement { letter: "G" }
+        ListElement { letter: "H" }
+        ListElement { letter: "J" }
+        ListElement { letter: "K" }
+        ListElement { letter: "L" }
+        ListElement { letter: "Z" }
+        ListElement { letter: "Ź" }
+        ListElement { letter: "Ż" }
+        ListElement { letter: "C" }
+        ListElement { letter: "Ć" }
+        ListElement { letter: "V" }
+        ListElement { letter: "B" }
+        ListElement { letter: "N" }
+        ListElement { letter: "Ń" }
+        ListElement { letter: "M" }
     }
 }

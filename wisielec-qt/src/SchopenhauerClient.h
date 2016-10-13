@@ -26,7 +26,7 @@ public:
     QString get_session_id() { return session_id; }
     QStringList get_used_chars() { return used_chars; }
 
-    void guess_letter(QString letter);
+    Q_INVOKABLE void guess_letter(QString letter);
 
 
 signals:
