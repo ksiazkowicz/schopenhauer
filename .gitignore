@@ -139,3 +139,6 @@ $RECYCLE.BIN/
 *.lnk
 
 .idea/*
+
+# Qt stuff
+build-*/*
