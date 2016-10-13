@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'home',
     'profiles',
     'game',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -133,3 +134,10 @@ STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
     'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "asgiref.inmemory.ChannelLayer",
+        "ROUTING": "game.routing.channel_routing",
+    },
+}
