@@ -60,8 +60,6 @@ def ws_guess(message):
 
         game.save()
 
-        print "O BOZE TO DZIALA DLACZEGO JAK TO WOOOOW"
-
         Group("chat").send({
             "text": json.dumps({
                 "mistakes": game.mistakes,
@@ -73,6 +71,21 @@ def ws_guess(message):
             }),
         })
 
+    if path == "/lobby/":
+        action = content['action']
+        if action == "join":
+            session_id = content['session_id']
+            game = get_object_or_404(Game, session_id=session_id)
+
+            Group("chat").send({
+                "text": json.dumps({
+                    "mistakes": game.mistakes,
+                    "session_id": session_id,
+                    "progress": game.progress,
+                    "score": game.score,
+                    "used_chars": game.used_characters,
+                }),
+            })
 
 # Connected to websocket.disconnect
 def ws_disconnect(message):
