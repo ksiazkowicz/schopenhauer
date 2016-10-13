@@ -3,6 +3,7 @@ import QtQuick.Controls 2.0
 import schopenhauer 1.0
 
 Page {
+    property alias client: game_client
     SchClient {
         id: game_client
     }
@@ -74,16 +75,19 @@ Page {
         ListElement { letter: "Q" }
         ListElement { letter: "W" }
         ListElement { letter: "E" }
+        ListElement { letter: "Ę" }
         ListElement { letter: "R" }
         ListElement { letter: "T" }
         ListElement { letter: "Y" }
         ListElement { letter: "U" }
         ListElement { letter: "I" }
         ListElement { letter: "O" }
+        ListElement { letter: "Ó" }
         ListElement { letter: "P" }
         ListElement { letter: "A" }
         ListElement { letter: "Ą" }
         ListElement { letter: "S" }
+        ListElement { letter: "Ś" }
         ListElement { letter: "D" }
         ListElement { letter: "F" }
         ListElement { letter: "G" }
@@ -91,6 +95,7 @@ Page {
         ListElement { letter: "J" }
         ListElement { letter: "K" }
         ListElement { letter: "L" }
+        ListElement { letter: "Ł" }
         ListElement { letter: "Z" }
         ListElement { letter: "Ź" }
         ListElement { letter: "Ż" }

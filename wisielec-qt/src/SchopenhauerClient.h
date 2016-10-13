@@ -15,7 +15,7 @@ class SchopenhauerClient : public QObject
     Q_PROPERTY(int mistakes READ get_mistakes NOTIFY mistakes_changed)
     Q_PROPERTY(QString progress READ get_progress NOTIFY progress_changed)
     Q_PROPERTY(QStringList used_chars READ get_used_chars NOTIFY used_chars_changed)
-    Q_PROPERTY(QString session_id READ get_session_id NOTIFY session_id_changed)
+    Q_PROPERTY(QString session_id READ get_session_id WRITE set_session_id NOTIFY session_id_changed)
 
 public:
     explicit SchopenhauerClient(QObject *parent = 0);
@@ -24,9 +24,11 @@ public:
     int get_mistakes() { return mistakes; }
     QString get_progress() { return progress; }
     QString get_session_id() { return session_id; }
+    void set_session_id(QString _new) { session_id = _new; emit session_id_changed(); }
     QStringList get_used_chars() { return used_chars; }
 
     Q_INVOKABLE void guess_letter(QString letter);
+    Q_INVOKABLE void join_game(QString session_id);
 
 
 signals:
@@ -40,9 +42,11 @@ public slots:
     void onConnected();
     void onDisconnected();
     void onContentReceived(QString message);
+    void onLobbyContentReceived(QString message);
 
 private:
     QWebSocket socket;
+    QWebSocket lobby_socket;
     QString session_id;
     int score = 0;
     int mistakes = 0;

@@ -6,7 +6,7 @@ ApplicationWindow {
     visible: true
     width: 400
     height: 480
-    title: qsTr("Hello World")
+    title: qsTr("wisielec schopenhauera")
 
     SwipeView {
         id: swipeView
@@ -14,7 +14,13 @@ ApplicationWindow {
         currentIndex: tabBar.currentIndex
 
         Page1 {}
-        Page2 {}
+        LobbyPage {
+            join_button.onClicked: {
+                gamePage.client.join_game(session_field.text)
+                swipeView.currentIndex = 2
+            }
+        }
+        Page2 { id: gamePage }
         Page {}
     }
 
@@ -27,6 +33,11 @@ ApplicationWindow {
             //text: qsTr("\uE716")
             text: qsTr("profile")
         }
+        TabButton {
+            font.family: "Segoe UI Light"
+            text: qsTr("lobby")
+        }
+
         TabButton {
             //font.family: "Segoe MDL2 Assets"
             //text: qsTr("\uE768")
