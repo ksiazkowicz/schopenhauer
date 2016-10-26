@@ -18,13 +18,17 @@ class Game(models.Model):
     mistakes = models.IntegerField(_("Mistakes"), default=0)
 
     @property
+    def state(self):
+        return self.get_winning_condition
+
+    @property
     def get_winning_condition(self):
         # if phrase is guessed
         if self.phrase == self.progress:
-            return GAME_STATES[0]
+            return GAME_STATES[2]
         # if used more than 5 incorrect chars, fail
         elif self.mistakes >= 5:
-            return GAME_STATES[2]
+            return GAME_STATES[1]
 
         # game still in progress
-        return GAME_STATES[1]
+        return GAME_STATES[0]

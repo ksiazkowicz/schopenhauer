@@ -15,22 +15,28 @@ quotes = [
     u"Nieustanne starania obliczone na usunięcie cierpienia nie dają nic poza zmianą jego postaci.",
     u"Prostytutki to ludzkie ofiary złożone na ołtarzu monogamii.",
     u"Suma cierpień przewyższa u człowieka znacznie sumę rozkoszy.",
+    u"Zimno mi psychicznie.",
 ]
 
 
-def new_game(request, template="game/new.html"):
-    if request.POST:
-        # TODO: get that from wikiquotes in randomized fashion
-        phrase = quotes[random.randint(0, len(quotes)-1)]
-        game_progress = ""
-        for x in phrase:
-            if x.isalpha():
-                game_progress += "_"
-            else:
-                game_progress += x
+def create_game():
+    # TODO: get that from wikiquotes in randomized fashion
+    phrase = quotes[random.randint(0, len(quotes) - 1)]
+    game_progress = ""
+    for x in phrase:
+        if x.isalpha():
+            game_progress += "_"
+        else:
+            game_progress += x
 
-        game = Game.objects.create(session_id=uuid.uuid1().hex, phrase=phrase, progress=game_progress,
-                                   used_characters="")
+    game = Game.objects.create(session_id=uuid.uuid1().hex, phrase=phrase, progress=game_progress,
+                               used_characters="")
+    return game
+
+
+def new_game(request, template="game/lobby.html"):
+    if request.POST:
+        game = create_game()
         return HttpResponseRedirect("%s" % game.session_id)
 
     return render(request, template, locals())

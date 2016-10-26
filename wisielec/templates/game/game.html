@@ -5,16 +5,18 @@
     <script>
         // Note that the path doesn't matter right now; any WebSocket
         // connection gets bumped over to WebSocket consumers
-        socket = new WebSocket("ws://" + window.location.host + "/guess/");
+        socket = new WebSocket("ws://" + window.location.host + "/game/");
         socket.onmessage = function(e) {
-            alert(e.data);
             var bread = JSON.parse(e.data);
             if (bread.session_id == "{{ game.session_id }}") {
                 document.getElementById("used_letters").innerHTML += bread.letter + ", ";
                 document.getElementById("score").innerText = bread.score;
                 document.getElementById("mistakes").innerText = bread.mistakes;
                 document.getElementById("progress").innerText = bread.progress;
-                document.getElementById("pikczer").setAttribute("src", "{% static 'img/wis' %}0"+(bread.mistakes+1)+".png");
+
+                var img_mistakes = bread.mistakes < 5 ? bread.mistakes+1 : 6;
+
+                document.getElementById("pikczer").setAttribute("src", "{% static 'img/wis' %}0"+(img_mistakes)+".png");
             }
         }
         socket.onopen = function() {
@@ -38,7 +40,7 @@
     <div class="pull-right">
         <img id="pikczer" src="{% static 'img/wis' %}0{{ game.mistakes|add:"1" }}.png">
     </div>
-
+ 
     <div>
         {% if game.mistakes < 5 %}
         {% for x in alphabet %}

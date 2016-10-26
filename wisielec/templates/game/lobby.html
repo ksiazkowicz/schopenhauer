@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <script>
+        socket = new WebSocket("ws://" + window.location.host + "/lobby/");
+        socket.onmessage = function(e) {
+            var data_json = JSON.parse(e.data);
+            var games = data_json.running_games;
+
+            if (games) {
+                for (var i = 0, len = games.length; i < len; i++) {
+                  append_game(games[i]);
+                }
+            }
+        };
+
+        function append_game(session_id) {
+            if (!document.getElementById("game-" + session_id)) {
+                var t = document.createElement("div");
+                t.id = "game-" + session_id;
+                t.innerHTML = "<hr/><h4>" + session_id +"</h4> <i class='fa fa-user'></i> grają <b>chlebzycia666</b>, <b>bezsensistnienia12</b>, <b>RanyZamkniete</b> | <a href='/game/" + session_id + "'>Dołącz</a>";
+                document.getElementById("running-games-list").appendChild(t);
+            }
+        }
+    </script>
+
+
+    <div class="clearfix">
+        <div class="col-md-8">
+            <h3>
+                Trwające gry:
+                <div class="pull-right">
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        {% comment %}<h3 style="color: #aaa">wylosowana fraza</h3>
+                        <h2 style="width: 70%; margin: 40px auto;">{{ phrase }}</h2>{% endcomment %}
+                        <button type="submit" class="btn btn-info button"><i class="fa fa-plus"></i> Nowa</button>
+                    </form>
+                </div>
+            </h3>
+            <div id="running-games-list" style="min-height: 480px"></div>
+        </div>
+        <div class="col-md-4">
+            <h3>Czat</h3>
+            <hr/>
+		    <div class="postbody mChatBodyFix">
+			    <div id="mChatmain" class="mChatRowLimit" style="height: 400px;">
+                    <div id="mChatData">
+                        <div class="mChatBG1 mChatHover">
+                            <span style="float:left;">
+                                <a class="mChatScriptLink">
+                                    <span style="color: #FF9900"><strong>@</strong></span>
+                                </a>&nbsp;<a style="color: #FF9900;" class="username-coloured">chlebzycia666</a></span>&nbsp;
+                                <br><div class="mChatMessage">ej hoćcie gradź</div>
+                        </div>
+                        <div class="mChatBG2 mChatHover">
+                            <span style="float:left;">
+                                <a class="mChatScriptLink">
+                                    <span style="color: #FF9900"><strong>@</strong></span>
+                                </a>&nbsp;<a style="color: #FF9900;" class="username-coloured">bezsensistnienia12</a></span>&nbsp;
+                                <br><div class="mChatMessage">ok idem</div>
+                        </div>
+                    </div>
+                </div>
+                <form method="post" action="javascript://" onsubmit="mChat.add();" id="postform">
+                    <div class="mChatPanel">
+                        <input type="text" name="message" class="inputbox medium mChatText" id="mChatMessage"><div style="position: absolute; top: -9999px; left: -9999px; width: auto; font-size: 10px; font-family: Verdana, Helvetica, Arial, sans-serif; font-weight: 400; letter-spacing: 0px; white-space: nowrap;"></div>&nbsp;
+                        <input id="submit_button" type="button" class="button2" value="Wyślij">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

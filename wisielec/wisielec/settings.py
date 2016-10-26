@@ -138,6 +138,6 @@ STATICFILES_FINDERS = (
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "asgiref.inmemory.ChannelLayer",
-        "ROUTING": "game.routing.channel_routing",
+        "ROUTING": "game.routing.routing",
     },
 }
