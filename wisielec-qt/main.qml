@@ -19,6 +19,10 @@ ApplicationWindow {
                 gamePage.client.join_game(session_field.text)
                 swipeView.currentIndex = 2
             }
+            new_button.onClicked: {
+                gamePage.client.new_game()
+                swipeView.currentIndex = 2
+            }
         }
         Page2 { id: gamePage }
         Page {}
@@ -29,23 +33,23 @@ ApplicationWindow {
         currentIndex: swipeView.currentIndex
         TabButton {
             //font.family: "Segoe MDL2 Assets"
-            font.family: "Segoe UI Light"
+            font.family: "Segoe UI"
             //text: qsTr("\uE716")
             text: qsTr("profile")
         }
         TabButton {
-            font.family: "Segoe UI Light"
+            font.family: "Segoe UI"
             text: qsTr("lobby")
         }
 
         TabButton {
             //font.family: "Segoe MDL2 Assets"
             //text: qsTr("\uE768")
-            font.family: "Segoe UI Light"
+            font.family: "Segoe UI"
             text: qsTr("game")
         }
         TabButton {
-            font.family: "Segoe UI Light"
+            font.family: "Segoe UI"
             text: qsTr("settings")
         }
     }

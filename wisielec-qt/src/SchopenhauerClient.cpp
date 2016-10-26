@@ -18,7 +18,7 @@ void SchopenhauerClient::onConnected()
     connect(&lobby_socket, &QWebSocket::textMessageReceived,
             this, &SchopenhauerClient::onLobbyContentReceived);
 
-    this->guess_letter("a");
+    this->join_game(this->session_id);
 }
 
 
@@ -42,6 +42,16 @@ void SchopenhauerClient::join_game(QString _new_id) {
     lobby_socket.sendTextMessage(doc.toJson(QJsonDocument::Compact));
 }
 
+void SchopenhauerClient::new_game() {
+    this->session_id = "";
+    QJsonObject request;
+    request["session_id"] = "";
+    request["action"] = "new";
+
+    QJsonDocument doc(request);
+    lobby_socket.sendTextMessage(doc.toJson(QJsonDocument::Compact));
+}
+
 void SchopenhauerClient::onDisconnected()
 {
     qDebug() << "WebSocket disconnected";
@@ -57,15 +67,22 @@ void SchopenhauerClient::onContentReceived(QString message)
     qDebug() << (jsonObject["session_id"].toString() == session_id);
     qDebug() << jsonObject.keys();
 
-    if (jsonObject["session_id"].toString() == session_id) {
-        progress = jsonObject["progress"].toString();
-        score = jsonObject["score"].toInt();
-        QString letter = jsonObject["letter"].toString();
-        mistakes = jsonObject["mistakes"].toInt();
-        used_chars.append(letter);
-        emit progress_changed();
-        emit score_changed();
-        emit mistakes_changed();
+    if (jsonObject["session_id"].toString() != "") {
+        if (this->session_id == "") {
+            if (jsonObject["new"].toBool())
+                this->session_id = jsonObject["session_id"].toString();
+        }
+
+        if (jsonObject["session_id"].toString() == session_id) {
+            progress = jsonObject["progress"].toString();
+            score = jsonObject["score"].toInt();
+            QString letter = jsonObject["letter"].toString();
+            mistakes = jsonObject["mistakes"].toInt();
+            used_chars.append(letter);
+            emit progress_changed();
+            emit score_changed();
+            emit mistakes_changed();
+        }
     }
 }
 

@@ -6,4 +6,12 @@
         <file>Page2.qml</file>
         <file>LobbyPage.qml</file>
     </qresource>
+    <qresource prefix="/img">
+        <file alias="wis01.png">img/wis01.png</file>
+        <file alias="wis02.png">img/wis02.png</file>
+        <file alias="wis03.png">img/wis03.png</file>
+        <file alias="wis04.png">img/wis04.png</file>
+        <file alias="wis05.png">img/wis05.png</file>
+        <file alias="wis06.png">img/wis06.png</file>
+    </qresource>
 </RCC>

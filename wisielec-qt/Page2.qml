@@ -6,6 +6,13 @@ Page {
     property alias client: game_client
     SchClient {
         id: game_client
+        onMistakesChanged: wisielecImicz.source = "qrc:/img/wis0"+(game_client.mistakes+1)+".png"
+    }
+
+    Image {
+        anchors { top: mistakes_label.bottom; horizontalCenter: mistakes_label.verticalCenter }
+        id: wisielecImicz
+        source: "qrc:/img/wis01.png"
     }
 
     Text {
@@ -44,6 +51,7 @@ Page {
     }
 
     Rectangle {
+        id: keyboard
         height: 200
         anchors {
             bottom: parent.bottom
@@ -62,6 +70,7 @@ Page {
                     text: letter
                     width: 30
                     height: 40
+                    enabled: game_client.mistakes < 5
                     onClicked: game_client.guess_letter(letter.toLowerCase())
                     anchors { fill: parent; margins: 5 }
                 }

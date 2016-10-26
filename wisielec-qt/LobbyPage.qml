@@ -3,6 +3,7 @@ import QtQuick.Controls 2.0
 
 Page {
     property alias join_button: join_button
+    property alias new_button: new_button
     property alias session_field: session_field
     id: page1
     Button {
@@ -10,6 +11,14 @@ Page {
         text: qsTr("Join")
         anchors.horizontalCenter: session_field.horizontalCenter
         anchors.top: session_field.bottom
+        anchors.topMargin: 11
+    }
+
+    Button {
+        id: new_button
+        text: qsTr("New")
+        anchors.horizontalCenter: session_field.horizontalCenter
+        anchors.top: join_button.bottom
         anchors.topMargin: 11
     }
 
