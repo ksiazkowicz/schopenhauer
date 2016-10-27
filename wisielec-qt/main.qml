@@ -16,11 +16,11 @@ ApplicationWindow {
         Page1 {}
         LobbyPage {
             join_button.onClicked: {
-                gamePage.client.join_game(session_field.text)
+                gameClient.join_game(session_field.text)
                 swipeView.currentIndex = 2
             }
             new_button.onClicked: {
-                gamePage.client.new_game()
+                gameClient.new_game()
                 swipeView.currentIndex = 2
             }
         }

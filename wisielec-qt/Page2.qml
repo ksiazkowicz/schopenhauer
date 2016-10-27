@@ -1,12 +1,10 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.0
-import schopenhauer 1.0
 
 Page {
-    property alias client: game_client
-    SchClient {
-        id: game_client
-        onMistakesChanged: wisielecImicz.source = "qrc:/img/wis0"+(game_client.mistakes+1)+".png"
+    Connections {
+        target: gameClient
+        onMistakesChanged: wisielecImicz.source = "qrc:/img/wis0"+(gameClient.mistakes+1)+".png"
     }
 
     Image {
@@ -20,7 +18,7 @@ Page {
         font.family: "Segoe UI Light"
         font.pixelSize: 20
         wrapMode: Text.WordWrap
-        text: game_client.progress
+        text: gameClient.progress
         anchors {
             horizontalCenter: parent.horizontalCenter;
             top: parent.top
@@ -32,7 +30,7 @@ Page {
 
     Label {
         id: score_label
-        text: game_client.score
+        text: gameClient.score
         anchors {
             horizontalCenter: parent.horizontalCenter;
             top: progress_label.bottom
@@ -42,7 +40,7 @@ Page {
 
     Label {
         id: mistakes_label
-        text: game_client.mistakes
+        text: gameClient.mistakes
         anchors {
             horizontalCenter: parent.horizontalCenter;
             top: score_label.bottom
@@ -70,8 +68,8 @@ Page {
                     text: letter
                     width: 30
                     height: 40
-                    enabled: game_client.mistakes < 5
-                    onClicked: game_client.guess_letter(letter.toLowerCase())
+                    enabled: gameClient.mistakes < 5
+                    onClicked: gameClient.guess_letter(letter.toLowerCase())
                     anchors { fill: parent; margins: 5 }
                 }
             }

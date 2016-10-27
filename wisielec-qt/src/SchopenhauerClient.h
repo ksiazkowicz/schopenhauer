@@ -16,12 +16,14 @@ class SchopenhauerClient : public QObject
     Q_PROPERTY(QString progress READ get_progress NOTIFY progress_changed)
     Q_PROPERTY(QStringList used_chars READ get_used_chars NOTIFY used_chars_changed)
     Q_PROPERTY(QString session_id READ get_session_id WRITE set_session_id NOTIFY session_id_changed)
+    Q_PROPERTY(QVariant games READ get_games NOTIFY games_changed)
 
 public:
     explicit SchopenhauerClient(QObject *parent = 0);
 
     int get_score() { return score; }
     int get_mistakes() { return mistakes; }
+    QVariant get_games() { return QVariant::fromValue(games); }
     QString get_progress() { return progress; }
     QString get_session_id() { return session_id; }
     void set_session_id(QString _new) { session_id = _new; emit session_id_changed(); }
@@ -35,6 +37,7 @@ public:
 signals:
     void score_changed();
     void progress_changed();
+    void games_changed();
     void mistakes_changed();
     void used_chars_changed();
     void session_id_changed();
@@ -53,6 +56,7 @@ private:
     int mistakes = 0;
     QString progress = "____";
     QStringList used_chars;
+    QStringList games;
 };
 
 #endif // SCHOPENHAUERCLIENT_H

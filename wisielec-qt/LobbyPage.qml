@@ -5,6 +5,7 @@ Page {
     property alias join_button: join_button
     property alias new_button: new_button
     property alias session_field: session_field
+    property alias games_list: games_list
     id: page1
     Button {
         id: join_button
@@ -38,5 +39,24 @@ Page {
         anchors.topMargin: 20
         anchors.leftMargin: 0
         anchors.left: session_field.left
+    }
+
+    ListView {
+        id: games_list
+        model: gameClient.games
+        anchors { top: new_button.bottom; topMargin: 20; left: parent.left; right: parent.right; bottom: parent.bottom; }
+        delegate: Item {
+            width: parent.width
+            height: 40
+            Row {
+                id: row1
+                spacing: 10
+                Text {
+                    text: modelData
+                    anchors.verticalCenter: parent.verticalCenter
+                    font.bold: true
+                }
+            }
+        }
     }
 }

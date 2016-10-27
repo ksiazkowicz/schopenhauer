@@ -4,10 +4,11 @@ SchopenhauerClient::SchopenhauerClient(QObject *parent) : QObject(parent)
 {
     connect(&socket, &QWebSocket::connected, this, &SchopenhauerClient::onConnected);
     connect(&socket, &QWebSocket::disconnected, this, &SchopenhauerClient::onDisconnected);
-    socket.open(QUrl("ws://127.0.0.1:8000/guess/"));
+    socket.open(QUrl("ws://127.0.0.1:8000/game/"));
     lobby_socket.open(QUrl("ws://127.0.0.1:8000/lobby/"));
 
     session_id = "2ec39b80911911e6a00f68f728f88948";
+    games.append("artur szopenhauer krulem rzycia");
 }
 
 void SchopenhauerClient::onConnected()
@@ -95,6 +96,22 @@ void SchopenhauerClient::onLobbyContentReceived(QString message)
 
     qDebug() << (jsonObject["session_id"].toString() == session_id);
     qDebug() << jsonObject.keys();
+
+    if (jsonObject.keys().contains("running_games")) {
+        QJsonArray running_games = jsonObject["running_games"].toArray();
+        qDebug() << running_games;
+
+        if (!running_games.isEmpty()) {
+            for (int i=0; i < running_games.size(); i++) {
+                QString game = running_games.at(i).toString();
+                if (!games.contains(game)) {
+                    games.append(game);
+                }
+            }
+            qDebug() << games;
+            emit games_changed();
+        }
+    }
 
     if (jsonObject["session_id"].toString() == session_id) {
         progress = jsonObject["progress"].toString();
