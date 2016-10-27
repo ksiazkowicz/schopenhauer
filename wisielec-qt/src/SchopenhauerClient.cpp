@@ -8,7 +8,6 @@ SchopenhauerClient::SchopenhauerClient(QObject *parent) : QObject(parent)
     lobby_socket.open(QUrl("ws://127.0.0.1:8000/lobby/"));
 
     session_id = "2ec39b80911911e6a00f68f728f88948";
-    games.append("artur szopenhauer krulem rzycia");
 }
 
 void SchopenhauerClient::onConnected()

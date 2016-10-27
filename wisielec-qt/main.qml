@@ -4,8 +4,8 @@ import QtQuick.Layouts 1.0
 
 ApplicationWindow {
     visible: true
-    width: 400
-    height: 480
+    width: 540
+    height: 720
     title: qsTr("wisielec schopenhauera")
 
     SwipeView {

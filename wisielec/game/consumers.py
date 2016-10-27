@@ -56,6 +56,19 @@ def lobby_receive(message):
                 "used_chars": game.used_characters,
             }),
         })
+    if action == "join":
+        session_id = content['session_id']
+        game = Game.objects.get(session_id=session_id)
+        Group("lobby").send({
+            "text": json.dumps({
+                "new": True,
+                "mistakes": game.mistakes,
+                "session_id": session_id,
+                "progress": game.progress,
+                "score": game.score,
+                "used_chars": game.used_characters,
+            }),
+        })
 
 
 # Connected to websocket.connect
@@ -112,7 +125,6 @@ def ws_guess(message):
 
     if game.state == "IN_PROGRESS":
         if letter in game.used_characters:
-            print "ugh"
             game.mistakes += 1
         elif letter in game.phrase.lower():
             game.used_characters += letter

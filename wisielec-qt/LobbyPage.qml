@@ -17,6 +17,7 @@ Page {
 
     Button {
         id: new_button
+        enabled: false
         text: qsTr("New")
         anchors.horizontalCenter: session_field.horizontalCenter
         anchors.top: join_button.bottom
@@ -53,8 +54,15 @@ Page {
                 spacing: 10
                 Text {
                     text: modelData
-                    anchors.verticalCenter: parent.verticalCenter
-                    font.bold: true
+                    anchors { verticalCenter: parent.verticalCenter; leftMargin: 20; rightMargin: 20 }
+                    font.bold: false
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked:  {
+                            gameClient.join_game(modelData)
+                            swipeView.currentIndex = 2
+                        }
+                    }
                 }
             }
         }

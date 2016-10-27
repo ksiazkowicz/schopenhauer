@@ -8,9 +8,10 @@ Page {
     }
 
     Image {
-        anchors { top: mistakes_label.bottom; horizontalCenter: mistakes_label.verticalCenter }
+        anchors { top: mistakes_label.bottom; horizontalCenter: parent.horizontalCenter; bottom: keyboard.top }
         id: wisielecImicz
         source: "qrc:/img/wis01.png"
+        fillMode: Image.PreserveAspectFit
     }
 
     Text {
@@ -50,13 +51,14 @@ Page {
 
     Rectangle {
         id: keyboard
-        height: 200
+        height: keyboardGrid.contentHeight
         anchors {
             bottom: parent.bottom
             left: parent.left
             right: parent.right
         }
         GridView {
+            id: keyboardGrid
             anchors.fill: parent
             model: letters
             cellWidth: 40
