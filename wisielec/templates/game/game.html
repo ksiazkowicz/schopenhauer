@@ -5,11 +5,19 @@
     <script>
         // Note that the path doesn't matter right now; any WebSocket
         // connection gets bumped over to WebSocket consumers
-        socket = new WebSocket("ws://" + window.location.host + "/game/");
+        socket = new WebSocket("ws://" + window.location.host + "/game/{{ game.session_id }}");
         socket.onmessage = function(e) {
             var bread = JSON.parse(e.data);
             if (bread.session_id == "{{ game.session_id }}") {
-                document.getElementById("used_letters").innerHTML += bread.letter + ", ";
+                if (bread.letter) {
+                    document.getElementById("used_letters").innerHTML += bread.letter + ", ";
+                }
+                if (bread.used_chars) {
+                    document.getElementById("used_letters").innerHTML = "Wykorzystane literki: "
+                    for (var i=0; i < bread.used_chars.length; i++) {
+                        document.getElementById("used_letters").innerHTML += bread.used_chars[i] + ", ";
+                    }
+                }
                 document.getElementById("score").innerText = bread.score;
                 document.getElementById("mistakes").innerText = bread.mistakes;
                 document.getElementById("progress").innerText = bread.progress;
@@ -58,7 +66,7 @@
         <!--<a href="guess?letter={{ x }}">{{ x }}</a>-->
         {% endfor %}{% else %}PRZEGRALES ZYCIE LOL{% endif %}
         <p id="used_letters">
-            Wykorzystane literki: {% if game.used_characters %}{% for x in game.used_characters %}{{ x }}{% if not forloop.last %},{% endif %} {% endfor %}{% else %}nie ma{% endif %}
+            Wykorzystane literki: {% if game.used_characters %}{% for x in game.used_characters %}{{ x }}{% if not forloop.last %},{% endif %} {% endfor %}{% endif %}
         </p>
     </div>
     <div>

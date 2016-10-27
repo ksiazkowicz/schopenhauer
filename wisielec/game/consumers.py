@@ -56,56 +56,38 @@ def lobby_receive(message):
                 "used_chars": game.used_characters,
             }),
         })
-    if action == "join":
-        session_id = content['session_id']
-        game = Game.objects.get(session_id=session_id)
-        Group("lobby").send({
-            "text": json.dumps({
-                "new": True,
-                "mistakes": game.mistakes,
-                "session_id": session_id,
-                "progress": game.progress,
-                "score": game.score,
-                "used_chars": game.used_characters,
-            }),
-        })
 
 
-# Connected to websocket.connect
-"""
-@channel_session
-def ws_connect(message):
-    # Work out room name from path (ignore slashes)
-    room = message.content['path'].strip("/")
-    # Save room in session and add us to the group
-    message.channel_session['room'] = room
-    Group("chat-%s" % room).add(message.reply_channel)
-
-# Connected to websocket.receive
-@channel_session
-def ws_message(message):
-    Group("chat-%s" % message.channel_session['room']).send({
-        "text": message['text'],
+def push_game_status(channel):
+    session_id = channel.strip("game-")
+    game = Game.objects.get(session_id=session_id)
+    Group(channel).send({
+        "text": json.dumps({
+            "mistakes": game.mistakes,
+            "session_id": session_id,
+            "progress": game.progress,
+            "score": game.score,
+            "used_chars": game.used_characters,
+        }),
     })
 
-# Connected to websocket.disconnect
+
 @channel_session
-def ws_disconnect(message):
-    Group("chat-%s" % message.channel_session['room']).discard(message.reply_channel)
-"""
-
-
 def ws_connect(message):
-    Group("chat").add(message.reply_channel)
+    game_id = message.content['path'].strip("/game/")
+    message.channel_session['game'] = game_id
+    Group("game-%s" % game_id).add(message.reply_channel)
+    push_game_status("game-%s" % game_id)
 
 
 # Connected to websocket.receive
+@channel_session
 def ws_message(message):
-    Group("chat").send({
+    Group("game-%s" % message.channel_session['game']).send({
         "text": "[user] %s" % message.content['text'],
     })
 
-
+@channel_session
 def ws_guess(message):
     content = None
 
@@ -145,7 +127,7 @@ def ws_guess(message):
 
         game.save()
 
-        Group("chat").send({
+        Group("game-%s" % message.channel_session['game']).send({
             "text": json.dumps({
                 "mistakes": game.mistakes,
                 "session_id": session_id,
