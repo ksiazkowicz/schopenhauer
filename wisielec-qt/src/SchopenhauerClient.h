@@ -32,6 +32,7 @@ public:
     Q_INVOKABLE void guess_letter(QString letter);
     Q_INVOKABLE void join_game(QString session_id);
     Q_INVOKABLE void new_game();
+    Q_INVOKABLE void refresh_lobby();
 
 
 signals:

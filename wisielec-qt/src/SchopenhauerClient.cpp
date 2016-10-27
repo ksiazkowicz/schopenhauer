@@ -4,21 +4,22 @@ SchopenhauerClient::SchopenhauerClient(QObject *parent) : QObject(parent)
 {
     connect(&socket, &QWebSocket::connected, this, &SchopenhauerClient::onConnected);
     connect(&socket, &QWebSocket::disconnected, this, &SchopenhauerClient::onDisconnected);
-    socket.open(QUrl("ws://127.0.0.1:8000/game/"));
+    connect(&socket, &QWebSocket::textMessageReceived,
+            this, &SchopenhauerClient::onContentReceived);
+    connect(&lobby_socket, &QWebSocket::textMessageReceived,
+            this, &SchopenhauerClient::onLobbyContentReceived);
     lobby_socket.open(QUrl("ws://127.0.0.1:8000/lobby/"));
 
-    session_id = "2ec39b80911911e6a00f68f728f88948";
+    session_id = "";
 }
 
 void SchopenhauerClient::onConnected()
 {
     qDebug() << "WebSocket connected";
-    connect(&socket, &QWebSocket::textMessageReceived,
-            this, &SchopenhauerClient::onContentReceived);
-    connect(&lobby_socket, &QWebSocket::textMessageReceived,
-            this, &SchopenhauerClient::onLobbyContentReceived);
+}
 
-    this->join_game(this->session_id);
+void SchopenhauerClient::refresh_lobby() {
+    lobby_socket.close(); lobby_socket.open(QUrl("ws://127.0.0.1:8000/lobby/"));
 }
 
 
@@ -33,13 +34,8 @@ void SchopenhauerClient::guess_letter(QString letter) {
 
 void SchopenhauerClient::join_game(QString _new_id) {
     this->session_id = _new_id;
-
-    QJsonObject request;
-    request["session_id"] = this->session_id;
-    request["action"] = "join";
-
-    QJsonDocument doc(request);
-    lobby_socket.sendTextMessage(doc.toJson(QJsonDocument::Compact));
+    socket.close();
+    socket.open(QUrl("ws://127.0.0.1:8000/game/" + this->session_id));
 }
 
 void SchopenhauerClient::new_game() {

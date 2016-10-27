@@ -13,6 +13,11 @@ Page {
         source: "qrc:/img/wis01.png"
         fillMode: Image.PreserveAspectFit
     }
+    TextField {
+        id: textfield
+        focus: true
+        onFocusChanged: { textfield.focus = true; }
+    }
 
     Text {
         id: progress_label
