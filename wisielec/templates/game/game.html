@@ -31,6 +31,14 @@
                 letter: letter
             }));
         }
+
+        function uniCharCode(event) {
+            var char = event.which || event.keyCode; // event.keyCode is used for IE8 and earlier
+            test(String.fromCharCode(char));
+        }
+        function zaznacz_rzeczy() {
+            document.getElementById("wpisywacz").focus();
+        }
     </script>
 
 
@@ -40,7 +48,9 @@
     <div class="pull-right">
         <img id="pikczer" src="{% static 'img/wis' %}0{{ game.mistakes|add:"1" }}.png">
     </div>
- 
+
+    <input type="text" style="color: #000; background-color: #000; height: 0; opacity: 0;" onkeypress="uniCharCode(event)" onfocusout="zaznacz_rzeczy()" autofocus id="wpisywacz">
+
     <div>
         {% if game.mistakes < 5 %}
         {% for x in alphabet %}
