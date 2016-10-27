@@ -19,9 +19,8 @@ quotes = [
 ]
 
 
-def create_game():
+def create_game(phrase):
     # TODO: get that from wikiquotes in randomized fashion
-    phrase = quotes[random.randint(0, len(quotes) - 1)]
     game_progress = ""
     for x in phrase:
         if x.isalpha():
@@ -36,7 +35,11 @@ def create_game():
 
 def new_game(request, template="game/lobby.html"):
     if request.POST:
-        game = create_game()
+        try:
+            quote = request.POST["quote"]
+        except:
+            quote = quotes[random.randint(0, len(quotes) - 1)]
+        game = create_game(quote)
         return HttpResponseRedirect("%s" % game.session_id)
 
     return render(request, template, locals())
