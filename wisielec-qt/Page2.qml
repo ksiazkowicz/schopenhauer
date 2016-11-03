@@ -16,7 +16,16 @@ Page {
     TextField {
         id: textfield
         focus: true
-        onFocusChanged: { textfield.focus = true; }
+        onFocusChanged: { textfield.focus = true; textfield.forceActiveFocus(); }
+        onTextChanged: {
+            // get letter
+            var letter = textfield.text;
+            // guess it
+            if (letter)
+                gameClient.guess_letter(letter.toLowerCase());
+            // reset
+            textfield.text = "";
+        }
     }
 
     Text {
