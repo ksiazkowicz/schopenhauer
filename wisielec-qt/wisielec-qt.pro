@@ -1,6 +1,8 @@
-QT += qml quickcontrols2 websockets
+QT += quickcontrols2 websockets
+QT -= widgets core gui
 
 CONFIG += c++11
+CONFIG += qtquickcompiler
 
 SOURCES += main.cpp \
     src/SchopenhauerClient.cpp
@@ -17,3 +19,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     src/SchopenhauerClient.h
+
+DISTFILES +=

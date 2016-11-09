@@ -13,24 +13,9 @@ Page {
         source: "qrc:/img/wis01.png"
         fillMode: Image.PreserveAspectFit
     }
-    TextField {
-        id: textfield
-        focus: true
-        onFocusChanged: { textfield.focus = true; textfield.forceActiveFocus(); }
-        onTextChanged: {
-            // get letter
-            var letter = textfield.text;
-            // guess it
-            if (letter)
-                gameClient.guess_letter(letter.toLowerCase());
-            // reset
-            textfield.text = "";
-        }
-    }
 
     Text {
         id: progress_label
-        font.family: "Segoe UI Light"
         font.pixelSize: 20
         wrapMode: Text.WordWrap
         text: gameClient.progress
@@ -65,6 +50,39 @@ Page {
 
     Rectangle {
         id: keyboard
+        height: 200
+        color: "#eee"
+        anchors {
+            bottom: parent.bottom
+            left: parent.left
+            right: parent.right
+        }
+        Text {
+            anchors.centerIn: parent
+            text: "Press here to enter text"
+            color: "#999"
+        }
+        TextField {
+            id: textfield
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.fill: parent
+            opacity: 0
+            focus: true
+            //onFocusChanged: { textfield.focus = true; textfield.forceActiveFocus(); }
+            onTextChanged: {
+                // get letter
+                var letter = textfield.text;
+                // guess it
+                if (letter)
+                    gameClient.guess_letter(letter.toLowerCase());
+                // reset
+                textfield.text = "";
+            }
+        }
+    }
+
+    /*Rectangle {
+        id: keyboard
         height: keyboardGrid.contentHeight
         anchors {
             bottom: parent.bottom
@@ -90,7 +108,7 @@ Page {
                 }
             }
         }
-    }
+    }*/
 
 
     ListModel {

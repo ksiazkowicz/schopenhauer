@@ -13,12 +13,14 @@ ApplicationWindow {
         anchors.fill: parent
         currentIndex: tabBar.currentIndex
 
-        Page1 {}
+        Page1 {
+            renderlabel.text: renderer
+            serverlabel.text: gameClient.api_url
+        }
         LobbyPage {
             new_button.onClicked: gameClient.refresh_lobby()
         }
         Page2 { id: gamePage }
-        Page {}
     }
 
     header: TabBar {
@@ -41,9 +43,9 @@ ApplicationWindow {
             font.family: "Segoe UI"
             text: qsTr("game")
         }
-        TabButton {
+        /*TabButton {
             font.family: "Segoe UI"
             text: qsTr("settings")
-        }
+        }*/
     }
 }

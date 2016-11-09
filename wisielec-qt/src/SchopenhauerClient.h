@@ -11,6 +11,7 @@ class SchopenhauerClient : public QObject
 {
     Q_OBJECT
 
+    Q_PROPERTY(QString api_url READ get_api_url)
     Q_PROPERTY(int score READ get_score NOTIFY score_changed)
     Q_PROPERTY(int mistakes READ get_mistakes NOTIFY mistakes_changed)
     Q_PROPERTY(QString progress READ get_progress NOTIFY progress_changed)
@@ -34,6 +35,8 @@ public:
     Q_INVOKABLE void new_game();
     Q_INVOKABLE void refresh_lobby();
 
+    const QString get_api_url() { return api_url; }
+
 
 signals:
     void score_changed();
@@ -48,6 +51,7 @@ public slots:
     void onDisconnected();
     void onContentReceived(QString message);
     void onLobbyContentReceived(QString message);
+    void onStateChanged(QAbstractSocket::SocketState state);
 
 private:
     QWebSocket socket;
@@ -58,6 +62,8 @@ private:
     QString progress = "____";
     QStringList used_chars;
     QStringList games;
+
+    QString api_url;
 };
 
 #endif // SCHOPENHAUERCLIENT_H
