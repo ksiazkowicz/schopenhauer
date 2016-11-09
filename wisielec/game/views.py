@@ -20,6 +20,8 @@ quotes = [
 
 
 def create_game(phrase):
+    if not phrase:
+        phrase = quotes[random.randint(0, len(quotes) - 1)]
     # TODO: get that from wikiquotes in randomized fashion
     game_progress = ""
     for x in phrase:

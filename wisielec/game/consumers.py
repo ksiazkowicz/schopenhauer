@@ -135,6 +135,7 @@ def ws_guess(message):
                 "letter": letter,
                 "score": game.score,
                 "outcome": yes,
+                "state": game.state,
             }),
         })
 
