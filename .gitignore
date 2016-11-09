@@ -143,3 +143,5 @@ $RECYCLE.BIN/
 
 # Qt stuff
 build-*/*
+*.sqlite3
+wisielec-qt/img
