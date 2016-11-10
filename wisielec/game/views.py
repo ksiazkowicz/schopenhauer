@@ -4,11 +4,12 @@ from django.http import HttpResponseRedirect
 from models import Game
 import uuid
 import random
+from wikiquotes import openSearch, queryTitles, getSectionsForPage, getQuotesForSection
 import requests
 
 
 # ugh, you should totally get that from wikiquotes
-quotes = [
+fallback_quotes = [
     u"Czy nie wygląda to, jakby istnienie było pomyłką, której skutki ujawniają się stopniowo coraz bardziej?",
     u"Każde pożegnanie ma coś ze śmierci, każde ponowne spotkanie – coś ze zmartwychwstania.",
     u"Na świecie ma się do wyboru tylko samotność albo pospolitość.",
@@ -20,9 +21,25 @@ quotes = [
 
 
 def create_game(phrase):
-    if not phrase:
+    # get title
+    all_titles = ["śmierć", "Artur Schopenhauer", "życie", "nieszczęście", "niepowodzenie"]
+    title = all_titles[random.randint(0, len(all_titles) - 1)]
+
+    # search
+    search_results = openSearch(title)
+
+
+    pages = queryTitles(search_results['response'][0])
+    if pages['response'] != "":
+        sections = getSectionsForPage(pages['response'])
+        quotes = getQuotesForSection(pages['response'], sections['response'][0])
+
+        quotes = quotes['response']
         phrase = quotes[random.randint(0, len(quotes) - 1)]
-    # TODO: get that from wikiquotes in randomized fashion
+    else:
+        # fallback
+        phrase = fallback_quotes[random.randint(0, len(fallback_quotes) - 1)]
+
     game_progress = ""
     for x in phrase:
         if x.isalpha():

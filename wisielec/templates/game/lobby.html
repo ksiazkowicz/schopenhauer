@@ -13,7 +13,6 @@
                   append_game(games[i]);
                 }
             }
-            dawaj_cytat();
         };
 
         function append_game(session_id) {
@@ -23,31 +22,6 @@
                 t.innerHTML = "<hr/><h4>" + session_id +"</h4> <i class='fa fa-user'></i> grają <b>chlebzycia666</b>, <b>bezsensistnienia12</b> | <a href='/game/" + session_id + "'>Dołącz</a>";
                 document.getElementById("running-games-list").appendChild(t);
             }
-        }
-        function dawaj_cytat() {
-            WikiquoteApi.openSearch(dawaj_temat(),
-              function(results) {
-                // Get quote
-                WikiquoteApi.getRandomQuote(results[0],
-                  function(newQuote) { console.dir(newQuote); quoteReady(newQuote, 12); },
-                  function(msg){
-                    alert(msg);
-                  }
-                );
-              },
-              function(msg) {
-                alert(msg);
-              }
-            );
-        }
-        function dawaj_temat() {
-            var tematy = ["śmierć", "Artur Schopenhauer", "życie", "nieszczęście", "niepowodzenie"];
-            var index = Math.floor(Math.random() * tematy.length);
-            return tematy[index];
-        }
-
-        function quoteReady(newQuote, index) {
-            document.getElementById("cytat").value = newQuote.quote;
         }
     </script>
 
