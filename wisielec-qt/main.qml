@@ -19,6 +19,7 @@ ApplicationWindow {
         }
         LobbyPage {
             new_button.onClicked: gameClient.refresh_lobby()
+            newer_button.onClicked: gameClient.new_game()
         }
         Page2 { id: gamePage }
     }

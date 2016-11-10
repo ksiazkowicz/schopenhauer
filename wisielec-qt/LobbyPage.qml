@@ -3,12 +3,14 @@ import QtQuick.Controls 2.0
 
 Page {
     property alias new_button: new_button
+    property alias newer_button: newer_button
     property alias games_list: games_list
     id: page1
 
     Button {
         id: new_button
         text: qsTr("Refresh")
+        anchors.horizontalCenterOffset: -60
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         anchors.topMargin: 20
@@ -42,5 +44,13 @@ Page {
                 }
             }
         }
+    }
+
+    Button {
+        id: newer_button
+        y: 20
+        text: qsTr("New")
+        anchors.left: new_button.right
+        anchors.leftMargin: 17
     }
 }

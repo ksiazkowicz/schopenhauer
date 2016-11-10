@@ -3,7 +3,7 @@
 
 SchopenhauerClient::SchopenhauerClient(QObject *parent) : QObject(parent)
 {
-    api_url = "0.tcp.ngrok.io:10193";
+    api_url = "0.tcp.ngrok.io:12928";
     connect(&socket, &QWebSocket::connected, this, &SchopenhauerClient::onConnected);
     connect(&socket, &QWebSocket::disconnected, this, &SchopenhauerClient::onDisconnected);
     connect(&socket, &QWebSocket::textMessageReceived,
@@ -115,6 +115,17 @@ void SchopenhauerClient::onLobbyContentReceived(QString message)
                 }
             }
             qDebug() << games;
+            emit games_changed();
+        }
+    }
+
+    if (jsonObject.keys().contains("new")) {
+        bool dupy = jsonObject["new"].toBool();
+        if (dupy) {
+            QString game = jsonObject["session_id"].toString();
+            if (!games.contains(game)) {
+                games.append(game);
+            }
             emit games_changed();
         }
     }

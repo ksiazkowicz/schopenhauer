@@ -20,14 +20,13 @@ fallback_quotes = [
 ]
 
 
-def create_game(phrase):
+def create_game():
     # get title
     all_titles = ["śmierć", "Artur Schopenhauer", "życie", "nieszczęście", "niepowodzenie"]
     title = all_titles[random.randint(0, len(all_titles) - 1)]
 
     # search
     search_results = openSearch(title)
-
 
     pages = queryTitles(search_results['response'][0])
     if pages['response'] != "":
@@ -54,11 +53,7 @@ def create_game(phrase):
 
 def new_game(request, template="game/lobby.html"):
     if request.POST:
-        try:
-            quote = request.POST["quote"]
-        except:
-            quote = quotes[random.randint(0, len(quotes) - 1)]
-        game = create_game(quote)
+        game = create_game()
         return HttpResponseRedirect("%s" % game.session_id)
 
     return render(request, template, locals())

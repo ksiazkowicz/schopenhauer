@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
     //qmlRegisterType<SchopenhauerClient>("schopenhauer", 1, 0, "SchClient");
     SchopenhauerClient schopenhauer;
 
-    QQuickWindow::setSceneGraphBackend(QSGRendererInterface::Direct3D12);
+    QQuickWindow::setSceneGraphBackend(QSGRendererInterface::OpenGL);
     QQuickWindow app_window;
 
     QQmlApplicationEngine engine;
