@@ -21,6 +21,9 @@ class Game(models.Model):
     def state(self):
         return self.get_winning_condition
 
+    def __unicode__(self):
+        return "%s [%s]" % (self.progress, self.session_id)
+
     @property
     def get_winning_condition(self):
         # if phrase is guessed
