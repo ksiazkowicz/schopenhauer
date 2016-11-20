@@ -7,19 +7,37 @@
         socket.onmessage = function(e) {
             var data_json = JSON.parse(e.data);
             var games = data_json.running_games;
+            var players = data_json.players;
+            var game_id = data_json.session_id;
 
             if (games) {
                 for (var i = 0, len = games.length; i < len; i++) {
                   append_game(games[i]);
                 }
             }
+            if (game_id) {
+                append_game(game_id);
+                update_players(game_id, players);
+            }
+            if (players && !game_id) {
+                var players_list = document.getElementById("players-list");
+                players_list.innerHTML = players;
+            }
         };
+
+        function update_players(session_id, players) {
+            var players_list = document.getElementById("players-for-"+session_id);
+            if (players != "")
+                players_list.innerHTML = players;
+            else
+                players_list.innerHTML = "nie żyją!";
+        }
 
         function append_game(session_id) {
             if (!document.getElementById("game-" + session_id)) {
                 var t = document.createElement("div");
                 t.id = "game-" + session_id;
-                t.innerHTML = "<hr/><h4>" + session_id +"</h4> <i class='fa fa-user'></i> grają <b>chlebzycia666</b>, <b>bezsensistnienia12</b> | <a href='/game/" + session_id + "'>Dołącz</a>";
+                t.innerHTML = "<hr/><h4>" + session_id +"</h4> <i class='fa fa-user'></i> gracze: <span id='players-for-"+session_id+"'></span> | <a href='/game/" + session_id + "'>Dołącz</a>";
                 document.getElementById("running-games-list").appendChild(t);
             }
         }
@@ -41,6 +59,7 @@
                 </div>
             </h3>
             <div id="running-games-list" style="min-height: 480px"></div>
+            <div><b>Gracze w lobby:</b> <div id="players-list">nie żyją</div></div>
         </div>
         <div class="col-md-4">
             <h3>Czat</h3>

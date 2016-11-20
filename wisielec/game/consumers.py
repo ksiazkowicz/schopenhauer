@@ -1,12 +1,15 @@
 from django.shortcuts import get_object_or_404
 from models import Game
 from views import create_game
-
 from channels import Group
 from datetime import datetime
 from channels.sessions import channel_session
-
+from channels.auth import http_session_user, channel_session_user, channel_session_user_from_http
 import json
+
+
+lobby_players = []
+game_players = {}
 
 
 def push_list_current_games(channel):
@@ -17,8 +20,37 @@ def push_list_current_games(channel):
         })
     })
 
+    for x in games:
+        if x.state == "IN_PROGRESS":
+            push_list_current_players_game(x.session_id)
 
-# TODO: actually be able to tell players apart
+
+def push_list_current_players():
+    Group("lobby").send({
+        "text": json.dumps({
+            "players": lobby_players
+        })
+    })
+
+
+def push_list_current_players_game(game_id):
+    game = Game.objects.get(session_id=game_id)
+
+    Group("lobby").send({
+        "text": json.dumps({
+            "session_id": game_id,
+            "players": game_players.get(game_id, [])
+        }),
+    })
+    Group("game-%s" % game_id).send({
+        "text": json.dumps({
+            "session_id": game_id,
+            "player_list_only": True,
+            "players": game_players.get(game_id, [])
+        })
+    })
+
+@channel_session_user_from_http
 def lobby_connect(message):
     # add player to lobby
     Group("lobby").add(message.reply_channel)
@@ -26,12 +58,26 @@ def lobby_connect(message):
     # send out a list of running games
     push_list_current_games(message.reply_channel)
 
+    try:
+        lobby_players.append(unicode(message.user))
+    except:
+        pass
 
-# ugh i cant into websockets
+    push_list_current_players()
+
+
+@channel_session_user
 def lobby_disconnect(message):
     Group("lobby").discard(message.reply_channel)
+    try:
+        lobby_players.remove(unicode(message.user))
+    except:
+        pass
+
+    push_list_current_players()
 
 
+@channel_session_user
 def lobby_receive(message):
     content = None
 
@@ -73,20 +119,34 @@ def push_game_status(channel):
 
 
 @channel_session
+@channel_session_user_from_http
 def ws_connect(message):
     game_id = message.content['path'].strip("/game/")
     message.channel_session['game'] = game_id
     Group("game-%s" % game_id).add(message.reply_channel)
     push_game_status("game-%s" % game_id)
 
+    if not game_players.get(game_id):
+        game_players[game_id] = [unicode(message.user)]
+    else:
+        try:
+            game_players.get(game_id, []).append(unicode(message.user))
+        except:
+            pass
+
+    push_list_current_players_game(game_id)
+
 
 # Connected to websocket.receive
+@channel_session_user
 @channel_session
 def ws_message(message):
     Group("game-%s" % message.channel_session['game']).send({
         "text": "[user] %s" % message.content['text'],
     })
 
+
+@channel_session_user
 @channel_session
 def ws_guess(message):
     content = None
@@ -139,6 +199,16 @@ def ws_guess(message):
             }),
         })
 
+
 # Connected to websocket.disconnect
+@channel_session
+@channel_session_user
 def ws_disconnect(message):
-    Group("chat").discard(message.reply_channel)
+    game_id = message.channel_session['game']
+    Group("game-%s" % game_id).discard(message.reply_channel)
+    try:
+        game_players.get(game_id, []).remove(unicode(message.user))
+    except:
+        pass
+
+    push_list_current_players_game(game_id)

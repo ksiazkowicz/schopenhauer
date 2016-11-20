@@ -18,13 +18,19 @@
                         document.getElementById("used_letters").innerHTML += bread.used_chars[i] + ", ";
                     }
                 }
-                document.getElementById("score").innerText = bread.score;
-                document.getElementById("mistakes").innerText = bread.mistakes;
-                document.getElementById("progress").innerText = bread.progress;
+                if (bread.players) {
+                    var players_list = document.getElementById("players-list");
+                    players_list.innerHTML = bread.players;
+                }
+                if (!bread.player_list_only) {
+                    document.getElementById("score").innerText = bread.score;
+                    document.getElementById("mistakes").innerText = bread.mistakes;
+                    document.getElementById("progress").innerText = bread.progress;
 
-                var img_mistakes = bread.mistakes < 5 ? bread.mistakes+1 : 6;
+                    var img_mistakes = bread.mistakes < 5 ? bread.mistakes+1 : 6;
 
-                document.getElementById("pikczer").setAttribute("src", "{% static 'img/wis' %}0"+(img_mistakes)+".png");
+                    document.getElementById("pikczer").setAttribute("src", "{% static 'img/wis' %}0"+(img_mistakes)+".png");
+                }
             }
         }
         socket.onopen = function() {
@@ -73,4 +79,5 @@
         <label>Punkty</label> <p id="score">{{ game.score }}</p>
         <label>Błędy</label> <p id="mistakes">{{ game.mistakes }}</p>
     </div>
+    <div><b>Lista graczy:</b> <div id="players-list">nie żyją</div></div>
 {% endblock %}
