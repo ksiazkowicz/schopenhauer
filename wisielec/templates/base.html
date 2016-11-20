@@ -18,7 +18,15 @@
                 {% block header %}
                 <div class="headerbar clearfix" style="padding: 15px;">
                     <div class="pull-left"><h1>Wisielec Schopenhauera</h1></div>
-                    <div class="pull-right" style="margin-top: 20px"><h4><a href="/game/new">Lobby</a> | Zaloguj się | Nie chce mi się</h4></div>
+                    <div class="pull-right" style="margin-top: 20px">
+                        <h4><a href="/game/new">Lobby</a> |
+                        {% if not request.user.is_anonymous %}
+                        Witaj <b>{{ request.user }}</b>, życie nie ma sensu | <a href="{% url 'logout_view' %}">Wyloguj</a>
+                        {% else %}
+                        <a href="{% url 'login_view' %}">Zaloguj się</a> | <a href="/game/register">Nie chce mi się</a>
+                        {% endif %}
+                        </h4>
+                    </div>
                 </div>
                 {% endblock %}
             </div>

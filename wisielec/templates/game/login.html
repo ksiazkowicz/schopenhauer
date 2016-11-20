@@ -2,8 +2,11 @@
 {% load static %}
 
 {% block content %}
+    <h4>{{ error }}</h4>
     <form method="post">
+        <label>Username</label>
         <input type="text" name="username">
+        <label>Password</label>
         <input type="password" name="password">
         {% csrf_token %}
         <button type="submit">zagoluj siem</button>

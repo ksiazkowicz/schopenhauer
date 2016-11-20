@@ -5,8 +5,6 @@ from models import Game
 import uuid
 import random
 from wikiquotes import openSearch, queryTitles, getSectionsForPage, getQuotesForSection
-from django.contrib.auth import authenticate, login
-import requests
 
 
 # ugh, you should totally get that from wikiquotes
@@ -93,17 +91,3 @@ def guess_phrase(request, session_id):
     game.save()
 
     return HttpResponseRedirect("/game/%s" % session_id)
-
-
-def login_view(request, template="game/login.html"):
-    if request.POST:
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return HttpResponseRedirect("/game/new")
-        else:
-            raise Http404()
-
-    return render(request, template, locals())
