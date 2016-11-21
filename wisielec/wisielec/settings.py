@@ -25,7 +25,7 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 SECRET_KEY = '7333#=wb9n%1zy(^r2c^39lk8l8&0kn@15iws4z2h$*ofr1(g_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -141,3 +141,9 @@ CHANNEL_LAYERS = {
         "ROUTING": "game.routing.routing",
     },
 }
+
+try:
+    from local_settings import *
+except ImportError as e:
+    if "local_settings" not in str(e):
+        raise e
