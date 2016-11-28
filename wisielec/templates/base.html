@@ -22,7 +22,7 @@
                     <div class="pull-right" style="margin-top: 20px">
                         <h4><a href="{% url 'lobby_view' %}">Lobby</a> |
                         {% if not request.user.is_anonymous %}
-                        Witaj <b>{{ request.user }}</b>, życie nie ma sensu | <a href="{% url 'profile_view' request.user.username %}">Profil</a> | <a href="{% url 'logout_view' %}">Wyloguj</a>
+                        Witaj <b>{{ request.user }}</b>, życie nie ma sensu | <a href="{% url 'ranking_view' %}">Ranking</a> | <a href="{% url 'profile_view' request.user.username %}">Profil</a> | <a href="{% url 'logout_view' %}">Wyloguj</a>
                         {% else %}
                         <a href="{% url 'login_view' %}">Zaloguj się</a> | <a href="{% url 'register' %}">Zarejestruj</a>
                         {% endif %}

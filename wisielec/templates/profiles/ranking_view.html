@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="col-md-12">
+    <h2>Lista przegrywów</h2>
+
+    <ol>
+        {% for user in users %}
+        <li {% if user == request.user %}style="font-weight: bold"{% endif %}>{{ user }} <div class="pull-right">({{ user.ranking_score }})</div></li>
+        {% endfor %}
+    </ol>
+</div>
+
+{% endblock %}

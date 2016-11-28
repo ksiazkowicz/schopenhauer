@@ -56,6 +56,11 @@ def logout_view(request):
     return HttpResponseRedirect("/game/lobby")
 
 
+def ranking_view(request, template="profiles/ranking_view.html"):
+    users = sorted(UserProfile.objects.all(), key=lambda t: t.ranking_score, reverse=True)
+    return render(request, template, locals())
+
+
 def profile_view(request, username, template='profiles/profile_view.html'):
     user = get_object_or_404(UserProfile, username=username)
     return render(request, template, locals())

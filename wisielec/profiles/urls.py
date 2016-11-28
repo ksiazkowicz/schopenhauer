@@ -1,10 +1,11 @@
 from django.conf.urls import url
-from views import login_view, logout_view, profile_view, RegistrationView
+from views import login_view, logout_view, profile_view, RegistrationView, ranking_view
 from django.contrib.auth import views
 
 urlpatterns = [
     url(r'^login', login_view, name='login_view'),
     url(r'^logout', logout_view, name='logout_view'),
+    url(r'^ranking', ranking_view, name='ranking_view'),
 
     url(r'^register/$', RegistrationView.as_view(), name='register'),
     url(r'^register/done/$', views.password_reset_done, {
