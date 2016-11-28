@@ -27,7 +27,7 @@ SECRET_KEY = '7333#=wb9n%1zy(^r2c^39lk8l8&0kn@15iws4z2h$*ofr1(g_'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["schopenhauer.krojony.pl", ]
 
 
 # Application definition
@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'home',
     'profiles',
     'game',
+    'pipeline',
     'channels',
 ]
 
@@ -105,7 +106,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
 
@@ -122,17 +122,35 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
+STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+
+PIPELINE = {
+    'PIPELINE_ENABLED': True,
+    'COMPILERS': (
+      'pipeline.compilers.sass.SASSCompiler',
+    ),
+    'CSS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
+    'JS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
+    'STYLESHEETS': {
+        'application': {
+            'source_filenames': (
+                # main scss file
+                'css/schopenhauer/main.scss',
+            ),
+            'output_filename': 'css/application.css',
+        },
+    }
+}
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
-)
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static_app'), )
 
 STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    'pipeline.finders.PipelineFinder',
 )
 
 CHANNEL_LAYERS = {
@@ -141,6 +159,8 @@ CHANNEL_LAYERS = {
         "ROUTING": "game.routing.routing",
     },
 }
+
+AUTH_USER_MODEL = "profiles.UserProfile"
 
 try:
     from local_settings import *
