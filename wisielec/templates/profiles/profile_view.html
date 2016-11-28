@@ -7,8 +7,7 @@
     <div class="col-md-3">
         <div style="text-align: center;">
             <img src="{% static 'img/schopenhauer.jpg' %}" style="border-radius: 100%; margin-bottom: 20px; width: 100px; height: 100px;">
-            <h3>{{ username }}</h3>
-            <p>niezalogowany</p>
+            <h3>{{ user.username }}</h3>
 
             <hr/>
             <button class="btn btn-default btn-lg">Zaproś do turnieju</button>
@@ -16,6 +15,11 @@
             <hr/>
             <h4>Statystyki</h4>
             <ul style="list-style-type: none; padding: 0; margin: 0; text-align: left;">
+                <li><b>Wygrane gry</b>: {{ user.won_games }}</li>
+                <li><b>Przegrane gry</b>: {{ user.lost_games }}</li>
+                <li><b>Wygrane turnieje</b>: {{ user.won_tournaments }}</li>
+                <li><b>Przegrane turnieje</b>: {{ user.lost_tournaments }}</li>
+                <li><b>Łącznie punktów</b>: {{ user.score }}</li>
                 <li><b>Przegrane życie</b>: bardzo</li>
                 <li><b>Pozycja w rakingu</b>: żadna</li>
             </ul>

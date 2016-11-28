@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 
 from django.contrib.auth.forms import PasswordResetForm
 from django.shortcuts import redirect
@@ -36,7 +37,7 @@ class RegistrationView(CreateView):
         return redirect('accounts:register-done')
 
 
-def login_view(request, template="game/login.html"):
+def login_view(request, template="profiles/login_view.html"):
     if request.POST:
         username = request.POST['username']
         password = request.POST['password']
@@ -56,4 +57,5 @@ def logout_view(request):
 
 
 def profile_view(request, username, template='profiles/profile_view.html'):
+    user = get_object_or_404(UserProfile, username=username)
     return render(request, template, locals())
