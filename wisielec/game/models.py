@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 
+from profiles.models import UserProfile
+
 
 GAME_STATES = [
     "IN_PROGRESS", "FAIL", "WIN",
@@ -16,6 +18,7 @@ class Game(models.Model):
     used_characters = models.CharField(_("Used letters"), max_length=128, blank=False)
     score = models.IntegerField(_("Score"), default=0)
     mistakes = models.IntegerField(_("Mistakes"), default=0)
+    player = models.ForeignKey(UserProfile, null=True)
 
     @property
     def state(self):

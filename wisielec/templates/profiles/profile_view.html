@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <h4>{{ error }}</h4>
+
+    <div class="col-md-3">
+        <div style="text-align: center;">
+            <img src="{% static 'img/schopenhauer.jpg' %}" style="border-radius: 100%; margin-bottom: 20px; width: 100px; height: 100px;">
+            <h3>{{ username }}</h3>
+            <p>niezalogowany</p>
+
+            <hr/>
+            <button class="btn btn-default btn-lg">Zaproś do turnieju</button>
+
+            <hr/>
+            <h4>Statystyki</h4>
+            <ul style="list-style-type: none; padding: 0; margin: 0; text-align: left;">
+                <li><b>Przegrane życie</b>: bardzo</li>
+                <li><b>Pozycja w rakingu</b>: żadna</li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-8 col-md-offset-1 clearfix">
+        <h4>Osiągnięcia (0%)</h4>
+        <p>Brak!</p>
+        <hr/>
+        <h4>Turnieje</h4>
+        <p>Ten gracz nie uczestniczy w żadnych turniejach.</p>
+        <hr/>
+        <h4>Znajomi</h4>
+        <p>Bez przesady</p>
+
+    </div>
+{% endblock %}
