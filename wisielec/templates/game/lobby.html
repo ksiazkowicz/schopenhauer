@@ -49,13 +49,6 @@
             <h3>
                 Trwające gry:
                 <div class="pull-right">
-                    <form action="" method="post">
-                        {% csrf_token %}
-                        {% comment %}<h3 style="color: #aaa">wylosowana fraza</h3>
-                        <h2 style="width: 70%; margin: 40px auto;">{{ phrase }}</h2>{% endcomment %}
-                        <textarea style="display: none" type="text" id="cytat" name="quote" title="cytat"></textarea>
-                        <button type="submit" class="btn btn-info button"><i class="fa fa-plus"></i> Nowa</button>
-                    </form>
                 </div>
             </h3>
             <div id="running-games-list" style="min-height: 480px"></div>

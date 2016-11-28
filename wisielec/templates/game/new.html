@@ -1,12 +1,51 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
+    <script>
+        function set_mode(value) {
+            $("#game_mode_field").val(value);
+            $(".mode").removeClass("current-mode");
+            $("#mode-"+value).addClass("current-mode");
+        }
+    </script>
+
+    <style>
+        .mode { width: 100%; }
+        .current-mode {
+            box-sizing: border-box;
+            border: 3px solid lightblue;
+        }
+    </style>
+
     <div style="text-align: center;">
-        <div>
+        <div class="col-md-4 col-md-offset-4 clearfix">
+            <h2>Wybierz tryb rozgrywki</h2>
+            <hr/>
+        </div>
+
+        <div class="col-md-2 col-md-offset-3">
+            <img id="mode-0" class="mode" src="{% static 'img/modes/eutanazol.png' %}">
+            <h4><a href="#" onclick="set_mode(0);">Eutanazol</a></h4>
+            <p>Klasyczna gra w wisielca.</p>
+        </div>
+        <div class="col-md-2">
+            <img id="mode-1" class="mode" src="{% static 'img/modes/born_to_die.png' %}">
+            <h4><a href="#" onclick="set_mode(1);">Born To Die</a></h4>
+            <p>Spróbuj poznać słodki smak porażki.</p>
+        </div>
+
+        <div class="col-md-2 clearfix">
+            <img id="mode-2" class="mode" src="{% static 'img/modes/yolo.jpg' %}">
+            <h4><a href="#" onclick="set_mode(2);">Masz tylko jedno życie</a></h4>
+            <p>I dobrze.</p>
+        </div>
+
+
+        <div class="col-md-12">
             <form action="" method="post">
                 {% csrf_token %}
-                {% comment %}<h3 style="color: #aaa">wylosowana fraza</h3>
-                <h2 style="width: 70%; margin: 40px auto;">{{ phrase }}</h2>{% endcomment %}
+                <input type="text" style="display: none" name="game_mode" id="game_mode_field" />
                 <input type="submit" class="btn btn-info btn-lg" value="Zaczynamy" />
             </form>
         </div>

@@ -79,5 +79,9 @@
         <label>Punkty</label> <p id="score">{{ game.score }}</p>
         <label>Błędy</label> <p id="mistakes">{{ game.mistakes }}</p>
     </div>
-    <div><b>Lista graczy:</b> <div id="players-list">nie żyją</div></div>
+    <div><b>Lista uczestników:</b> <div id="players-list">nie żyją</div></div>
+
+    {% if game.player %}<br/>
+    <div><b>Gra</b> {{ game.player }}</div>
+    {% endif %}
 {% endblock %}

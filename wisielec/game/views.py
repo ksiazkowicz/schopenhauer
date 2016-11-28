@@ -19,23 +19,32 @@ fallback_quotes = [
 ]
 
 
-def create_game():
-    # get title
-    all_titles = ["śmierć", "Artur Schopenhauer", "życie", "nieszczęście", "niepowodzenie"]
-    title = all_titles[random.randint(0, len(all_titles) - 1)]
+def get_quote():
+    # I'm so sad while making this "fix" ;-;
+    phrase = "a" * 210
 
-    # search
-    search_results = openSearch(title)
+    while len(phrase) > 128:
+        # get title
+        all_titles = ["śmierć", "Artur Schopenhauer", "życie", "nieszczęście", "niepowodzenie"]
+        title = all_titles[random.randint(0, len(all_titles) - 1)]
 
-    pages = queryTitles(search_results['response'][0])
-    if pages['response'] != "":
-        sections = getSectionsForPage(pages['response'])
-        quotes = getQuotesForSection(pages['response'], sections['response'][0])
+        # search
+        search_results = openSearch(title)
 
-        quotes = quotes['response']
-        phrase = quotes[random.randint(0, len(quotes) - 1)]
-    else:
-        # fallback
+        pages = queryTitles(search_results['response'][0])
+        if pages['response'] != "":
+            sections = getSectionsForPage(pages['response'])
+            quotes = getQuotesForSection(pages['response'], sections['response'][0])
+
+            quotes = quotes['response']
+            phrase = quotes[random.randint(0, len(quotes) - 1)]
+    return phrase
+
+
+def create_game(user, inverse_death=False, max_mistakes=5):
+    try:
+        phrase = get_quote()
+    except:
         phrase = fallback_quotes[random.randint(0, len(fallback_quotes) - 1)]
 
     game_progress = ""
@@ -46,13 +55,29 @@ def create_game():
             game_progress += x
 
     game = Game.objects.create(session_id=uuid.uuid1().hex, phrase=phrase, progress=game_progress,
-                               used_characters="")
+                               used_characters="", player=user, inverse_death=inverse_death, max_mistakes=max_mistakes)
     return game
 
 
-def new_game(request, template="game/lobby.html"):
+def lobby_view(request, template="game/lobby.html"):
+    return render(request, template, locals())
+
+
+def new_game(request, template="game/new.html"):
     if request.POST:
-        game = create_game()
+        mode = int(request.POST.get("game_mode", 0))
+        game = None
+
+        if mode == 0:
+            # Eutanazol selected
+            game = create_game(request.user)
+        elif mode == 1:
+            # Born To Die selected
+            game = create_game(request.user, inverse_death=True)
+        elif mode == 2:
+            # yolo selected
+            game = create_game(request.user, max_mistakes=1)
+
         return HttpResponseRedirect("%s" % game.session_id)
 
     return render(request, template, locals())
@@ -63,31 +88,3 @@ def current_game(request, session_id, template="game/game.html"):
     alphabet = u"aąbcćdeęfghijklłmnoprsśtuówyzżź"
 
     return render(request, template, locals())
-
-
-def guess_phrase(request, session_id):
-    game = get_object_or_404(Game, session_id=session_id)
-    letter = request.GET.get("letter", "")
-
-    if letter in game.used_characters:
-        print "ugh"
-        game.mistakes += 1
-    elif letter in game.phrase.lower():
-        game.used_characters += letter
-        new_progress = ""
-
-        for index, org_letter in enumerate(game.phrase.lower()):
-            if letter == org_letter:
-                game.score += 1
-                new_progress += game.phrase[index]
-            else:
-                new_progress += game.progress[index]
-
-        game.progress = new_progress
-    else:
-        game.mistakes += 1
-        game.used_characters += letter
-
-    game.save()
-
-    return HttpResponseRedirect("/game/%s" % session_id)

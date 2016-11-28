@@ -77,7 +77,7 @@ def lobby_disconnect(message):
     push_list_current_players()
 
 
-@channel_session_user
+@http_session_user
 def lobby_receive(message):
     content = None
 
@@ -90,7 +90,7 @@ def lobby_receive(message):
 
     action = content['action']
     if action == "new":
-        game = create_game()
+        game = create_game(message.user)
         session_id = game.session_id
         Group("lobby").send({
             "text": json.dumps({
@@ -146,6 +146,7 @@ def ws_message(message):
     })
 
 
+@http_session_user
 @channel_session_user
 @channel_session
 def ws_guess(message):
@@ -162,6 +163,11 @@ def ws_guess(message):
     letter = content['letter']
 
     game = get_object_or_404(Game, session_id=session_id)
+    player = game.player
+
+    if player:
+        if player != message.user:
+            return
 
     yes = False
 
@@ -175,6 +181,8 @@ def ws_guess(message):
             for index, org_letter in enumerate(game.phrase.lower()):
                 if letter == org_letter:
                     game.score += 1
+                    if player:
+                        player.score += 1
                     new_progress += game.phrase[index]
                 else:
                     new_progress += game.progress[index]
@@ -187,6 +195,15 @@ def ws_guess(message):
 
         game.save()
 
+        # keep track of won and lost games
+        if player:
+            if game.state == "FAIL":
+                player.lost_games += 1
+            elif game.state == "WIN":
+                player.won_games += 1
+            player.save()
+
+        # send updated game status to group
         Group("game-%s" % message.channel_session['game']).send({
             "text": json.dumps({
                 "mistakes": game.mistakes,

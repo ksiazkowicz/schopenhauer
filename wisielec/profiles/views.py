@@ -44,7 +44,7 @@ def login_view(request, template="profiles/login_view.html"):
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
-            return HttpResponseRedirect("/game/new")
+            return HttpResponseRedirect("/game/lobby")
         else:
             error = "Invalid username or password"
 
@@ -53,7 +53,7 @@ def login_view(request, template="profiles/login_view.html"):
 
 def logout_view(request):
     logout(request)
-    return HttpResponseRedirect("/game/new")
+    return HttpResponseRedirect("/game/lobby")
 
 
 def profile_view(request, username, template='profiles/profile_view.html'):
