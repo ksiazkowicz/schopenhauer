@@ -145,3 +145,5 @@ $RECYCLE.BIN/
 build-*/*
 *.sqlite3
 wisielec-qt/img
+wisielec/static
+wisielec/.idea
