@@ -24,7 +24,7 @@ class Game(models.Model):
 
     def update_round(self):
         all_rounds = self.round_set.all()
-        if len(all_rounds) < 0:
+        if len(all_rounds) <= 0:
             return
         else:
             game_round = all_rounds[0]

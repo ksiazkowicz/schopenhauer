@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'game',
     'pipeline',
     'channels',
+    'api',
 ]
 
 MIDDLEWARE = [
