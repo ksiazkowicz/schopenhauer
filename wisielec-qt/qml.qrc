@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>AuthView.qml</file>
         <file alias="main.qml">qml/main.qml</file>
     </qresource>
     <qresource prefix="/img">

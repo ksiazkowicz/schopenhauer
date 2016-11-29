@@ -1,52 +1,21 @@
 import QtQuick 2.0
+import QtWebView 1.1
 import QtQuick.Controls 2.0
 
 Page {
-    SwipeView {
-        id: swipeView
+    WebView {
+        id: webview
+        url: "about:blank"
         anchors.fill: parent
-        currentIndex: tabBar.currentIndex
+        onUrlChanged: {
+            console.log(url)
+            var urlString = url.toString();
 
-        AccountInfoPage {
-            renderlabel.text: renderer
-            serverlabel.text: "127.0.0.1:8000" //gameClient.api_url
+            if (!urlString.match("profiles\/register")) {
+                // back on lobby page, quit
+                stack.pop()
+            }
         }
-        LobbyPage {
-            new_button.onClicked: gameClient.refresh_lobby()
-            newer_button.onClicked: gameClient.new_game()
-        }
-        GamePage { id: gamePage }
-    }
-
-    header: TabBar {
-        id: tabBar
-        currentIndex: swipeView.currentIndex
-        TabButton {
-            //font.family: "Segoe MDL2 Assets"
-            font.family: "Segoe UI"
-            //text: qsTr("\uE716")
-            text: qsTr("profile")
-        }
-        TabButton {
-            font.family: "Segoe UI"
-            text: qsTr("lobby")
-        }
-
-        TabButton {
-            //font.family: "Segoe MDL2 Assets"
-            //text: qsTr("\uE768")
-            font.family: "Segoe UI"
-            text: qsTr("game")
-        }
-
-        /*TabButton {
-            font.family: "Segoe UI"
-            text: qsTr("longin")
-        }*/
-
-        /*TabButton {
-            font.family: "Segoe UI"
-            text: qsTr("settings")
-        }*/
+        Component.onCompleted: url = "http://127.0.0.1:8000/profiles/register"
     }
 }

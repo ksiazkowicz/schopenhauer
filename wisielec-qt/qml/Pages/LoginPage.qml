@@ -58,6 +58,9 @@ Page {
             id: registerButton
             text: qsTr("Zarejestruj")
             Layout.fillWidth: true
+            onClicked: {
+                stack.push("qrc:/Pages/RegisterPage.qml")
+            }
         }
     }
 
