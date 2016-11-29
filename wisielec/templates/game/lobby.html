@@ -37,7 +37,7 @@
             if (!document.getElementById("game-" + session_id)) {
                 var t = document.createElement("div");
                 t.id = "game-" + session_id;
-                t.innerHTML = "<hr/><h4>" + session_id +"</h4> <i class='fa fa-user'></i> gracze: <span id='players-for-"+session_id+"'></span> | <a href='/game/" + session_id + "'>Dołącz</a>";
+                t.innerHTML = "<hr/><h4>" + session_id +"</h4> <i class='fa fa-user'></i> gracze: <span id='players-for-"+session_id+"'></span> | <a href='/game/g/" + session_id + "'>Dołącz</a>";
                 document.getElementById("running-games-list").appendChild(t);
             }
         }
@@ -49,7 +49,8 @@
             <h3>
                 Trwające gry:
                 <div class="pull-right">
-                    <a href="{% url "new_game" %}" type="submit" class="btn btn-info button"><i class="fa fa-plus"></i> Nowa</a>
+                    <a href="{% url "new_game_view" %}" type="submit" class="btn btn-info button"><i class="fa fa-plus"></i> Nowa</a>
+                    <a href="{% url "new_tournament_view" %}" type="submit" class="btn btn-info button"><i class="fa fa-plus"></i> Nowy turniej</a>
                 </div>
             </h3>
             <div id="running-games-list" style="min-height: 480px"></div>

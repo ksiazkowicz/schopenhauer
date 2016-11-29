@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect, Http404
-from models import Game
+from models import Game, Tournament, Round
+from profiles.models import UserProfile
 import uuid
 import random
 from wikiquotes import openSearch, queryTitles, getSectionsForPage, getQuotesForSection
@@ -41,11 +42,12 @@ def get_quote():
     return phrase
 
 
-def create_game(user, inverse_death=False, max_mistakes=5):
-    try:
-        phrase = get_quote()
-    except:
-        phrase = fallback_quotes[random.randint(0, len(fallback_quotes) - 1)]
+def create_game(user, inverse_death=False, max_mistakes=5, phrase=None):
+    if not phrase:
+        try:
+            phrase = get_quote()
+        except:
+            phrase = fallback_quotes[random.randint(0, len(fallback_quotes) - 1)]
 
     game_progress = ""
     for x in phrase:
@@ -78,7 +80,20 @@ def new_game(request, template="game/new.html"):
             # yolo selected
             game = create_game(request.user, max_mistakes=1)
 
-        return HttpResponseRedirect("%s" % game.session_id)
+        return HttpResponseRedirect("/game/g/%s" % game.session_id)
+
+    return render(request, template, locals())
+
+
+def new_tournament_view(request, template="tournament/new.html"):
+    if request.POST:
+        game_mode = int(request.POST.get("game_mode", 0))
+        name = request.POST.get("name", "")
+
+        tournament = Tournament.objects.create(session_id=uuid.uuid1().hex, name=name, mode=game_mode)
+        tournament.players.add(request.user)
+
+        return HttpResponseRedirect("/game/t/%s" % tournament.session_id)
 
     return render(request, template, locals())
 
@@ -88,3 +103,42 @@ def current_game(request, session_id, template="game/game.html"):
     alphabet = u"aąbcćdeęfghijklłmnoprsśtuówyzżź"
 
     return render(request, template, locals())
+
+
+def tournament_view(request, session_id, template="tournament/tournament_lobby.html"):
+    tournament = get_object_or_404(Tournament, session_id=session_id)
+    rounds = tournament.round_set.all().order_by("round_id")
+
+    if request.POST:
+        if "name" in request.POST.keys():
+            try:
+                user = UserProfile.objects.get(username=request.POST.get("name", ""))
+                tournament.players.add(user)
+            except:
+                pass
+        else:
+            inverse_death = False
+            max_mistakes = 5
+            if tournament.mode == 1:
+                # Born To Die selected
+                inverse_death = True
+            elif tournament.mode == 2:
+                # yolo selected
+                max_mistakes = 1
+            try:
+                phrase = get_quote()
+            except:
+                phrase = fallback_quotes[random.randint(0, len(fallback_quotes) - 1)]
+            round = Round.objects.create(round_id=tournament.current_round+1, tournament=tournament)
+            tournament.current_round = tournament.current_round+1
+            tournament.save()
+            no_mans_game = False
+            for player in tournament.players.all():
+                game = create_game(player, phrase=phrase, inverse_death=inverse_death, max_mistakes=max_mistakes)
+                round.games.add(game)
+                if player == request.user:
+                    no_mans_game = game
+            return HttpResponseRedirect("/game/g/%s" % no_mans_game.session_id)
+
+    return render(request, template, locals())
+

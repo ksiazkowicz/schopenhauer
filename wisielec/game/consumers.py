@@ -193,6 +193,7 @@ def ws_guess(message):
             game.mistakes += 1
             game.used_characters += letter
 
+        game.update_round()
         game.save()
 
         # keep track of won and lost games

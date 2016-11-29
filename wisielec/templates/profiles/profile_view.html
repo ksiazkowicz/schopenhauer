@@ -30,7 +30,11 @@
         <p>Brak!</p>
         <hr/>
         <h4>Turnieje</h4>
-        <p>Ten gracz nie uczestniczy w żadnych turniejach.</p>
+        {% if not user.tournament_set.all %}
+            <p>Ten gracz nie uczestniczy w żadnych turniejach.</p>
+        {% else %}
+            <p>{% for tournament in user.tournament_set.all %}<a href="{% url 'tournament_view' tournament.session_id %}">{{ tournament.name }}</a>{% if not forloop.last %},{% endif %} {% endfor %}</p>
+        {% endif %}
         <hr/>
         <h4>Znajomi</h4>
         <p>Bez przesady</p>
