@@ -15,7 +15,7 @@ ApplicationWindow {
 
         Page1 {
             renderlabel.text: renderer
-            serverlabel.text: gameClient.api_url
+            serverlabel.text: "127.0.0.1:8000" //gameClient.api_url
         }
         LobbyPage {
             new_button.onClicked: gameClient.refresh_lobby()
@@ -44,6 +44,12 @@ ApplicationWindow {
             font.family: "Segoe UI"
             text: qsTr("game")
         }
+
+        /*TabButton {
+            font.family: "Segoe UI"
+            text: qsTr("longin")
+        }*/
+
         /*TabButton {
             font.family: "Segoe UI"
             text: qsTr("settings")

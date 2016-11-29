@@ -6,12 +6,12 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include "auth.h"
+#include "api.h"
 
 class SchopenhauerClient : public QObject
 {
     Q_OBJECT
-
-    Q_PROPERTY(QString api_url READ get_api_url)
     Q_PROPERTY(int score READ get_score NOTIFY score_changed)
     Q_PROPERTY(int mistakes READ get_mistakes NOTIFY mistakes_changed)
     Q_PROPERTY(QString progress READ get_progress NOTIFY progress_changed)
@@ -35,9 +35,6 @@ public:
     Q_INVOKABLE void new_game();
     Q_INVOKABLE void refresh_lobby();
 
-    const QString get_api_url() { return api_url; }
-
-
 signals:
     void score_changed();
     void progress_changed();
@@ -53,17 +50,19 @@ public slots:
     void onLobbyContentReceived(QString message);
     void onStateChanged(QAbstractSocket::SocketState state);
 
+    void invalidateSockets();
+
 private:
     QWebSocket socket;
     QWebSocket lobby_socket;
-    QString session_id;
     int score = 0;
     int mistakes = 0;
     QString progress = "____";
     QStringList used_chars;
     QStringList games;
 
-    QString api_url;
+    SchopenhauerApi *api;
+    QString session_id;
 };
 
 #endif // SCHOPENHAUERCLIENT_H

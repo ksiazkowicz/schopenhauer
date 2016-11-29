@@ -1,11 +1,14 @@
-QT += quickcontrols2 websockets
+QT += quickcontrols2 websockets webview
 QT -= widgets core gui
 
 CONFIG += c++11
 CONFIG += qtquickcompiler
 
-SOURCES += main.cpp \
-    src/SchopenhauerClient.cpp
+SOURCES += src/main.cpp \
+    src/libdecadence/client.cpp \
+    src/libdecadence/auth.cpp \
+    src/libdecadence/api.cpp \
+    src/settings.cpp
 
 RESOURCES += qml.qrc
 
@@ -18,6 +21,9 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    src/SchopenhauerClient.h
+    src/libdecadence/client.h \
+    src/libdecadence/auth.h \
+    src/libdecadence/api.h \
+    src/settings.h
 
 DISTFILES +=

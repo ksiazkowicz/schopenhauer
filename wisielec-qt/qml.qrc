@@ -4,6 +4,7 @@
         <file>Page1.qml</file>
         <file>Page2.qml</file>
         <file>LobbyPage.qml</file>
+        <file>AuthView.qml</file>
     </qresource>
     <qresource prefix="/img">
         <file alias="wis01.png">img/wis01.png</file>

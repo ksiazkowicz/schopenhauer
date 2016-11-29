@@ -1,9 +1,12 @@
-#include "src/SchopenhauerClient.h"
-
+#include "client.h"
 
 SchopenhauerClient::SchopenhauerClient(QObject *parent) : QObject(parent)
 {
-    api_url = "0.tcp.ngrok.io:12928";
+    // initialize API
+    api = new SchopenhauerApi();
+    connect(api, &SchopenhauerApi::updatedSessionData, this, &SchopenhauerClient::invalidateSockets);
+
+    // connect sockets to signals and slots
     connect(&socket, &QWebSocket::connected, this, &SchopenhauerClient::onConnected);
     connect(&socket, &QWebSocket::disconnected, this, &SchopenhauerClient::onDisconnected);
     connect(&socket, &QWebSocket::textMessageReceived,
@@ -13,9 +16,9 @@ SchopenhauerClient::SchopenhauerClient(QObject *parent) : QObject(parent)
     connect(&lobby_socket, &QWebSocket::connected, this, &SchopenhauerClient::onConnected);
     connect(&lobby_socket, &QWebSocket::disconnected, this, &SchopenhauerClient::onDisconnected);
     connect(&lobby_socket, &QWebSocket::stateChanged, this, &SchopenhauerClient::onStateChanged);
-    lobby_socket.open(QUrl("ws://"+api_url+"/lobby/"));
 
-    session_id = "";
+    // connect to lobby
+    this->refresh_lobby();
 }
 
 void SchopenhauerClient::onConnected()
@@ -30,7 +33,12 @@ void SchopenhauerClient::onStateChanged(QAbstractSocket::SocketState state) {
 }
 
 void SchopenhauerClient::refresh_lobby() {
-    lobby_socket.close(); lobby_socket.open(QUrl("ws://"+api_url+"/lobby/"));
+    /*
+     *  Reconnect to lobby.
+     *
+     */
+    lobby_socket.close();
+    lobby_socket.open(QUrl(api->getUrl(SchopenhauerApi::Websocket, "/lobby/")));
 }
 
 
@@ -46,7 +54,7 @@ void SchopenhauerClient::guess_letter(QString letter) {
 void SchopenhauerClient::join_game(QString _new_id) {
     this->session_id = _new_id;
     socket.close();
-    socket.open(QUrl("ws://"+api_url+"/game/" + this->session_id));
+    socket.open(QUrl(api->getUrl(SchopenhauerApi::Websocket,"/game/" + this->session_id)));
 }
 
 void SchopenhauerClient::new_game() {
@@ -139,4 +147,8 @@ void SchopenhauerClient::onLobbyContentReceived(QString message)
         emit score_changed();
         emit mistakes_changed();
     }
+}
+
+void SchopenhauerClient::invalidateSockets() {
+    this->refresh_lobby();
 }
