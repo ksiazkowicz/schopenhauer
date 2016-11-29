@@ -9,10 +9,6 @@ SchopenhauerApi::SchopenhauerApi(QObject *parent) : QObject(parent)
     // and auth things
     auth = new SchopenhauerCookies();
     connect(auth, &SchopenhauerCookies::sessionFound, this, &SchopenhauerApi::setSessionToken);
-
-    // attempt login
-    // TODO: this shouldn't be hardcoded
-    this->attemptLogin("chlebzycia666", "chleb1234");
 }
 
 

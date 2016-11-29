@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     QQuickWindow app_window;
 
     QQmlApplicationEngine engine;
-    //engine.rootContext()->setContextProperty("appSettings", &appSettings);
+    engine.rootContext()->setContextProperty("appSettings", &appSettings);
     engine.rootContext()->setContextProperty("gameClient", &schopenhauer);
 
     QString renderer_string = "Unknown";

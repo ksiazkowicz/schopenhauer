@@ -35,6 +35,9 @@ public:
     Q_INVOKABLE void new_game();
     Q_INVOKABLE void refresh_lobby();
 
+
+    Q_INVOKABLE void attemptLogin(QString login, QString password);
+
 signals:
     void score_changed();
     void progress_changed();

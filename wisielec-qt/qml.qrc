@@ -1,10 +1,7 @@
 <RCC>
     <qresource prefix="/">
-        <file>main.qml</file>
-        <file>Page1.qml</file>
-        <file>Page2.qml</file>
-        <file>LobbyPage.qml</file>
         <file>AuthView.qml</file>
+        <file alias="main.qml">qml/main.qml</file>
     </qresource>
     <qresource prefix="/img">
         <file alias="wis01.png">img/wis01.png</file>
@@ -14,5 +11,13 @@
         <file alias="wis05.png">img/wis05.png</file>
         <file alias="wis06.png">img/wis06.png</file>
         <file alias="avatar.jpg">img/schopenhauer.jpg</file>
+    </qresource>
+    <qresource prefix="/Pages">
+        <file alias="LoginPage.qml">qml/Pages/LoginPage.qml</file>
+        <file alias="MainPage.qml">qml/Pages/MainPage.qml</file>
+        <file alias="RegisterPage.qml">qml/Pages/RegisterPage.qml</file>
+        <file alias="AboutPage.qml">qml/Pages/AboutPage.qml</file>
+        <file alias="GamePage.qml">qml/Pages/GamePage.qml</file>
+        <file alias="LobbyPage.qml">qml/Pages/LobbyPage.qml</file>
     </qresource>
 </RCC>

@@ -3,10 +3,13 @@
 
 #include <QObject>
 
-class Settings
+class Settings : public QObject
 {
+    Q_OBJECT
 public:
-    Settings();
+    explicit Settings(QObject *parent = 0);
+
+    Q_INVOKABLE bool isLoggedIn() { return false; }
 };
 
 #endif // SETTINGS_H

@@ -1,6 +1,6 @@
 #include "settings.h"
 
-Settings::Settings()
+Settings::Settings(QObject *parent) : QObject(parent)
 {
 
 }

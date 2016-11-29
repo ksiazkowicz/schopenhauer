@@ -152,3 +152,7 @@ void SchopenhauerClient::onLobbyContentReceived(QString message)
 void SchopenhauerClient::invalidateSockets() {
     this->refresh_lobby();
 }
+
+void SchopenhauerClient::attemptLogin(QString login, QString password) {
+    api->attemptLogin(login, password);
+}
