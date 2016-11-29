@@ -1,9 +1,9 @@
 #include "client.h"
 
-SchopenhauerClient::SchopenhauerClient(QObject *parent) : QObject(parent)
+SchopenhauerClient::SchopenhauerClient(SchopenhauerApi *api, QObject *parent) : QObject(parent)
 {
     // initialize API
-    api = new SchopenhauerApi();
+    this->api = api;
     connect(api, &SchopenhauerApi::updatedSessionData, this, &SchopenhauerClient::invalidateSockets);
 
     // connect sockets to signals and slots
@@ -54,7 +54,7 @@ void SchopenhauerClient::guess_letter(QString letter) {
 void SchopenhauerClient::join_game(QString _new_id) {
     this->session_id = _new_id;
     socket.close();
-    socket.open(QUrl(api->getUrl(SchopenhauerApi::Websocket,"/game/" + this->session_id)));
+    socket.open(QUrl(api->getUrl(SchopenhauerApi::Websocket,"/game/" + this->session_id +"/")));
 }
 
 void SchopenhauerClient::new_game() {
@@ -153,6 +153,3 @@ void SchopenhauerClient::invalidateSockets() {
     this->refresh_lobby();
 }
 
-void SchopenhauerClient::attemptLogin(QString login, QString password) {
-    api->attemptLogin(login, password);
-}

@@ -7,6 +7,7 @@
 
 // libdecadence imports
 #include "src/libdecadence/client.h"
+#include "src/libdecadence/api.h"
 #include "src/settings.h"
 
 int main(int argc, char *argv[])
@@ -21,12 +22,14 @@ int main(int argc, char *argv[])
 
     // register QML types
     Settings appSettings;
-    SchopenhauerClient schopenhauer;
+    SchopenhauerApi libdecadence;
+    SchopenhauerClient schopenhauer(&libdecadence);
 
     //QQuickWindow::setSceneGraphBackend(QSGRendererInterface::OpenGL);
     QQuickWindow app_window;
 
     QQmlApplicationEngine engine;
+    engine.rootContext()->setContextProperty("api", &libdecadence);
     engine.rootContext()->setContextProperty("appSettings", &appSettings);
     engine.rootContext()->setContextProperty("gameClient", &schopenhauer);
 

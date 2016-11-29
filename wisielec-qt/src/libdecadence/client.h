@@ -20,7 +20,7 @@ class SchopenhauerClient : public QObject
     Q_PROPERTY(QVariant games READ get_games NOTIFY games_changed)
 
 public:
-    explicit SchopenhauerClient(QObject *parent = 0);
+    explicit SchopenhauerClient(SchopenhauerApi *api, QObject *parent = 0);
 
     int get_score() { return score; }
     int get_mistakes() { return mistakes; }
@@ -34,9 +34,6 @@ public:
     Q_INVOKABLE void join_game(QString session_id);
     Q_INVOKABLE void new_game();
     Q_INVOKABLE void refresh_lobby();
-
-
-    Q_INVOKABLE void attemptLogin(QString login, QString password);
 
 signals:
     void score_changed();

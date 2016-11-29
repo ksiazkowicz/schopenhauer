@@ -8,7 +8,11 @@ SchopenhauerApi::SchopenhauerApi(QObject *parent) : QObject(parent)
 
     // and auth things
     auth = new SchopenhauerCookies();
+    manager = auth->getManager();
     connect(auth, &SchopenhauerCookies::sessionFound, this, &SchopenhauerApi::setSessionToken);
+    connect(manager, &QNetworkAccessManager::finished, this, &SchopenhauerApi::parseReply);
+
+    this->getRanking();
 }
 
 
@@ -62,4 +66,35 @@ void SchopenhauerApi::attemptLogin(QString login, QString password) {
     auth->login = postData;
     // start login sequence
     auth->sendGetRequest(QUrl(getUrl(Http,"/profiles/login",true)));
+}
+
+void SchopenhauerApi::getRanking() {
+    // call ranking API
+    qDebug() << getUrl(Http, "/api/v1/ranking", true);
+    manager->get(QNetworkRequest(QUrl(getUrl(Http, "/api/v1/ranking", true))));
+}
+
+void SchopenhauerApi::parseReply(QNetworkReply *reply) {
+    QString content = reply->readAll();
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(content.toUtf8());
+    QJsonObject jsonObject = jsonResponse.object();
+
+    if (jsonObject.keys().contains("players")) {
+        QJsonArray playersArray = jsonObject["players"].toArray();
+
+        if (!playersArray.isEmpty()) {
+            bestPlayers.clear();
+            for (int i=0; i < playersArray.size(); i++) {
+                QJsonObject playerJson = playersArray.at(i).toObject();
+                RankingModel *player = new RankingModel();
+                player->setUsername(playerJson["username"].toString());
+                player->setScore((float)(playerJson["score"].toDouble()));
+                player->setPosition(playerJson["position"].toInt());
+                bestPlayers.append(player);
+                qDebug() << playerJson["username"] << playerJson["score"] << playerJson["position"];
+            }
+            emit rankingChanged();
+        }
+        emit rankingChanged();
+    }
 }

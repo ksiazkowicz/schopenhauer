@@ -19,6 +19,7 @@ Page {
 
         TextField {
             id: textField1
+            text: "chlebzycia666"
             Layout.fillWidth: true
         }
 
@@ -29,6 +30,7 @@ Page {
 
         TextField {
             id: textField2
+            text: "chleb1234"
             Layout.fillWidth: true
         }
 
@@ -47,7 +49,7 @@ Page {
             text: qsTr("Zaloguj")
             Layout.fillWidth: true
             onClicked: {
-                gameClient.attemptLogin(textField1.text, textField2.text)
+                api.attemptLogin(textField1.text, textField2.text)
                 stack.replace("qrc:/Pages/MainPage.qml")
             }
         }

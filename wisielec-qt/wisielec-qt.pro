@@ -24,6 +24,7 @@ HEADERS += \
     src/libdecadence/client.h \
     src/libdecadence/auth.h \
     src/libdecadence/api.h \
-    src/settings.h
+    src/settings.h \
+    src/models/RankingModel.h
 
 DISTFILES +=

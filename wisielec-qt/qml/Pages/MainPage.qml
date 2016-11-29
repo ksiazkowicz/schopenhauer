@@ -16,6 +16,7 @@ Page {
             newer_button.onClicked: gameClient.new_game()
         }
         GamePage { id: gamePage }
+        RankingPage { id: rankingPage }
     }
 
     header: TabBar {
@@ -33,6 +34,11 @@ Page {
         TabButton {
             font.family: "Segoe UI"
             text: qsTr("game")
+        }
+
+        TabButton {
+            font.family: "Segoe UI"
+            text: qsTr("ranking")
         }
     }
 }
