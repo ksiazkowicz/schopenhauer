@@ -10,6 +10,7 @@
         <file alias="wis05.png">img/wis05.png</file>
         <file alias="wis06.png">img/wis06.png</file>
         <file alias="avatar.jpg">img/schopenhauer.jpg</file>
+        <file alias="suicide_rabbit.png">img/suicide_rabbit.png</file>
     </qresource>
     <qresource prefix="/Pages">
         <file alias="LoginPage.qml">qml/Pages/LoginPage.qml</file>

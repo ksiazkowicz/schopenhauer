@@ -6,16 +6,12 @@ Page {
     id: page1
 
     ColumnLayout {
-        x: 184
-        y: 58
-        width: 293
-        height: 121
-        anchors.horizontalCenter: parent.horizontalCenter
+        id: loginForm
+        width: parent.width > 300 ? 300 : parent.width - 40
+        height: implicitHeight
+        anchors { horizontalCenter: parent.horizontalCenter; top: rabbit.bottom; topMargin: 30; }
 
-        Label {
-            id: label1
-            text: qsTr("Login")
-        }
+        Label { text: qsTr("Login")}
 
         TextField {
             id: textField1
@@ -23,26 +19,22 @@ Page {
             Layout.fillWidth: true
         }
 
-        Label {
-            id: label2
-            text: qsTr("Hasło")
-        }
+        Label { text: qsTr("Hasło") }
 
         TextField {
             id: textField2
             text: "chleb1234"
             Layout.fillWidth: true
+            echoMode: TextInput.PasswordEchoOnEdit
         }
 
     }
 
     RowLayout {
         id: rowLayout1
-        x: 184
-        y: 195
-        width: 293
-        height: 40
-        anchors.horizontalCenter: parent.horizontalCenter
+        width: parent.width > 300 ? 300 : parent.width - 40
+        height: implicitHeight
+        anchors { horizontalCenter: parent.horizontalCenter; top: loginForm.bottom; topMargin: 20; }
 
         Button {
             id: loginButton
@@ -62,6 +54,18 @@ Page {
                 stack.push("qrc:/Pages/RegisterPage.qml")
             }
         }
+    }
+
+    Image {
+        id: rabbit
+        anchors { top: parent.top; left: parent.left; right: parent.right; }
+        source: "qrc:/img/suicide_rabbit.png"
+        fillMode: Image.PreserveAspectFit
+    }
+
+    Label {
+        text: api.getApiServer()
+        anchors { horizontalCenter: parent.horizontalCenter; bottom: parent.bottom; bottomMargin: 10 }
     }
 
 }

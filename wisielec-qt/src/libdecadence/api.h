@@ -29,6 +29,8 @@ public:
     QString getUrl(Protocol proto, QString path);
     QString getUrl(Protocol proto, QString path, bool ignoreSessionToken);
 
+    Q_INVOKABLE QString getApiServer() { return this->apiUrl; }
+
     Q_INVOKABLE void getRanking();
     Q_INVOKABLE void getUserData();
     Q_INVOKABLE void getUserData(QString username);
