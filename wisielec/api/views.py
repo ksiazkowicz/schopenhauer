@@ -8,10 +8,26 @@ def user_api(request):
     """
     Returns currently logged in player.
     """
-    response = {
-        "username": request.user,
-        "authenticated": request.user.is_authenticated,
-    }
+    if request.user.is_authenticated():
+        response = {
+            "username": request.user.username,
+            "authenticated": request.user.is_authenticated(),
+            "avatar": "",
+            "overall_score": request.user.score,
+            "ranking_score": request.user.ranking_score,
+            "position": request.user.ranking_position,
+            "won_games": request.user.won_games,
+            "lost_games": request.user.lost_games,
+            "won_tournaments": request.user.won_tournaments,
+            "lost_tournaments": request.user.lost_tournaments,
+            "tournaments": [x.session_id for x in request.user.tournament_set.all()],
+        }
+    else:
+        response = {
+            "username": "AnonymousUser",
+            "authenticated": request.user.is_authenticated(),
+            "avatar": "",
+        }
     return HttpResponse(json.dumps(response), content_type="application/json")
 
 
