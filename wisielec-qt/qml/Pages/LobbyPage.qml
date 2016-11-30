@@ -48,7 +48,7 @@ Page {
                 Button {
                     text: "Dołącz";
                     onClicked:  {
-                        gameClient.join_game(modelData)
+                        gameClient.join_game(modelData.sessionId)
                         swipeView.currentIndex = 2
                     }
                 }
@@ -90,5 +90,6 @@ Page {
         text: qsTr("New")
         anchors.left: new_button.right
         anchors.leftMargin: 17
+        onClicked: stack.push("qrc:/Pages/NewGamePage.qml")
     }
 }

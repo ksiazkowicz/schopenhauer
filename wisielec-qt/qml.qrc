@@ -21,5 +21,6 @@
         <file alias="LobbyPage.qml">qml/Pages/LobbyPage.qml</file>
         <file alias="RankingPage.qml">qml/Pages/RankingPage.qml</file>
         <file alias="TournamentInvitePage.qml">qml/Pages/TournamentInvitePage.qml</file>
+        <file alias="NewGamePage.qml">qml/Pages/NewGamePage.qml</file>
     </qresource>
 </RCC>

@@ -12,12 +12,13 @@ Page {
             console.log(url)
             var urlString = url.toString();
 
-            if (!urlString.match("profiles\/register")) {
+            if (!urlString.match("game\/new_game")) {
                 // back on lobby page, quit
                 stack.pop()
+                gameClient.refresh_lobby()
             }
         }
-        Component.onCompleted: url = "http://" + api.getApiServer() + "/profiles/register"
+        Component.onCompleted: url = "http://" + api.getApiServer() + "/game/new_game"
     }
     footer: ToolBar {
         RowLayout {
