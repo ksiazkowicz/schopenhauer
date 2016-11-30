@@ -18,10 +18,9 @@
                         document.getElementById("used_letters").innerHTML += bread.used_chars[i] + ", ";
                     }
                 }
-                if (bread.players) {
-                    var players_list = document.getElementById("players-list");
-                    players_list.innerHTML = bread.players;
-                }
+                if (bread.players)
+                    update_players("players-list", bread.players);
+                
                 if (!bread.player_list_only) {
                     document.getElementById("score").innerText = bread.score;
                     document.getElementById("mistakes").innerText = bread.mistakes;

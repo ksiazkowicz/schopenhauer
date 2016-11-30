@@ -17,21 +17,12 @@
             }
             if (game_id) {
                 append_game(game_id);
-                update_players(game_id, players);
+                update_players("players-for-"+game_id, String(players).split(","));
             }
             if (players && !game_id) {
-                var players_list = document.getElementById("players-list");
-                players_list.innerHTML = players;
+                update_players("players-list", String(players).split(","));
             }
         };
-
-        function update_players(session_id, players) {
-            var players_list = document.getElementById("players-for-"+session_id);
-            if (players != "")
-                players_list.innerHTML = players;
-            else
-                players_list.innerHTML = "nie żyją!";
-        }
 
         function append_game(session_id) {
             if (!document.getElementById("game-" + session_id)) {
