@@ -8,6 +8,7 @@ Page {
         currentIndex: tabBar.currentIndex
 
         AboutPage {
+            id: aboutPage
             //renderlabel.text: renderer
             //serverlabel.text: "127.0.0.1:8000" //gameClient.api_url
         }
@@ -40,5 +41,16 @@ Page {
             font.family: "Segoe UI"
             text: qsTr("ranking")
         }
+        onCurrentIndexChanged: {
+            switch (currentIndex) {
+            case 0: { aboutPage.viewingMe = true; api.getUserData(); break; };
+            case 3: { api.getRanking(); break; };
+            }
+        }
+    }
+
+    function switchToProfile() {
+        swipeView.currentIndex = 0
+        aboutPage.viewingMe = false
     }
 }

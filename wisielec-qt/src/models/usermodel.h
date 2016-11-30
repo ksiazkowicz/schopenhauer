@@ -19,6 +19,16 @@ public:
     explicit UserModel(QObject *parent = 0) : QObject(parent) {
         this->reset();
     }
+    UserModel(UserModel *model) {
+        this->username = model->username;
+        this->avatar = model->avatar;
+        this->position = model->position;
+        this->score = model->score;
+        this->wonGames = model->wonGames;
+        this->lostGames = model->lostGames;
+        this->wonTournaments = model->wonTournaments;
+        this->lostTournaments = model->lostTournaments;
+    }
 
     void reset() {
         this->username = "AnonymousUser";

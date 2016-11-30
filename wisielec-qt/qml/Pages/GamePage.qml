@@ -20,7 +20,6 @@ Page {
         wrapMode: Text.WordWrap
         text: gameClient.progress
         anchors {
-            horizontalCenter: parent.horizontalCenter;
             top: parent.top
             left: parent.left
             right: parent.right

@@ -19,28 +19,66 @@ Page {
     ListView {
         id: games_list
         model: gameClient.games
-        anchors { top: new_button.bottom; topMargin: 20; left: parent.left; right: parent.right; bottom: parent.bottom; }
+        anchors { top: new_button.bottom; topMargin: 20; left: parent.left; right: parent.right; bottom: lobbyContainer.top; }
         delegate: Item {
             width: parent.width
-            height: 48
+            height: 64
             anchors { left: parent.left; leftMargin: 20; right: parent.right; rightMargin: 20 }
             Text {
                 id: line1
-                text: modelData
+                text: modelData.sessionId
                 anchors { top: parent.top; topMargin: 15 }
                 font.bold: true
                 font.pointSize: 12
             }
-            Text {
+            Row {
                 id: line2
+                spacing: 10;
                 anchors { top: line1.bottom; topMargin: 5 }
-                text: "grają: <b>chlebzycia666</b>, <b>bezsensistnienia12</b>"
+                Repeater {
+                    model: modelData.playerList;
+                    Button {
+                        text: modelData;
+                        onClicked: {
+                            api.getUserData(modelData)
+                            switchToProfile()
+                        }
+                    }
+                }
+                Button {
+                    text: "Dołącz";
+                    onClicked:  {
+                        gameClient.join_game(modelData)
+                        swipeView.currentIndex = 2
+                    }
+                }
             }
-            MouseArea {
-                anchors.fill: parent
-                onClicked:  {
-                    gameClient.join_game(modelData)
-                    swipeView.currentIndex = 2
+        }
+    }
+
+    Rectangle {
+        id: lobbyContainer
+        anchors { bottom: parent.bottom; left: parent.left; right: parent.right; }
+        height: playersRow.implicitHeight + 70
+        color: "#d9d9d9"
+        Label {
+            id: lobbyLabel
+            text: "Gracze w lobby"
+            anchors { top: parent.top; left: parent.left; margins: 20; }
+        }
+        Row {
+            id: playersRow
+            anchors.topMargin: 10
+            spacing: 10;
+            anchors { left: parent.left; right: parent.right; top: lobbyLabel.bottom; bottom: parent.bottom; margins: 20; }
+            Repeater {
+                model: gameClient.lobbyPlayers
+                Button {
+                    text: modelData;
+                    onClicked: {
+                        api.getUserData(modelData)
+                        switchToProfile()
+                    }
                 }
             }
         }

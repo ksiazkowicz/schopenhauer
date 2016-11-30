@@ -14,6 +14,9 @@ SchopenhauerApi::SchopenhauerApi(QObject *parent) : QObject(parent)
 
     // user stuff
     me = new UserModel();
+    viewedUser = new UserModel();
+
+    tempUsername = "";
 }
 
 
@@ -22,6 +25,7 @@ void SchopenhauerApi::setSessionToken(QString token) {
     if (token != this->sessionToken) {
         this->sessionToken = token;
         this->getUserData();
+        this->getTournamentList();
         emit updatedSessionData();
     }
 }
@@ -72,8 +76,8 @@ void SchopenhauerApi::attemptLogin(QString login, QString password) {
 
 void SchopenhauerApi::getRanking() {
     // call ranking API
-    qDebug() << getUrl(Http, "/api/v1/ranking", true);
-    manager->get(QNetworkRequest(QUrl(getUrl(Http, "/api/v1/ranking", true))));
+    qDebug() << getUrl(Http, "/api/v1/ranking/", true);
+    manager->get(QNetworkRequest(QUrl(getUrl(Http, "/api/v1/ranking/", true))));
 }
 
 void SchopenhauerApi::parseReply(QNetworkReply *reply) {
@@ -81,21 +85,47 @@ void SchopenhauerApi::parseReply(QNetworkReply *reply) {
     QJsonDocument jsonResponse = QJsonDocument::fromJson(content.toUtf8());
     QJsonObject jsonObject = jsonResponse.object();
 
+    qDebug() << content;
+
+    if (jsonObject.keys().contains("result")) {
+        qDebug() << "REZULTNELO SIE UWAGA ------------";
+        qDebug() << jsonObject["result"].toString();
+        emit omgToDziala();
+        this->getTournamentList();
+        qDebug() << "no dzienki";
+    }
+
+    if (jsonObject.keys().contains("tournaments") && reply->url().toString().contains("/api/v1/tournament")) {
+        emit foundTournaments(content);
+    }
+
     if (jsonObject.keys().contains("username")) {
-        if (jsonObject["authenticated"].toBool()) {
-            me->setUsername(jsonObject["username"].toString());
-            me->setAvatar(jsonObject["avatar"].toString());
-            me->setScore(jsonObject["score"].toDouble());
-            me->setPosition(jsonObject["position"].toInt());
-            me->setWonGames(jsonObject["won_games"].toInt());
-            me->setLostGames(jsonObject["lost_games"].toInt());
-            me->setWonTournaments(jsonObject["won_tournaments"].toInt());
-            me->setLostTournaments(jsonObject["lost_tournaments"].toInt());
+        UserModel* user;
+
+        bool updatingMe = false;
+        if (reply->url().toString().contains("/user/"+tempUsername) && !tempUsername.isEmpty()) {
+            user = viewedUser;
+            tempUsername = "";
         } else {
-            me->reset();
+            user = me;
+            updatingMe = true;
+        }
+
+        if (jsonObject["authenticated"].toBool()) {
+            user->setUsername(jsonObject["username"].toString());
+            user->setAvatar(jsonObject["avatar"].toString());
+            user->setScore(jsonObject["score"].toDouble());
+            user->setPosition(jsonObject["position"].toInt());
+            user->setWonGames(jsonObject["won_games"].toInt());
+            user->setLostGames(jsonObject["lost_games"].toInt());
+            user->setWonTournaments(jsonObject["won_tournaments"].toInt());
+            user->setLostTournaments(jsonObject["lost_tournaments"].toInt());
+        } else {
+            user->reset();
         }
 
         emit userChanged();
+        emit viewedUserChanged();
     }
 
     if (jsonObject.keys().contains("players")) {
@@ -119,5 +149,24 @@ void SchopenhauerApi::parseReply(QNetworkReply *reply) {
 }
 
 void SchopenhauerApi::getUserData() {
-    manager->get(QNetworkRequest(QUrl(getUrl(Http, "/api/v1/user", true))));
+    manager->get(QNetworkRequest(QUrl(getUrl(Http, "/api/v1/user/", true))));
+}
+
+void SchopenhauerApi::getUserData(QString username) {
+    tempUsername = username;
+    manager->get(QNetworkRequest(QUrl(getUrl(Http, "/api/v1/user/"+username, true))));
+}
+
+void SchopenhauerApi::getTournamentList() {
+    manager->get(QNetworkRequest(QUrl(getUrl(Http, "/api/v1/tournament/", true))));
+}
+
+void SchopenhauerApi::invitePlayerToTournament(QString tournament, QString username) {
+    qDebug() << tournament << username;
+    QUrlQuery postData;
+    postData.addQueryItem("tournament_id", tournament);
+    postData.addQueryItem("username", username);
+    // push request
+
+    auth->sendPostRequest(QUrl(getUrl(Http,"/api/v1/tournament/invite/",true)),postData);
 }

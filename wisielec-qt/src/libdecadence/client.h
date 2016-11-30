@@ -6,8 +6,11 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QMap>
 #include "auth.h"
 #include "api.h"
+#include "src/models/gamemodel.h"
+#include "src/models/TournamentModel.h"
 
 class SchopenhauerClient : public QObject
 {
@@ -18,13 +21,15 @@ class SchopenhauerClient : public QObject
     Q_PROPERTY(QStringList used_chars READ get_used_chars NOTIFY used_chars_changed)
     Q_PROPERTY(QString session_id READ get_session_id WRITE set_session_id NOTIFY session_id_changed)
     Q_PROPERTY(QVariant games READ get_games NOTIFY games_changed)
+    Q_PROPERTY(QVariant tournaments READ getTournaments NOTIFY tournamentsChanged)
+    Q_PROPERTY(QVariant lobbyPlayers READ getLobbyPlayers NOTIFY lobbyPlayersChanged)
 
 public:
     explicit SchopenhauerClient(SchopenhauerApi *api, QObject *parent = 0);
 
     int get_score() { return score; }
     int get_mistakes() { return mistakes; }
-    QVariant get_games() { return QVariant::fromValue(games); }
+    QVariant get_games() { return QVariant::fromValue(games.values()); }
     QString get_progress() { return progress; }
     QString get_session_id() { return session_id; }
     void set_session_id(QString _new) { session_id = _new; emit session_id_changed(); }
@@ -35,6 +40,9 @@ public:
     Q_INVOKABLE void new_game();
     Q_INVOKABLE void refresh_lobby();
 
+    QVariant getLobbyPlayers() { return QVariant::fromValue(this->lobbyPlayers); }
+    QVariant getTournaments() { return QVariant::fromValue(this->tournaments.values()); }
+
 signals:
     void score_changed();
     void progress_changed();
@@ -43,14 +51,17 @@ signals:
     void used_chars_changed();
     void session_id_changed();
 
+    void lobbyPlayersChanged();
+    void tournamentsChanged();
+
 public slots:
-    void onConnected();
-    void onDisconnected();
     void onContentReceived(QString message);
     void onLobbyContentReceived(QString message);
     void onStateChanged(QAbstractSocket::SocketState state);
 
     void invalidateSockets();
+
+    void parseTournaments(QString content);
 
 private:
     QWebSocket socket;
@@ -59,7 +70,12 @@ private:
     int mistakes = 0;
     QString progress = "____";
     QStringList used_chars;
-    QStringList games;
+    QStringList lobbyPlayers;
+
+    QMap<QString,QObject*> games;
+    QMap<QString,QObject*> tournaments;
+
+    GameModel* currentGame;
 
     SchopenhauerApi *api;
     QString session_id;

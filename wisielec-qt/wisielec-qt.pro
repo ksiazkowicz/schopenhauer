@@ -26,6 +26,8 @@ HEADERS += \
     src/libdecadence/api.h \
     src/settings.h \
     src/models/RankingModel.h \
-    src/models/UserModel.h
+    src/models/UserModel.h \
+    src/models/GameModel.h \
+    src/models/TournamentModel.h
 
 DISTFILES +=

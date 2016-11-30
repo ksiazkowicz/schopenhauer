@@ -40,9 +40,9 @@ void SchopenhauerCookies::replyFinished(QNetworkReply *reply) {
     QString csrftoken;
     QString session_id;
     QList<QNetworkCookie>  cookies = mManager->cookieJar()->cookiesForUrl(mUrl);
-    qDebug() << "COOKIES for" << mUrl.host(); // << cookies;
+    //qDebug() << "COOKIES for" << mUrl.host(); // << cookies;
     for (int i=0; i<cookies.size(); i++) {
-        qDebug() << cookies.at(i).name() << cookies.at(i).value();
+        //qDebug() << cookies.at(i).name() << cookies.at(i).value();
         if (cookies.at(i).name() == "csrftoken") csrftoken = cookies.at(i).value();
         if (cookies.at(i).name() == "sessionid") session_id = cookies.at(i).value();
     }

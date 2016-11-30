@@ -5,31 +5,25 @@ SchopenhauerClient::SchopenhauerClient(SchopenhauerApi *api, QObject *parent) : 
     // initialize API
     this->api = api;
     connect(api, &SchopenhauerApi::updatedSessionData, this, &SchopenhauerClient::invalidateSockets);
+    connect(api, &SchopenhauerApi::foundTournaments, this, &SchopenhauerClient::parseTournaments);
 
     // connect sockets to signals and slots
-    connect(&socket, &QWebSocket::connected, this, &SchopenhauerClient::onConnected);
-    connect(&socket, &QWebSocket::disconnected, this, &SchopenhauerClient::onDisconnected);
     connect(&socket, &QWebSocket::textMessageReceived,
             this, &SchopenhauerClient::onContentReceived);
     connect(&lobby_socket, &QWebSocket::textMessageReceived,
             this, &SchopenhauerClient::onLobbyContentReceived);
-    connect(&lobby_socket, &QWebSocket::connected, this, &SchopenhauerClient::onConnected);
-    connect(&lobby_socket, &QWebSocket::disconnected, this, &SchopenhauerClient::onDisconnected);
     connect(&lobby_socket, &QWebSocket::stateChanged, this, &SchopenhauerClient::onStateChanged);
+    connect(&socket, &QWebSocket::stateChanged, this, &SchopenhauerClient::onStateChanged);
 
     // connect to lobby
-    this->refresh_lobby();
-}
-
-void SchopenhauerClient::onConnected()
-{
-    qDebug() << "WebSocket connected";
+    //this->refresh_lobby();
 }
 
 void SchopenhauerClient::onStateChanged(QAbstractSocket::SocketState state) {
     qDebug() << "socket jest na" << state;
     QWebSocket* socket = (QWebSocket*)QObject::sender();
-    qDebug() << socket->errorString();
+    if (socket->error() != QAbstractSocket::UnknownSocketError)
+        qDebug() << socket->errorString();
 }
 
 void SchopenhauerClient::refresh_lobby() {
@@ -67,11 +61,6 @@ void SchopenhauerClient::new_game() {
     lobby_socket.sendTextMessage(doc.toJson(QJsonDocument::Compact));
 }
 
-void SchopenhauerClient::onDisconnected()
-{
-    qDebug() << "WebSocket disconnected";
-}
-
 void SchopenhauerClient::onContentReceived(QString message)
 {
     qDebug() << "Message received:" << message;
@@ -79,7 +68,6 @@ void SchopenhauerClient::onContentReceived(QString message)
     QJsonDocument jsonResponse = QJsonDocument::fromJson(message.toUtf8());
     QJsonObject jsonObject = jsonResponse.object();
 
-    qDebug() << (jsonObject["session_id"].toString() == session_id);
     qDebug() << jsonObject.keys();
 
     if (jsonObject["session_id"].toString() != "") {
@@ -108,21 +96,36 @@ void SchopenhauerClient::onLobbyContentReceived(QString message)
     QJsonDocument jsonResponse = QJsonDocument::fromJson(message.toUtf8());
     QJsonObject jsonObject = jsonResponse.object();
 
-    qDebug() << (jsonObject["session_id"].toString() == session_id);
     qDebug() << jsonObject.keys();
+
+    if (jsonObject.keys().contains("players")) {
+        QJsonArray players = jsonObject["players"].toArray();
+        QStringList playerList;
+        for (int i=0; i < players.size(); i++) {
+            playerList.append(players.at(i).toString());
+        }
+        if (jsonObject.keys().contains("session_id")) {
+            QString sessionId = jsonObject["session_id"].toString();
+            GameModel *game = (GameModel*)games.value(sessionId);
+            if (game)
+                game->setPlayerList(playerList);
+        } else {
+            this->lobbyPlayers = playerList;
+            emit lobbyPlayersChanged();
+        }
+    }
 
     if (jsonObject.keys().contains("running_games")) {
         QJsonArray running_games = jsonObject["running_games"].toArray();
-        qDebug() << running_games;
 
         if (!running_games.isEmpty()) {
+            games.clear();
             for (int i=0; i < running_games.size(); i++) {
                 QString game = running_games.at(i).toString();
-                if (!games.contains(game)) {
-                    games.append(game);
-                }
+                GameModel *gameObj = new GameModel();
+                gameObj->setSessionId(game);
+                games.insert(game, gameObj);
             }
-            qDebug() << games;
             emit games_changed();
         }
     }
@@ -131,9 +134,9 @@ void SchopenhauerClient::onLobbyContentReceived(QString message)
         bool dupy = jsonObject["new"].toBool();
         if (dupy) {
             QString game = jsonObject["session_id"].toString();
-            if (!games.contains(game)) {
-                games.append(game);
-            }
+            GameModel *gameObj = new GameModel();
+            gameObj->setSessionId(game);
+            games.insert(game, gameObj);
             emit games_changed();
         }
     }
@@ -142,7 +145,6 @@ void SchopenhauerClient::onLobbyContentReceived(QString message)
         progress = jsonObject["progress"].toString();
         score = jsonObject["score"].toInt();
         mistakes = jsonObject["mistakes"].toInt();
-        qDebug() << jsonObject["used_chars"].toArray();
         emit progress_changed();
         emit score_changed();
         emit mistakes_changed();
@@ -150,6 +152,48 @@ void SchopenhauerClient::onLobbyContentReceived(QString message)
 }
 
 void SchopenhauerClient::invalidateSockets() {
+    qDebug() << "Invalidating sockets";
     this->refresh_lobby();
 }
 
+void SchopenhauerClient::parseTournaments(QString reply) {
+    // parse reply as JSON document
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(reply.toUtf8());
+    QJsonObject jsonObject = jsonResponse.object();
+
+    // reset tournament map
+    tournaments.clear();
+
+    // iterate through all tournaments in array
+    QJsonArray array = jsonObject["tournaments"].toArray();
+    for (int i=0; i<array.size(); i++) {
+        // get json for specific position
+        QJsonObject json = array.at(i).toObject();
+
+        // create new tournament object
+        TournamentModel* tournament = new TournamentModel();
+
+        // move session id to another string, cause we're going to use it as key later
+        QString sessionId = json["session_id"].toString();
+
+        // add values from JSON to our model
+        tournament->setName(json["name"].toString());
+        tournament->setSessionId(sessionId);
+        tournament->setInProgress(json["in_progress"].toBool());
+
+        // parse players array
+        QJsonArray players = json["players"].toArray();
+        QStringList playerList;
+        for (int i=0; i < players.size(); i++) {
+            playerList.append(players.at(i).toString());
+        }
+
+        // set players list
+        tournament->setPlayerList(playerList);
+        qDebug() << playerList;
+
+        // add to our map and push out a signal
+        tournaments.insert(sessionId, tournament);
+        emit tournamentsChanged();
+    }
+}
