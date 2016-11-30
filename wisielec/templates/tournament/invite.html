@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="col-md-12">
+    <div class="text-center">
+        <h4>Zaproś do turnieju</h4>
+        <h2>{{ username }}</h2>
+    </div>
+
+    <h3>Trwające turnieje</h3>
+    {% if tournaments %}
+    {% for tournament in tournaments %}
+        <div class="clearfix" style="font-size: 12pt; margin-bottom: 10px">
+            <form class="pull-right" method="post">{% csrf_token %}<input style="display:none" name="tournament_id" value="{{ tournament.session_id }}"/>
+            <button type="submit" class="btn btn-sm btn-default">Zaproś</button></form>
+            {{ tournament.name }}<div style="font-size: 8pt">({{ tournament.session_id }})</div>
+        </div>
+    {% endfor %}
+    {% else %}Nie ma turniejów{% endif %}
+</div>
+{% endblock %}

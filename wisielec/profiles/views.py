@@ -61,6 +61,7 @@ def ranking_view(request, template="profiles/ranking_view.html"):
     return render(request, template, locals())
 
 
+@login_required
 def profile_view(request, username, template='profiles/profile_view.html'):
     user = get_object_or_404(UserProfile, username=username)
     return render(request, template, locals())

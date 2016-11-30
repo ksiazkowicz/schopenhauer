@@ -6,6 +6,7 @@ from profiles.models import UserProfile
 import uuid
 import random
 from wikiquotes import openSearch, queryTitles, getSectionsForPage, getQuotesForSection
+from django.shortcuts import redirect
 
 
 # ugh, you should totally get that from wikiquotes
@@ -101,6 +102,19 @@ def new_tournament_view(request, template="tournament/new.html"):
 def current_game(request, session_id, template="game/game.html"):
     game = get_object_or_404(Game, session_id=session_id)
     alphabet = u"aąbcćdeęfghijklłmnoprsśtuówyzżź"
+
+    return render(request, template, locals())
+
+
+def tournament_invite_view(request, username, template="tournament/invite.html"):
+    tournaments = Tournament.objects.filter(in_progress=True)
+    user = get_object_or_404(UserProfile, username=username)
+
+    errors = []
+    if request.POST:
+        tournament = get_object_or_404(Tournament, session_id=request.POST.get("tournament_id"))
+        tournament.players.add(user)
+        return redirect("tournament_view", tournament.session_id)
 
     return render(request, template, locals())
 

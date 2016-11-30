@@ -9,8 +9,13 @@
             <img src="{% static 'img/schopenhauer.jpg' %}" style="border-radius: 100%; margin-bottom: 20px; width: 100px; height: 100px;">
             <h3>{{ user.username }}</h3>
 
+            {% if not user == request.user %}
             <hr/>
-            <button class="btn btn-default btn-lg">Zaproś do turnieju</button>
+            <a href="{% url 'tournament_invite' user.username %}" class="btn btn-default btn-lg">Zaproś do turnieju</a>
+            {% else %}
+            <hr/>
+            <a href="{% url "edit_profile" %}" class="btn btn-default btn-lg">Ustawienia profilu</a>
+            {% endif %}
 
             <hr/>
             <h4>Statystyki</h4>
