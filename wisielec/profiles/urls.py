@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from views import login_view, logout_view, profile_view, RegistrationView, ranking_view
+from views import login_view, logout_view, profile_view, RegistrationView, ranking_view, profile_edit_view
 from django.contrib.auth import views
 
 urlpatterns = [
@@ -8,6 +8,7 @@ urlpatterns = [
     url(r'^ranking', ranking_view, name='ranking_view'),
 
     url(r'^register/$', RegistrationView.as_view(), name='register'),
+    url(r'^edit/$', profile_edit_view, name='edit_profile'),
     url(r'^register/done/$', views.password_reset_done, {
         'template_name': 'registration/initial_done.html',
     }, name='register-done'),

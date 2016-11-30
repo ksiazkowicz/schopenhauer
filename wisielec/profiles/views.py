@@ -3,38 +3,37 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 
-from django.contrib.auth.forms import PasswordResetForm
 from django.shortcuts import redirect
 from django.views.generic import CreateView
 
-from profiles.forms import RegistrationForm
+from profiles.forms import ProfileForm
 from profiles.models import UserProfile
+
+from django.contrib.auth.decorators import login_required
 
 
 class RegistrationView(CreateView):
-    form_class = RegistrationForm
+    form_class = ProfileForm
     model = UserProfile
 
     def form_valid(self, form):
         obj = form.save(commit=False)
-        obj.set_password(UserProfile.objects.make_random_password())
         obj.save()
 
-        # This form only requires the "email" field, so will validate.
-        reset_form = PasswordResetForm(self.request.POST)
-        reset_form.is_valid()  # Must trigger validation
-        # Copied from django/contrib/auth/views.py : password_reset
-        opts = {
-            'use_https': self.request.is_secure(),
-            'email_template_name': 'registration/verification.html',
-            'subject_template_name': 'registration/verification_subject.txt',
-            'request': self.request,
-            # 'html_email_template_name': provide an HTML content template if you desire.
-        }
-        # This form sends the email on save()
-        reset_form.save(**opts)
-
         return redirect('lobby_view')
+
+
+@login_required
+def profile_edit_view(request, template="profiles/userprofile_form.html"):
+    form = ProfileForm(request.POST or None, instance=request.user)
+
+    if request.POST:
+        if form.is_valid():
+            form.save()
+
+        return redirect("profile_view", username=request.user.username)
+
+    return render(request, template, locals())
 
 
 def login_view(request, template="profiles/login_view.html"):
@@ -51,6 +50,7 @@ def login_view(request, template="profiles/login_view.html"):
     return render(request, template, locals())
 
 
+@login_required
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect("/game/lobby")
