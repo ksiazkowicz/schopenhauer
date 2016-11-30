@@ -10,7 +10,7 @@ class RankingModel : public QObject
     Q_PROPERTY(float score READ getScore WRITE setScore NOTIFY scoreChanged)
     Q_PROPERTY(int position READ getPosition WRITE setPosition NOTIFY positionChanged)
 public:
-    explicit RankingModel(QObject *parent = 0) {}
+    explicit RankingModel(QObject *parent = 0) : QObject(parent) {}
     void setUsername(QString username) { this->username = username; emit usernameChanged(); }
     void setScore(float score) { this->score = score; emit scoreChanged(); }
     void setPosition(int position) { this->position = position; emit positionChanged(); }

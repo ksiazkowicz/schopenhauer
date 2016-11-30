@@ -8,6 +8,7 @@
 // libdecadence imports
 #include "src/libdecadence/client.h"
 #include "src/libdecadence/api.h"
+#include "src/models/usermodel.h"
 #include "src/settings.h"
 
 int main(int argc, char *argv[])
@@ -32,6 +33,8 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("api", &libdecadence);
     engine.rootContext()->setContextProperty("appSettings", &appSettings);
     engine.rootContext()->setContextProperty("gameClient", &schopenhauer);
+
+    qmlRegisterUncreatableType<UserModel>("schopenhauer", 1,0, "User", "because I said so");
 
     QString renderer_string = "Unknown";
     /*int graphics_api = app_window.rendererInterface()->graphicsApi();

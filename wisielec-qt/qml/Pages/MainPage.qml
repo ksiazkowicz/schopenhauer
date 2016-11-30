@@ -8,8 +8,8 @@ Page {
         currentIndex: tabBar.currentIndex
 
         AboutPage {
-            renderlabel.text: renderer
-            serverlabel.text: "127.0.0.1:8000" //gameClient.api_url
+            //renderlabel.text: renderer
+            //serverlabel.text: "127.0.0.1:8000" //gameClient.api_url
         }
         LobbyPage {
             new_button.onClicked: gameClient.refresh_lobby()

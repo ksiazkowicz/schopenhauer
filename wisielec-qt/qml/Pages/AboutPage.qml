@@ -3,85 +3,153 @@ import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.0
 
 Item {
-    property alias renderlabel: renderlabel
-    property alias serverlabel: serverlabel
     id: item1
+
     Rectangle {
-        id: rectangle1
-        width: 100
-        height: 100
-        color: "#000"
-        radius: 100
-        clip: true
-        Image {
-            anchors.fill: parent
+        id: headerContainer
+        height: 222
+        color: "#d9d9d9"
+        anchors.right: parent.right
+        anchors.rightMargin: 0
+        anchors.left: parent.left
+        anchors.leftMargin: 0
+        anchors.top: parent.top
+        anchors.topMargin: 0
+        z: -1
+
+        Rectangle {
+            id: rectangle1
+            x: 270
+            y: 40
             width: 100
             height: 100
+            color: "#000"
+            radius: 100
             clip: true
-            source: "qrc:/img/avatar.jpg"
+            Image {
+                anchors.fill: parent
+                width: 100
+                height: 100
+                clip: true
+                source: api.user.avatar
+            }
+
+            anchors {
+                top: parent.top
+                margins: 40
+                horizontalCenter: parent.horizontalCenter
+            }
         }
 
-        anchors {
-            top: parent.top
-            margins: 40
-            horizontalCenter: parent.horizontalCenter
+        Label {
+            x: 219
+            y: 160
+            text: api.user.username
+            z: 1
+            font.pointSize: 16
+            anchors {
+                top: rectangle1.bottom
+                margins: 20
+                horizontalCenter: rectangle1.horizontalCenter
+            }
         }
     }
+
     Label {
-        text: "chlebzycia_666"
-        font.pointSize: 16
-        anchors {
-            top: rectangle1.bottom
-            margins: 20
-            horizontalCenter: rectangle1.horizontalCenter
-        }
-    }
-
-    Text {
-        id: text1
-        x: 308
-        text: qsTr("renderowane za pomocą:")
+        id: wonGamesLabel
+        y: 234
+        text: qsTr("Wygrane gry")
+        anchors.left: parent.left
+        anchors.leftMargin: 8
         font.bold: true
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: rectangle1.bottom
-        anchors.topMargin: 77
-        font.pixelSize: 12
     }
 
-    Text {
-        id: renderlabel
-        x: 301
-        y: -8
-        text: qsTr("wszystkiego")
-        anchors.horizontalCenterOffset: 0
-        anchors.horizontalCenter: parent.horizontalCenter
-        font.pixelSize: 12
-        anchors.top: rectangle1.bottom
-        anchors.topMargin: 93
+    Label {
+        id: wonGames
+        text: api.user.wonGames
+        anchors.left: wonGamesLabel.left
+        anchors.leftMargin: 0
+        anchors.top: wonGamesLabel.bottom
+        anchors.topMargin: 6
     }
 
-    Text {
-        id: text2
-        x: 304
-        y: -4
-        text: qsTr("adres URL API")
-        anchors.horizontalCenterOffset: 0
-        anchors.horizontalCenter: parent.horizontalCenter
-        font.pixelSize: 12
+    Label {
+        id: lostGamesLabel
+        x: -4
+        text: qsTr("Przegrane gry")
+        anchors.top: wonGames.bottom
+        anchors.topMargin: 6
+        anchors.left: parent.left
+        anchors.leftMargin: 8
         font.bold: true
-        anchors.top: rectangle1.bottom
-        anchors.topMargin: 118
     }
 
-    Text {
-        id: serverlabel
-        x: 297
-        y: -12
-        text: qsTr("127.0.0.1:8000")
-        anchors.horizontalCenterOffset: 0
-        anchors.horizontalCenter: parent.horizontalCenter
-        font.pixelSize: 12
-        anchors.top: rectangle1.bottom
-        anchors.topMargin: 138
+    Label {
+        id: lostGames
+        text: api.user.lostGames
+        anchors.top: lostGamesLabel.bottom
+        anchors.topMargin: 6
+        anchors.left: lostGamesLabel.left
+        anchors.leftMargin: 0
+    }
+
+    Label {
+        id: wonTournamentsLabel
+        x: -5
+        y: 234
+        text: qsTr("Wygrane turnieje")
+        anchors.left: wonGamesLabel.right
+        anchors.leftMargin: 14
+        font.bold: true
+    }
+
+    Label {
+        id: wonTournaments
+        text: api.user.wonTournaments
+        anchors.top: wonTournamentsLabel.bottom
+        anchors.topMargin: 6
+        anchors.left: wonTournamentsLabel.left
+        anchors.leftMargin: 0
+    }
+
+    Label {
+        id: lostTournamentsLabel
+        x: -9
+        text: qsTr("Przegrane turnieje")
+        anchors.top: wonTournaments.bottom
+        anchors.topMargin: 6
+        anchors.left: lostGamesLabel.right
+        anchors.leftMargin: 6
+        font.bold: true
+    }
+
+    Label {
+        id: lostTournaments
+        text: api.user.lostTournaments
+        anchors.top: lostTournamentsLabel.bottom
+        anchors.topMargin: 6
+        anchors.left: lostTournamentsLabel.left
+        anchors.leftMargin: 0
+    }
+
+    Label {
+        id: label5
+        x: 509
+        y: 228
+        text: api.user.position
+        anchors.right: parent.right
+        anchors.rightMargin: 8
+        horizontalAlignment: Text.AlignRight
+        font.pointSize: 40
+    }
+
+    Label {
+        id: label6
+        x: 579
+        y: 298
+        text: qsTr("w rankingu")
+        anchors.right: parent.right
+        anchors.rightMargin: 8
+        horizontalAlignment: Text.AlignRight
     }
 }

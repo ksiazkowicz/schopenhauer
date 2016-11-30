@@ -12,7 +12,8 @@ SchopenhauerApi::SchopenhauerApi(QObject *parent) : QObject(parent)
     connect(auth, &SchopenhauerCookies::sessionFound, this, &SchopenhauerApi::setSessionToken);
     connect(manager, &QNetworkAccessManager::finished, this, &SchopenhauerApi::parseReply);
 
-    this->getRanking();
+    // user stuff
+    me = new UserModel();
 }
 
 
@@ -20,6 +21,7 @@ void SchopenhauerApi::setSessionToken(QString token) {
     // don't invalidate anything unless token is different
     if (token != this->sessionToken) {
         this->sessionToken = token;
+        this->getUserData();
         emit updatedSessionData();
     }
 }
@@ -79,6 +81,23 @@ void SchopenhauerApi::parseReply(QNetworkReply *reply) {
     QJsonDocument jsonResponse = QJsonDocument::fromJson(content.toUtf8());
     QJsonObject jsonObject = jsonResponse.object();
 
+    if (jsonObject.keys().contains("username")) {
+        if (jsonObject["authenticated"].toBool()) {
+            me->setUsername(jsonObject["username"].toString());
+            me->setAvatar(jsonObject["avatar"].toString());
+            me->setScore(jsonObject["score"].toDouble());
+            me->setPosition(jsonObject["position"].toInt());
+            me->setWonGames(jsonObject["won_games"].toInt());
+            me->setLostGames(jsonObject["lost_games"].toInt());
+            me->setWonTournaments(jsonObject["won_tournaments"].toInt());
+            me->setLostTournaments(jsonObject["lost_tournaments"].toInt());
+        } else {
+            me->reset();
+        }
+
+        emit userChanged();
+    }
+
     if (jsonObject.keys().contains("players")) {
         QJsonArray playersArray = jsonObject["players"].toArray();
 
@@ -97,4 +116,8 @@ void SchopenhauerApi::parseReply(QNetworkReply *reply) {
         }
         emit rankingChanged();
     }
+}
+
+void SchopenhauerApi::getUserData() {
+    manager->get(QNetworkRequest(QUrl(getUrl(Http, "/api/v1/user", true))));
 }

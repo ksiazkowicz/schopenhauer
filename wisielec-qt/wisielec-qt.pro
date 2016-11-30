@@ -25,6 +25,7 @@ HEADERS += \
     src/libdecadence/auth.h \
     src/libdecadence/api.h \
     src/settings.h \
-    src/models/RankingModel.h
+    src/models/RankingModel.h \
+    src/models/UserModel.h
 
 DISTFILES +=

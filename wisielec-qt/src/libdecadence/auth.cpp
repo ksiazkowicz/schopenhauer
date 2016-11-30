@@ -27,6 +27,9 @@ void SchopenhauerCookies::sendGetRequest(const QUrl &url) {
 
 
 void SchopenhauerCookies::replyFinished(QNetworkReply *reply) {
+    if (!reply->url().toString().contains("/profiles/login"))
+        return;
+
     if (reply->error() != QNetworkReply::NoError){
         qWarning() << "ERROR:" << reply->errorString();
         qWarning() << reply->readAll();
