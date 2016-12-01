@@ -22,6 +22,10 @@ class Game(models.Model):
     player = models.ForeignKey(UserProfile, null=True)
     inverse_death = models.BooleanField(_("Inverse death"), default=False)
 
+    @property
+    def progress_string(self):
+        return "%s/%s" % (len(self.progress)-self.progress.count("_"), len(self.progress))
+
     def update_round(self):
         all_rounds = self.round_set.all()
         if len(all_rounds) <= 0:

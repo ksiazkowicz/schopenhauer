@@ -196,6 +196,31 @@ def ws_guess(message):
         game.update_round()
         game.save()
 
+        if len(game.round_set.all()):
+            round = game.round_set.all()[0]
+            tournament = round.tournament
+            if round.winner:
+                for game in round.games.all():
+                    Group("game-%s" % game.session_id).send({
+                        "text": json.dumps({
+                           "redirect": True,
+                           "tournament": tournament.session_id})
+                        })
+            else:
+                status_updates = []
+                for game in round.games.all():
+                    status_updates += [{
+                        "session_id": game.session_id,
+                        "player": game.player.username,
+                        "mistakes": game.mistakes,
+                        "progress": game.progress_string
+                    }, ]
+                for game in round.games.all():
+                    Group("game-%s" % game.session_id).send({
+                        "text": json.dumps({
+                            "updates": status_updates})
+                    })
+
         # keep track of won and lost games
         if player:
             if game.state == "FAIL":

@@ -8,6 +8,22 @@
         socket = new WebSocket("ws://" + window.location.host + "/game/{{ game.session_id }}");
         socket.onmessage = function(e) {
             var bread = JSON.parse(e.data);
+            if (bread.redirect) {
+                location.href = "/game/t/" + bread.tournament + "/";
+            }
+
+            if (bread.updates) {
+                for (i=0; i<bread.updates.length; i++) {
+                    var update = bread.updates[i];
+                    if (document.getElementById("game-"+update.session_id)) {
+                        document.getElementById("game-mistakes-"+update.session_id).innerText = update.mistakes;
+                        document.getElementById("game-progress-"+update.session_id).innerText = "("+update.progress+")";
+                    } else {
+                        alert("NOT_IMPLEMENTED");
+                    }
+                }
+            }
+
             if (bread.session_id == "{{ game.session_id }}") {
                 if (bread.letter) {
                     document.getElementById("used_letters").innerHTML += bread.letter + ", ";
@@ -82,5 +98,17 @@
 
     {% if game.player %}<br/>
     <div><b>Gra</b> {{ game.player }}</div>
+    {% endif %}
+
+    {% if game.round_set.all %}
+        {% for round in game.round_set.all %}
+            {% for game in round.games.all %}
+                <div id="game-{{ game.session_id }}">
+                    <b>{{ game.player }}</b>
+                    <div id="game-progress-{{ game.session_id }}">{{ game.progress_string }}</div>
+                    <div id="game-mistakes-{{ game.session_id }}">({{ game.mistakes }})</div>
+                </div>
+            {% endfor %}
+        {% endfor %}
     {% endif %}
 {% endblock %}
