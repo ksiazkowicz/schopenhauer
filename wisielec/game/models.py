@@ -74,4 +74,4 @@ class Round(models.Model):
     round_id = models.IntegerField(_("This round ID"))
     tournament = models.ForeignKey(Tournament)
     games = models.ManyToManyField(Game)
-    winner = models.ForeignKey(UserProfile)
+    winner = models.ForeignKey(UserProfile, null=True, blank=True)
