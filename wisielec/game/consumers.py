@@ -200,23 +200,23 @@ def ws_guess(message):
             round = game.round_set.all()[0]
             tournament = round.tournament
             if round.winner:
-                for game in round.games.all():
-                    Group("game-%s" % game.session_id).send({
+                for game2 in round.games.all():
+                    Group("game-%s" % game2.session_id).send({
                         "text": json.dumps({
                            "redirect": True,
                            "tournament": tournament.session_id})
                         })
             else:
                 status_updates = []
-                for game in round.games.all():
+                for game2 in round.games.all():
                     status_updates += [{
-                        "session_id": game.session_id,
-                        "player": game.player.username,
-                        "mistakes": game.mistakes,
-                        "progress": game.progress_string
+                        "session_id": game2.session_id,
+                        "player": game2.player.username,
+                        "mistakes": game2.mistakes,
+                        "progress": game2.progress_string
                     }, ]
-                for game in round.games.all():
-                    Group("game-%s" % game.session_id).send({
+                for game2 in round.games.all():
+                    Group("game-%s" % game2.session_id).send({
                         "text": json.dumps({
                             "updates": status_updates})
                     })
