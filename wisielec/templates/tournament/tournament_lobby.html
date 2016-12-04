@@ -6,10 +6,26 @@
         <h4>{{ tournament.session_id }}</h4>
     </div>
 
-    <div class="col-md-12">
-        <b>Gracze:</b> <div id="players-list">{% for player in tournament.players.all %}{{ player }}{% if not forloop.last %},{% endif %} {% endfor %}</div>
+    <div class="col-md-4 pull-right">
+        <h3>Gracze</h3>
+        <div id="players-list">
+            <ul>
+                {% for player in tournament.players.all %}
+                <li>{{ player }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <form action="" method="post">
+            {% csrf_token %}
+            <div class="input-group">
+                <input type="text" name="name" placeholder="Nazwa" class="form-control" id="name_input">
+                <div class="input-group-btn">
+                    <input type="submit" class="btn btn-info" value="Zaproś" />
+                </div>
+            </div>
+        </form>
     </div>
-    <div class="col-md-12">
+    <div class="col-md-8">
         <h4>Rundy</h4>
         {% for round in rounds %}
             <div>
@@ -25,15 +41,6 @@
     </div>
 
     <div class="col-md-12">
-        <h4>Zaproś gracza</h4>
-        <form action="" method="post">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="usernameInput">Nazwa</label>
-                <input type="text" name="name" class="form-control" id="name_input">
-            </div>
-            <input type="submit" class="btn btn-info btn-lg" value="Zaproś" />
-        </form>
         <h4>Zacznij rundę</h4>
         <form action="" method="post">
             {% csrf_token %}
