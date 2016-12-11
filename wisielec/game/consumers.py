@@ -173,7 +173,8 @@ def ws_guess(message):
 
     if game.state == "IN_PROGRESS":
         if letter in game.used_characters:
-            game.mistakes += 1
+            if not game.inverse_death:
+                game.mistakes += 1
         elif letter in game.phrase.lower():
             game.used_characters += letter
             new_progress = ""
