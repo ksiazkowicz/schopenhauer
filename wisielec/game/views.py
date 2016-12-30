@@ -7,6 +7,8 @@ import uuid
 import random
 from wikiquotes import openSearch, queryTitles, getSectionsForPage, getQuotesForSection
 from django.shortcuts import redirect
+from channels import Group
+import json
 
 
 # ugh, you should totally get that from wikiquotes
@@ -152,6 +154,14 @@ def tournament_view(request, session_id, template="tournament/tournament_lobby.h
                 round.games.add(game)
                 if player == request.user:
                     no_mans_game = game
+
+                Group("tournament-%s" % tournament.session_id).send({
+                    "text": json.dumps({
+                        "game": game.session_id,
+                        "player": game.player.username,
+                        "redirect": True
+                    })
+                })
             return HttpResponseRedirect("/game/g/%s" % no_mans_game.session_id)
 
     return render(request, template, locals())

@@ -2,6 +2,7 @@
 from channels.routing import route
 from channels.routing import include
 from consumers import *
+from tournament_consumers import *
 
 
 game_routing = [
@@ -16,8 +17,14 @@ lobby_routing = [
     route("websocket.disconnect", lobby_disconnect),
 ]
 
+tournament_routing = [
+    route("websocket.connect", tournament_connect),
+    route("websocket.receive", tournament_receive),
+    route("websocket.disconnect", tournament_disconnect),
+]
+
 routing = [
-    # You can use a string import path as the first argument as well.
     include(lobby_routing, path=r"^/lobby"),
     include(game_routing, path=r"^/game"),
+    include(tournament_routing, path=r"^/tournament"),
 ]

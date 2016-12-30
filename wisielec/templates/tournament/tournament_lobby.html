@@ -2,6 +2,18 @@
 {% load tournament_tags %}
 
 {% block content %}
+    <script>
+        // Note that the path doesn't matter right now; any WebSocket
+        // connection gets bumped over to WebSocket consumers
+        socket = new WebSocket("ws://" + window.location.host + "/tournament/{{ tournament.session_id }}");
+        socket.onmessage = function(e) {
+            var bread = JSON.parse(e.data);
+            if (bread.redirect && bread.username == "{{ request.user }}") {
+                location.href = "/game/g/" + bread.game + "/";
+            }
+        }
+    </script>
+
     <div class="col-md-8">
         <h1>{{ tournament.name }}</h1>
         <h4>{{ tournament.session_id }}</h4>
