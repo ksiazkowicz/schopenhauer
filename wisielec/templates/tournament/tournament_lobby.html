@@ -1,21 +1,29 @@
 {% extends "base.html" %}
+{% load tournament_tags %}
 
 {% block content %}
-    <div class="col-md-12">
+    <div class="col-md-8">
         <h1>{{ tournament.name }}</h1>
         <h4>{{ tournament.session_id }}</h4>
     </div>
 
     <div class="col-md-4 pull-right">
         <h3>Gracze</h3>
-        <div id="players-list">
-            <ul>
-                {% for player in tournament.players.all %}
-                <li>{{ player }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-        <form action="" method="post">
+        <table id="players-list" class="table">
+            <tr>
+                <th>Nazwa</th>
+                <th>Wynik</th>
+                <th>Akcje</th>
+            </tr>
+            {% for player in tournament.players.all %}
+            <tr>
+                <td>{{ player }}</td>
+                <td>{% won_rounds player tournament %}</td>
+                <td></td>
+            </tr>
+            {% endfor %}
+        </table>
+        <form action="" method="post" style="margin-bottom: 30px;">
             {% csrf_token %}
             <div class="input-group">
                 <input type="text" name="name" placeholder="Nazwa" class="form-control" id="name_input">
@@ -27,17 +35,24 @@
     </div>
     <div class="col-md-8">
         <h4>Rundy</h4>
+        <table class="table round-table">
+            <tr>
+                <th>Numer</th>
+                <th>Status</th>
+                <th>Zwycięzca</th>
+                <th>Akcje</th>
+            </tr>
         {% for round in rounds %}
-            <div>
-                runda {{ round.round_id }}<br/>
-                gry: {% for game in round.games.all %}
-                    <a href="{% url 'game_view' game.session_id %}">{{ game.session_id }}</a>
-                {% if not forloop.last %},{% endif %}
-                {% endfor %}<br/>
-                zwycięzca: {{ round.winner }}<br/>
-            </div>
+            <tr {% if round.round_id == tournament.current_round %}class="current"{% endif %}>
+                <td>{{ round.round_id }}</td>
+                <td>{{ round.status_verbose }}</td>
+                <td {% if round.winner == request.user %}class="me"{% endif %}>{{ round.winner|default:"Nikt" }}</td>
+                <td>{% if round.status == "ROUND_IN_PROGRESS" %}{% for game in round.games.all %}{% if game.player == request.user %}
+                    <a class="btn btn-sm btn-default" href="{% url 'game_view' game.session_id %}">Dołącz</a>
+                    {% endif %}{% endfor %}{% endif %}</td>
+            </tr>
         {% endfor %}
-        obecna runda {{ tournament.current_round }}
+        </table>
     </div>
 
     <div class="col-md-12">

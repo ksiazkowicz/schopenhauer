@@ -598,7 +598,8 @@ fieldset[disabled] .btn-danger.active {
 
 /*# sourceMappingURL=bootstrap-theme.css.map */
 .tournament-status-line {
-  width: 100%; }
+  margin-top: 8px;
+  border-top: 1px solid #666; }
 
 .tournament-status-line .tournament-status {
   background-color: rgba(212, 20, 20, 0.6);
@@ -609,7 +610,8 @@ fieldset[disabled] .btn-danger.active {
 
 .tournament-status-line h4 {
   text-transform: uppercase;
-  font-weight: bold; }
+  font-weight: bold;
+  font-size: 14px; }
 
 .tournament-status .game-mistakes {
   float: right;
@@ -618,5 +620,15 @@ fieldset[disabled] .btn-danger.active {
 .tournament-status .player-name {
   font-weight: bold;
   text-transform: uppercase; }
+
+.round-table .current {
+  background-color: #222; }
+
+.round-table .current td {
+  font-weight: bold;
+  line-height: 30px; }
+
+.round-table .me {
+  color: #14ff14; }
 
 /*# sourceMappingURL=main.css.map */
