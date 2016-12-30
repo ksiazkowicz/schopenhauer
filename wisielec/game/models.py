@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
 from django.utils.translation import ugettext_lazy as _
@@ -79,3 +80,31 @@ class Round(models.Model):
     tournament = models.ForeignKey(Tournament)
     games = models.ManyToManyField(Game)
     winner = models.ForeignKey(UserProfile, null=True, blank=True)
+
+    @property
+    def status(self):
+        """
+        Returns a status of current round.
+        - "ROUND_IN_PROGRESS" - games in this round haven't ended yet
+        - "ROUND_WON" - round ended and we have a winner
+        - "ROUND_FAILED" - round ended but nobody won
+        """
+        # check if there is a winner first
+        if self.winner:
+            return "ROUND_WON"
+        # iterate through all games
+        for game in self.games.all():
+            # if any of games is in progress, round haven't ended yet
+            if game.state == "IN_PROGRESS":
+                return "ROUND_IN_PROGRESS"
+
+        # no games are in progress and there is no winner
+        # we fucked up
+        return "ROUND_FAILED"
+
+    @property
+    def status_verbose(self):
+        if self.status == "ROUND_IN_PROGRESS":
+            return u"W trakcie"
+        else:
+            return u"Zakończona"
