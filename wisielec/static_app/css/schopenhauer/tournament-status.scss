@@ -1,0 +1,26 @@
+.tournament-status-line {
+  width: 100%;
+}
+
+.tournament-status-line .tournament-status {
+  background-color: rgba(212, 20, 20, 0.6);
+  color: #fff;
+  border-radius: 4px;
+  display: inline-block;
+  padding: 5px;
+}
+
+.tournament-status-line h4 {
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.tournament-status .game-mistakes {
+  float: right;
+  padding-left: 16px;
+}
+
+.tournament-status .player-name {
+  font-weight: bold;
+  text-transform: uppercase;
+}

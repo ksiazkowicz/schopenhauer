@@ -101,14 +101,17 @@
     {% endif %}
 
     {% if game.round_set.all %}
+    <div class="tournament-status-line">
+        <h4>Pozostali gracze</h4>
         {% for round in game.round_set.all %}
             {% for game in round.games.all %}
-                <div id="game-{{ game.session_id }}">
-                    <b>{{ game.player }}</b>
-                    <div id="game-progress-{{ game.session_id }}">{{ game.progress_string }}</div>
-                    <div id="game-mistakes-{{ game.session_id }}">({{ game.mistakes }})</div>
+                <div class="tournament-status" id="game-{{ game.session_id }}">
+                    <div class="game-mistakes" id="game-mistakes-{{ game.session_id }}">({{ game.mistakes }})</div>
+                    <span class="player-name">{{ game.player }}</span>
+                    <div class="game-progress" id="game-progress-{{ game.session_id }}">{{ game.progress_string }}</div>
                 </div>
             {% endfor %}
         {% endfor %}
+    </div>
     {% endif %}
 {% endblock %}
