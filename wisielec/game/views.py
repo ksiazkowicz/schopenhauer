@@ -65,6 +65,11 @@ def create_game(user, inverse_death=False, max_mistakes=5, phrase=None):
 
 
 def lobby_view(request, template="game/lobby.html"):
+    """
+    Lobby view
+    """
+    if request.user:
+        tournaments = request.user.tournament_set.filter(in_progress=True)
     return render(request, template, locals())
 
 
@@ -132,37 +137,41 @@ def tournament_view(request, session_id, template="tournament/tournament_lobby.h
                 tournament.players.add(user)
             except:
                 pass
-        else:
-            inverse_death = False
-            max_mistakes = 5
-            if tournament.mode == 1:
-                # Born To Die selected
-                inverse_death = True
-            elif tournament.mode == 2:
-                # yolo selected
-                max_mistakes = 1
-            try:
-                phrase = get_quote()
-            except:
-                phrase = fallback_quotes[random.randint(0, len(fallback_quotes) - 1)]
-            round = Round.objects.create(round_id=tournament.current_round+1, tournament=tournament)
-            tournament.current_round = tournament.current_round+1
-            tournament.save()
-            no_mans_game = False
-            for player in tournament.players.all():
-                game = create_game(player, phrase=phrase, inverse_death=inverse_death, max_mistakes=max_mistakes)
-                round.games.add(game)
-                if player == request.user:
-                    no_mans_game = game
+        elif "new-round" in request.POST.keys():
+                inverse_death = False
+                max_mistakes = 5
+                if tournament.mode == 1:
+                    # Born To Die selected
+                    inverse_death = True
+                elif tournament.mode == 2:
+                    # yolo selected
+                    max_mistakes = 1
+                try:
+                    phrase = get_quote()
+                except:
+                    phrase = fallback_quotes[random.randint(0, len(fallback_quotes) - 1)]
+                round = Round.objects.create(round_id=tournament.current_round+1, tournament=tournament)
+                tournament.current_round = tournament.current_round+1
+                tournament.save()
+                no_mans_game = False
+                for player in tournament.players.all():
+                    game = create_game(player, phrase=phrase, inverse_death=inverse_death, max_mistakes=max_mistakes)
+                    round.games.add(game)
+                    if player == request.user:
+                        no_mans_game = game
 
-                Group("tournament-%s" % tournament.session_id).send({
-                    "text": json.dumps({
-                        "game": game.session_id,
-                        "player": game.player.username,
-                        "redirect": True
+                    Group("tournament-%s" % tournament.session_id).send({
+                        "text": json.dumps({
+                            "game": game.session_id,
+                            "player": game.player.username,
+                            "redirect": True
+                        })
                     })
-                })
-            return HttpResponseRedirect("/game/g/%s" % no_mans_game.session_id)
+                return HttpResponseRedirect("/game/g/%s" % no_mans_game.session_id)
+        elif "end-tournament" in request.POST.keys():
+            tournament.in_progress = False
+            tournament.save()
+            return HttpResponseRedirect("/game/t/%s" % tournament.session_id)
 
     return render(request, template, locals())
 

@@ -1,21 +1,56 @@
 html, body {
-  color: #aaa;
-  background-color: #222; }
+  color: #222;
+  background-color: #999; }
 
 #wrap {
-  background-color: #111; }
+  background-color: #eee;
+  min-height: 100vh; }
 
 h1 {
-  color: #fff; }
+  color: #111; }
 
 h2 {
-  color: #aaa; }
+  color: #222; }
 
 h3 {
-  color: #ccc; }
+  color: #222; }
 
 h4 {
-  color: #ccc; }
+  color: #222; }
+
+.lobby-game {
+  border-top: 1px solid #ccc;
+  padding-top: 10px; }
+
+.lobby-game .game-name {
+  font-size: 12pt;
+  font-weight: bold; }
+
+#running-games-list {
+  min-height: 480px; }
+
+#running-games-list .lobby-game:first-child {
+  border-top: none;
+  padding-top: 0px; }
+
+.headerbar {
+  border-top: 8px solid #a11b1b;
+  border-bottom: 1px solid #a11b1b;
+  margin-bottom: 10px;
+  padding: 10px; }
+
+.panel-heading {
+  line-height: 30px;
+  border-bottom: 4px solid #a11b1b !important; }
+
+a {
+  color: #a11b1b; }
+
+.btn-default, .btn-info {
+  color: #bbb;
+  background: #222;
+  background-image: none !important;
+  border: #333; }
 
 /*!
  * Bootstrap v3.3.7 (http://getbootstrap.com)
@@ -622,13 +657,13 @@ fieldset[disabled] .btn-danger.active {
   text-transform: uppercase; }
 
 .round-table .current {
-  background-color: #222; }
+  background-color: #ccc; }
 
 .round-table .current td {
   font-weight: bold;
   line-height: 30px; }
 
 .round-table .me {
-  color: #14ff14; }
+  color: green; }
 
 /*# sourceMappingURL=main.css.map */

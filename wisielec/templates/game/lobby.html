@@ -3,6 +3,11 @@
 
 {% block content %}
     <script>
+        var game_template = "<div class='lobby-game' id='game-[[ session_id ]]'>" +
+            "<p class='game-name'>[[ session_id ]]</p>" +
+            "<p><i class='fa fa-user'></i> gracze: <span id='players-for-[[ session_id ]]'></span> | <a href='/game/g/[[ session_id ]]'>Dołącz</a></p>" +
+            "</div>";
+
         socket = new WebSocket("ws://" + window.location.host + "/lobby/");
         socket.onmessage = function(e) {
             var data_json = JSON.parse(e.data);
@@ -26,10 +31,8 @@
 
         function append_game(session_id) {
             if (!document.getElementById("game-" + session_id)) {
-                var t = document.createElement("div");
-                t.id = "game-" + session_id;
-                t.innerHTML = "<hr/><h4>" + session_id +"</h4> <i class='fa fa-user'></i> gracze: <span id='players-for-"+session_id+"'></span> | <a href='/game/g/" + session_id + "'>Dołącz</a>";
-                document.getElementById("running-games-list").appendChild(t);
+                var t = generate_from_template(game_template, {"session_id": session_id});
+                document.getElementById("running-games-list").innerHTML += t;
             }
         }
     </script>
@@ -37,44 +40,49 @@
 
     <div class="clearfix">
         <div class="col-md-8">
-            <h3>
-                Trwające gry:
-                <div class="pull-right">
-                    <a href="{% url "new_game_view" %}" type="submit" class="btn btn-info button"><i class="fa fa-plus"></i> Nowa</a>
-                    <a href="{% url "new_tournament_view" %}" type="submit" class="btn btn-info button"><i class="fa fa-plus"></i> Nowy turniej</a>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Trwające gry
+                    <div class="pull-right">
+                        <a href="{% url "new_game_view" %}" type="submit" class="btn btn-sm btn-info"><i class="fa fa-plus"></i> Nowa</a>
+                    </div>
                 </div>
-            </h3>
-            <div id="running-games-list" style="min-height: 480px"></div>
-            <div><b>Gracze w lobby:</b> <div id="players-list">nie żyją</div></div>
+                <div class="panel-body">
+                    <div id="running-games-list"></div>
+                </div>
+            </div>
         </div>
         <div class="col-md-4">
-            <h3>Czat</h3>
-            <hr/>
-		    <div class="postbody mChatBodyFix">
-			    <div id="mChatmain" class="mChatRowLimit" style="height: 400px;">
-                    <div id="mChatData">
-                        <div class="mChatBG1 mChatHover">
-                            <span style="float:left;">
-                                <a class="mChatScriptLink">
-                                    <span style="color: #FF9900"><strong>@</strong></span>
-                                </a>&nbsp;<a style="color: #FF9900;" class="username-coloured">chlebzycia666</a></span>&nbsp;
-                                <br><div class="mChatMessage">ej hoćcie gradź</div>
-                        </div>
-                        <div class="mChatBG2 mChatHover">
-                            <span style="float:left;">
-                                <a class="mChatScriptLink">
-                                    <span style="color: #FF9900"><strong>@</strong></span>
-                                </a>&nbsp;<a style="color: #FF9900;" class="username-coloured">bezsensistnienia12</a></span>&nbsp;
-                                <br><div class="mChatMessage">ok idem</div>
-                        </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Turnieje
+                    <div class="pull-right">
+                        <a href="{% url "new_tournament_view" %}" type="submit" class="btn btn-sm btn-info"><i class="fa fa-plus"></i> Nowy turniej</a>
                     </div>
                 </div>
-                <form method="post" action="javascript://" onsubmit="mChat.add();" id="postform">
-                    <div class="mChatPanel">
-                        <input type="text" name="message" class="inputbox medium mChatText" id="mChatMessage"><div style="position: absolute; top: -9999px; left: -9999px; width: auto; font-size: 10px; font-family: Verdana, Helvetica, Arial, sans-serif; font-weight: 400; letter-spacing: 0px; white-space: nowrap;"></div>&nbsp;
-                        <input id="submit_button" type="button" class="button2" value="Wyślij">
+                <div class="panel-body">
+                    <div id="tournament-list">
+                        {% if not tournaments %}Nie uczestniczysz w żadnym turnieju.{% else %}
+                            {% for tournament in tournaments %}
+                                <div>
+                                    <a href="{% url 'tournament_view' tournament.session_id %}">{{ tournament.name }}</a>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
                     </div>
-                </form>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">Gracze</div>
+                <div class="panel-body">
+                    <div id="players-list">nie żyją</div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">Czat</div>
+                <div class="panel-body">
+                    nie chce mi się implementować
+                </div>
             </div>
         </div>
     </div>

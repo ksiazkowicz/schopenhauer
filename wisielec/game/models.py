@@ -74,6 +74,29 @@ class Tournament(models.Model):
     session_id = models.CharField(_("Session ID"), max_length=128, blank=False)
     in_progress = models.BooleanField(_("Is in progress?"), default=True)
 
+    @property
+    def winner(self):
+        """
+        Returns a player who won more rounds than anyone else.
+        """
+        # initialize values
+        all_winners = self.round_set.all().values("winner")
+        current_player = None
+        current_wins = 0
+
+        # iterate through all the players
+        for player in self.players.all():
+            # count wins
+            win_count = len(all_winners.filter(winner=player))
+            # check if he won more rounds
+            if win_count > current_wins:
+                # update data
+                current_wins = win_count
+                current_player = player
+
+        # return the best one
+        return current_player
+
 
 class Round(models.Model):
     round_id = models.IntegerField(_("This round ID"))

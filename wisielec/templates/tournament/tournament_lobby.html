@@ -16,63 +16,84 @@
 
     <div class="col-md-8">
         <h1>{{ tournament.name }}</h1>
-        <h4>{{ tournament.session_id }}</h4>
+        <h4>{{ tournament.session_id }} {% if not tournament.in_progress %}(zakończony){% endif %}</h4>
     </div>
 
     <div class="col-md-4 pull-right">
-        <h3>Gracze</h3>
-        <table id="players-list" class="table">
-            <tr>
-                <th>Nazwa</th>
-                <th>Wynik</th>
-                <th>Akcje</th>
-            </tr>
-            {% for player in tournament.players.all %}
-            <tr>
-                <td>{{ player }}</td>
-                <td>{% won_rounds player tournament %}</td>
-                <td></td>
-            </tr>
-            {% endfor %}
-        </table>
-        <form action="" method="post" style="margin-bottom: 30px;">
-            {% csrf_token %}
-            <div class="input-group">
-                <input type="text" name="name" placeholder="Nazwa" class="form-control" id="name_input">
-                <div class="input-group-btn">
-                    <input type="submit" class="btn btn-info" value="Zaproś" />
-                </div>
+        {% if tournament.in_progress %}
+        <div class="panel panel-default">
+            <div class="panel-heading">Zarządzaj turniejem</div>
+            <div class="panel-body">
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <input type="submit" name="new-round" class="btn btn-info" value="Nowa runda" />
+                    <input type="submit" name="end-tournament" class="btn btn-info" value="Zakończ" />
+                </form>
             </div>
-        </form>
+        </div>
+        {% else %}
+        <div class="panel panel-default">
+            <div class="panel-body" style="font-size: 12pt;">
+                <p>
+                    {% if tournament.current_round == 1 %}Odbyła się tylko jedna runda, którą wygrał <b>{{ tournament.winner }}</b>{% endif %}
+                    {% if tournament.current_round > 1 and tournament.current_round < 5 %}Turniej zakończono po {{ tournament.current_round }} rundach, wygrał użytkownik <b>{{ tournament.winner }}</b>{% else %}
+                        Zagrano {{ tournament.current_round }} rund, a turniej zakończył się wygraną użytkownika <b>{{ tournament.winner }}</b>{% endif %}.
+                </p>
+            </div>
+        </div>
+        {% endif %}
+        <div class="panel panel-default">
+            <div class="panel-heading">Gracze</div>
+            <div class="panel-body">
+                <table id="players-list" class="table">
+                    <tr>
+                        <th>Nazwa</th>
+                        <th>Wynik</th>
+                        <th>Akcje</th>
+                    </tr>
+                    {% for player in tournament.players.all %}
+                    <tr>
+                        <td>{{ player }}</td>
+                        <td>{% won_rounds player tournament %}</td>
+                        <td></td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <form action="" method="post" style="margin-bottom: 30px;">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <input type="text" name="name" placeholder="Nazwa" class="form-control" id="name_input">
+                        <div class="input-group-btn">
+                            <input type="submit" class="btn btn-info" value="Zaproś" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
     <div class="col-md-8">
-        <h4>Rundy</h4>
-        <table class="table round-table">
-            <tr>
-                <th>Numer</th>
-                <th>Status</th>
-                <th>Zwycięzca</th>
-                <th>Akcje</th>
-            </tr>
-        {% for round in rounds %}
-            <tr {% if round.round_id == tournament.current_round %}class="current"{% endif %}>
-                <td>{{ round.round_id }}</td>
-                <td>{{ round.status_verbose }}</td>
-                <td {% if round.winner == request.user %}class="me"{% endif %}>{{ round.winner|default:"Nikt" }}</td>
-                <td>{% if round.status == "ROUND_IN_PROGRESS" %}{% for game in round.games.all %}{% if game.player == request.user %}
-                    <a class="btn btn-sm btn-default" href="{% url 'game_view' game.session_id %}">Dołącz</a>
-                    {% endif %}{% endfor %}{% endif %}</td>
-            </tr>
-        {% endfor %}
-        </table>
+        <div class="panel panel-default">
+            <div class="panel-heading">Rundy</div>
+            <div class="panel-body">
+                <table class="table round-table">
+                    <tr>
+                        <th>Numer</th>
+                        <th>Status</th>
+                        <th>Zwycięzca</th>
+                        <th>Akcje</th>
+                    </tr>
+                {% for round in rounds %}
+                    <tr {% if round.round_id == tournament.current_round %}class="current"{% endif %}>
+                        <td>{{ round.round_id }}</td>
+                        <td>{{ round.status_verbose }}</td>
+                        <td {% if round.winner == request.user %}class="me"{% endif %}>{{ round.winner|default:"Nikt" }}</td>
+                        <td>{% if round.status == "ROUND_IN_PROGRESS" %}{% for game in round.games.all %}{% if game.player == request.user %}
+                            <a class="btn btn-sm btn-default" href="{% url 'game_view' game.session_id %}">Dołącz</a>
+                            {% endif %}{% endfor %}{% endif %}</td>
+                    </tr>
+                {% endfor %}
+                </table>
+            </div>
+        </div>
     </div>
-
-    <div class="col-md-12">
-        <h4>Zacznij rundę</h4>
-        <form action="" method="post">
-            {% csrf_token %}
-            <input type="submit" class="btn btn-info btn-lg" value="No dobra" />
-        </form>
-    </div>
-
 {% endblock %}

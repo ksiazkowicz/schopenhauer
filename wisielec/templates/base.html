@@ -1,29 +1,33 @@
 <!DOCTYPE html>
 {% load static %}
 {% load pipeline %}
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
     <title>Wisielec Schopenhauera</title>
     <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/font-awesome.min.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/mchat.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/schopenhauer.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/application.css' %}">
     <script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
     <script src="{% static 'js/libdecadence.js' %}"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
     <div class="container" id="wrap">
         <div class="row">
-            <div class="col-md-12" style="margin: 0 0 40px 0;">
+            <div class="col-md-12">
                 {% block header %}
-                <div class="headerbar clearfix" style="padding: 15px;">
-                    <div class="pull-left"><h1>Wisielec Schopenhauera</h1></div>
+                <div class="headerbar clearfix">
+                    <div class="pull-left">
+                        <a href="/"><img src="{% static 'img/arthurlogo_small.png' %}" alt="Wisielec Schopenhauera"></a>
+                    </div>
                     <div class="pull-right" style="margin-top: 20px">
+                        <div class="login-block">
+                            Witaj <b>{{ request.user }}</b>, życie nie ma sensu
+                        </div>
                         <h4><a href="{% url 'lobby_view' %}">Lobby</a> |
                         {% if not request.user.is_anonymous %}
-                        Witaj <b>{{ request.user }}</b>, życie nie ma sensu | <a href="{% url 'ranking_view' %}">Ranking</a> | <a href="{% url 'profile_view' request.user.username %}">Profil</a> | <a href="{% url 'logout_view' %}">Wyloguj</a>
+                        <a href="{% url 'ranking_view' %}">Ranking</a> | <a href="{% url 'profile_view' request.user.username %}">Profil</a> | <a href="{% url 'logout_view' %}">Wyloguj</a>
                         {% else %}
                         <a href="{% url 'login_view' %}">Zaloguj się</a> | <a href="{% url 'register' %}">Zarejestruj</a>
                         {% endif %}
