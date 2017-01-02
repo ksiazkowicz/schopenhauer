@@ -33,6 +33,9 @@ h4 {
   border-top: none;
   padding-top: 0px; }
 
+hr {
+  border-top: 1px solid #ccc; }
+
 .headerbar {
   border-top: 8px solid #a11b1b;
   border-bottom: 1px solid #a11b1b;
@@ -51,6 +54,17 @@ a {
   background: #222;
   background-image: none !important;
   border: #333; }
+
+#page-footer {
+  position: absolute;
+  bottom: 10px;
+  left: 0px; }
+
+#footer-filler {
+  height: 71px; }
+
+#players-list .current td {
+  font-weight: bold; }
 
 /*!
  * Bootstrap v3.3.7 (http://getbootstrap.com)

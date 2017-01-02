@@ -5,44 +5,69 @@
     <h4>{{ error }}</h4>
 
     <div class="col-md-3">
-        <div style="text-align: center;">
-            <img src="{% static 'img/schopenhauer.jpg' %}" style="border-radius: 100%; margin-bottom: 20px; width: 100px; height: 100px;">
-            <h3>{{ user.username }}</h3>
+        <div class="panel panel-default">
+            <div class="panel-body" style="text-align: center;">
+                <img src="{% static 'img/schopenhauer.jpg' %}" style="border-radius: 100%; margin-bottom: 20px; width: 100px; height: 100px;">
+                <h3>{{ user.username }}</h3>
 
-            {% if not user == request.user %}
-            <hr/>
-            <a href="{% url 'tournament_invite' user.username %}" class="btn btn-default btn-lg">Zaproś do turnieju</a>
-            {% else %}
-            <hr/>
-            <a href="{% url "edit_profile" %}" class="btn btn-default btn-lg">Ustawienia profilu</a>
-            {% endif %}
+                {% if not user == request.user %}
+                <hr/>
+                <a href="{% url 'tournament_invite' user.username %}" class="btn btn-default btn-lg">Zaproś do turnieju</a>
+                {% else %}
+                <hr/>
+                <a href="{% url "edit_profile" %}" class="btn btn-default btn-lg">Ustawienia profilu</a>
+                {% endif %}
 
-            <hr/>
-            <h4>Statystyki</h4>
-            <ul style="list-style-type: none; padding: 0; margin: 0; text-align: left;">
-                <li><b>Wygrane gry</b>: {{ user.won_games }}</li>
-                <li><b>Przegrane gry</b>: {{ user.lost_games }}</li>
-                <li><b>Wygrane turnieje</b>: {{ user.won_tournaments }}</li>
-                <li><b>Przegrane turnieje</b>: {{ user.lost_tournaments }}</li>
-                <li><b>Łącznie punktów</b>: {{ user.score }}</li>
-                <li><b>Przegrane życie</b>: bardzo</li>
-                <li><b>Pozycja w rakingu</b>: {{ user.ranking_position }}</li>
-            </ul>
+                <hr/>
+                <h4>Statystyki</h4>
+                <ul style="list-style-type: none; padding: 0; margin: 0; text-align: left;">
+                    <li><b>Wygrane gry</b>: {{ user.won_games }}</li>
+                    <li><b>Przegrane gry</b>: {{ user.lost_games }}</li>
+                    <li><b>Wygrane turnieje</b>: {{ user.won_tournaments }}</li>
+                    <li><b>Przegrane turnieje</b>: {{ user.lost_tournaments }}</li>
+                    <li><b>Łącznie punktów</b>: {{ user.score }}</li>
+                    <li><b>Przegrane życie</b>: bardzo</li>
+                    <li><b>Pozycja w rakingu</b>: {{ user.ranking_position }}</li>
+                </ul>
+            </div>
         </div>
     </div>
-    <div class="col-md-8 col-md-offset-1 clearfix">
-        <h4>Osiągnięcia (0%)</h4>
-        <p>Brak!</p>
-        <hr/>
-        <h4>Turnieje</h4>
-        {% if not user.tournament_set.all %}
-            <p>Ten gracz nie uczestniczy w żadnych turniejach.</p>
-        {% else %}
-            <p>{% for tournament in user.tournament_set.all %}<a href="{% url 'tournament_view' tournament.session_id %}">{{ tournament.name }}</a>{% if not forloop.last %},{% endif %} {% endfor %}</p>
-        {% endif %}
-        <hr/>
-        <h4>Znajomi</h4>
-        <p>Bez przesady</p>
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">Osiągnięcia (0%)</div>
+            <div class="panel-body">
+                Brak!
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">Turnieje</div>
+            <div class="panel-body">
+                {% if not user.tournament_set.all %}
+                    <p>Ten gracz nie uczestniczył w żadnych turniejach.</p>
+                {% else %}
+                    <h4>Trwające</h4>
+                    {% for tournament in user.tournament_set.all %}
+                        {% if tournament.in_progress %}
+                        <p><a href="{% url 'tournament_view' tournament.session_id %}">{{ tournament.name }}</a></p>
+                        {% endif %}
+                    {% endfor %}
+                    <h4>Zakończone</h4>
+                    {% for tournament in user.tournament_set.all %}
+                        {% if not tournament.in_progress %}
+                            <p><a href="{% url 'tournament_view' tournament.session_id %}">{{ tournament.name }}</a> {% if tournament.winner == user %}<b>(wygrany)</b>{% endif %}</p>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
 
+    <div class="col-md-3 clearfix">
+        <div class="panel panel-default">
+            <div class="panel-heading">Znajomi</div>
+            <div class="panel-body">
+                Bez przesady
+            </div>
+        </div>
     </div>
 {% endblock %}
