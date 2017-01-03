@@ -108,7 +108,7 @@ def new_tournament_view(request, template="tournament/new.html"):
 
 def current_game(request, session_id, template="game/game.html"):
     game = get_object_or_404(Game, session_id=session_id)
-    alphabet = u"aąbcćdeęfghijklłmnoprsśtuówyzżź"
+    alphabet = u"aąbcćdeęfghijklłmnńoprsśtuówyzżź"
 
     return render(request, template, locals())
 
