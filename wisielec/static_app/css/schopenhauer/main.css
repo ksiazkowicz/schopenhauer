@@ -66,6 +66,10 @@ a {
 #players-list .current td {
   font-weight: bold; }
 
+.panel-heading {
+  font-weight: bold;
+  background-image: url("/static/img/skull-overlay-heading.png") !important; }
+
 /*!
  * Bootstrap v3.3.7 (http://getbootstrap.com)
  * Copyright 2011-2016 Twitter, Inc.

@@ -56,3 +56,8 @@ a { color: $blood-red; }
 }
 
 #players-list .current td { font-weight: bold; }
+
+.panel-heading {
+  font-weight: bold;
+  background-image: url("/static/img/skull-overlay-heading.png") !important;
+}
