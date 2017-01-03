@@ -23,6 +23,7 @@
 
     <div class="col-md-4 pull-right">
         {% if tournament.in_progress %}
+        {% if request.user == tournament.players.all.0 %}
         <div class="panel panel-default">
             <div class="panel-heading">Zarządzaj turniejem</div>
             <div class="panel-body">
@@ -33,6 +34,7 @@
                 </form>
             </div>
         </div>
+        {% endif %}
         {% else %}
         <div class="panel panel-default">
             <div class="panel-body" style="font-size: 12pt;">
