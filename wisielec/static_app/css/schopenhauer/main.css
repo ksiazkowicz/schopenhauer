@@ -55,14 +55,6 @@ a {
   background-image: none !important;
   border: #333; }
 
-#page-footer {
-  position: absolute;
-  bottom: 10px;
-  left: 0px; }
-
-#footer-filler {
-  height: 71px; }
-
 #players-list .current td {
   font-weight: bold; }
 
