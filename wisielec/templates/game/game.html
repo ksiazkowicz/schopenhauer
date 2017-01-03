@@ -84,7 +84,6 @@
         {% if game.mistakes < 5 %}
         {% for x in alphabet %}
         <a href="javascript:test('{{x}}');">{{ x }}</a>
-        <!--<a href="guess?letter={{ x }}">{{ x }}</a>-->
         {% endfor %}{% else %}PRZEGRALES ZYCIE LOL{% endif %}
         <p id="used_letters">
             Wykorzystane literki: {% if game.used_characters %}{% for x in game.used_characters %}{{ x }}{% if not forloop.last %},{% endif %} {% endfor %}{% endif %}

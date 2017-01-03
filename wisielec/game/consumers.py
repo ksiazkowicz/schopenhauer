@@ -16,7 +16,7 @@ def push_list_current_games(channel):
     games = Game.objects.all()
     channel.send({
         "text": json.dumps({
-            "running_games": [x.session_id for x in games if x.state == "IN_PROGRESS"]
+            "running_games": [x.session_id for x in games if x.state == "IN_PROGRESS" and x.round_set.count() == 0]
         })
     })
 
