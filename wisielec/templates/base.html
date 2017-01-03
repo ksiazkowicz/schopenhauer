@@ -27,9 +27,9 @@
                         </div>
                         <h4><a href="{% url 'lobby_view' %}">Lobby</a> |
                         {% if not request.user.is_anonymous %}
-                        <a href="{% url 'ranking_view' %}">Ranking</a> | <a href="{% url 'profile_view' request.user.username %}">Profil</a> | <a href="{% url 'logout_view' %}">Wyloguj</a>
+                        <a href="{% url 'ranking_view' %}">Ranking</a> | <a href="{% url 'profile_view' request.user.username %}">Profil</a> | <a href="{% url 'account_logout' %}">Wyloguj</a>
                         {% else %}
-                        <a href="{% url 'login_view' %}">Zaloguj się</a> | <a href="{% url 'register' %}">Zarejestruj</a>
+                        <a href="{% url 'account_login' %}">Zaloguj się</a> | <a href="{% url 'account_signup' %}">Zarejestruj</a>
                         {% endif %}
                         </h4>
                     </div>

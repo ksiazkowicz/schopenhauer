@@ -21,9 +21,6 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '7333#=wb9n%1zy(^r2c^39lk8l8&0kn@15iws4z2h$*ofr1(g_'
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
@@ -36,6 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.sites',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
@@ -45,6 +43,11 @@ INSTALLED_APPS = [
     'pipeline',
     'channels',
     'api',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+     # Login Facebook provider
+     'allauth.socialaccount.providers.facebook',
 ]
 
 MIDDLEWARE = [
@@ -93,7 +96,7 @@ DATABASES = {
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
+    """{
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
     {
@@ -104,8 +107,17 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    },"""
 ]
+
+AUTHENTICATION_BACKENDS = (
+    # Default backend
+    "django.contrib.auth.backends.ModelBackend",
+    # `allauth` specific authentication methods, such as login by e-mail
+    "allauth.account.auth_backends.AuthenticationBackend",
+)
+
+ACCOUNT_LOGOUT_ON_GET = True
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/

@@ -4,6 +4,8 @@ from django.conf import settings
 
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
+from profiles.views import profile_view
+
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -11,6 +13,8 @@ urlpatterns = [
     url(r'^game/', include("game.urls")),
     url(r'^profiles/', include("profiles.urls")),
     url(r'^$', include("home.urls")),
+    url(r'^accounts/', include('allauth.urls')),
+    url(r'^accounts/profile/$', profile_view, name='your_profile_view'),
 ]
 
 if settings.DEBUG:

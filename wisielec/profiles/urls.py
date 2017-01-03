@@ -3,11 +3,11 @@ from views import login_view, logout_view, profile_view, RegistrationView, ranki
 from django.contrib.auth import views
 
 urlpatterns = [
-    url(r'^login', login_view, name='login_view'),
-    url(r'^logout', logout_view, name='logout_view'),
+    #url(r'^login', login_view, name='login_view'),
+    #url(r'^logout', logout_view, name='logout_view'),
     url(r'^ranking', ranking_view, name='ranking_view'),
 
-    url(r'^register/$', RegistrationView.as_view(), name='register'),
+    #url(r'^register/$', RegistrationView.as_view(), name='register'),
     url(r'^edit/$', profile_edit_view, name='edit_profile'),
     url(r'^register/done/$', views.password_reset_done, {
         'template_name': 'registration/initial_done.html',

@@ -62,6 +62,8 @@ def ranking_view(request, template="profiles/ranking_view.html"):
 
 
 @login_required
-def profile_view(request, username, template='profiles/profile_view.html'):
+def profile_view(request, username=None, template='profiles/profile_view.html'):
+    if not username:
+        username = request.user.username
     user = get_object_or_404(UserProfile, username=username)
     return render(request, template, locals())
