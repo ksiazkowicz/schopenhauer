@@ -18,12 +18,17 @@
 
     <div class="col-md-8">
         <h1>{{ tournament.name }}</h1>
-        <h4>{{ tournament.session_id }} {% if not tournament.in_progress %}(zakończony){% endif %}</h4>
+        <h4>
+            {% if tournament.mode == 0 %}Eutanazol{% endif %}
+            {% if tournament.mode == 1 %}Born To Die{% endif %}
+            {% if tournament.mode == 2 %}Masz tylko jedno życie{% endif %}
+            {% if not tournament.in_progress %}(zakończony){% endif %}
+        </h4>
     </div>
 
     <div class="col-md-4 pull-right">
         {% if tournament.in_progress %}
-        {% if request.user == tournament.players.all.0 %}
+        {% if request.user == tournament.get_admin %}
         <div class="panel panel-default">
             <div class="panel-heading">Zarządzaj turniejem</div>
             <div class="panel-body">
@@ -67,6 +72,7 @@
                     </tr>
                     {% endfor %}
                 </table>
+                {% if request.user == tournament.get_admin %}
                 <form action="" method="post" style="margin-bottom: 30px;">
                     {% csrf_token %}
                     <div class="input-group">
@@ -76,6 +82,7 @@
                         </div>
                     </div>
                 </form>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -103,5 +110,8 @@
                 </table>
             </div>
         </div>
+        {% with tournament.session_id|stringformat:"s" as session_id %}
+        {% include "includes/chatbox.html" with chat_context="tournament-"|add:session_id  %}
+        {% endwith %}
     </div>
 {% endblock %}

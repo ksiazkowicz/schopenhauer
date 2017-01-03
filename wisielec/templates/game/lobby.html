@@ -82,12 +82,7 @@
                     <div id="players-list">nie żyją</div>
                 </div>
             </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">Czat</div>
-                <div class="panel-body">
-                    nie chce mi się implementować
-                </div>
-            </div>
+            {% include "includes/chatbox.html" with chat_context="lobby" %}
         </div>
     </div>
 {% endblock %}

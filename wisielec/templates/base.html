@@ -23,7 +23,7 @@
                     </div>
                     <div class="pull-right" style="margin-top: 20px">
                         <div class="login-block">
-                            Witaj <b>{{ request.user }}</b>, życie nie ma sensu
+                            {% if request.user.is_authenticated %}Witaj <b>{{ request.user }}</b>, życie nie ma sensu{% else %}Nie jesteś zalogowany. Załóż konto!{% endif %}
                         </div>
                         <h4><a href="{% url 'lobby_view' %}">Lobby</a> |
                         {% if not request.user.is_anonymous %}

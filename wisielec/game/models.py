@@ -68,11 +68,21 @@ class Game(models.Model):
 class Tournament(models.Model):
     name = models.CharField(_("Tournament name"), max_length=255)
     players = models.ManyToManyField(UserProfile)
+    admin = models.ForeignKey(UserProfile, related_name="tournament_admin", default=True)
     current_round = models.IntegerField(_("Current round"), default=0)
     mode = models.IntegerField(_("Game mode"), default=0)
     tournament_mode = models.IntegerField(_("Tournament mode"), default=0)
     session_id = models.CharField(_("Session ID"), max_length=128, blank=False)
     in_progress = models.BooleanField(_("Is in progress?"), default=True)
+
+    def get_admin(self):
+        """
+        Returns tournament admin.
+        """
+        if self.admin:
+            return self.admin
+        else:
+            return self.players.all()[0]
 
     @property
     def winner(self):
@@ -131,3 +141,9 @@ class Round(models.Model):
             return u"W trakcie"
         else:
             return u"Zakończona"
+
+
+class ChatMessage(models.Model):
+    author = models.ForeignKey(UserProfile)
+    message = models.CharField(_("Message"), max_length=255)
+    context = models.CharField(_("Context"), max_length=255)

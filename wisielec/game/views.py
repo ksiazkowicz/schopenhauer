@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect, Http404
-from models import Game, Tournament, Round
+from models import Game, Tournament, Round, ChatMessage
 from profiles.models import UserProfile
 import uuid
 import random
@@ -98,7 +98,7 @@ def new_tournament_view(request, template="tournament/new.html"):
         game_mode = int(request.POST.get("game_mode", 0))
         name = request.POST.get("name", "")
 
-        tournament = Tournament.objects.create(session_id=uuid.uuid1().hex, name=name, mode=game_mode)
+        tournament = Tournament.objects.create(session_id=uuid.uuid1().hex, name=name, mode=game_mode, admin=request.user)
         tournament.players.add(request.user)
 
         return HttpResponseRedirect("/game/t/%s" % tournament.session_id)
