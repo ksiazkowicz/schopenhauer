@@ -53,6 +53,7 @@
             </div>
         </div>
         <div class="col-md-4">
+            {% if request.user.is_authenticated %}
             <div class="panel panel-default">
                 <div class="panel-heading">
                     Turnieje
@@ -72,6 +73,7 @@
                     </div>
                 </div>
             </div>
+            {% endif %}
             <div class="panel panel-default">
                 <div class="panel-heading">Gracze</div>
                 <div class="panel-body">

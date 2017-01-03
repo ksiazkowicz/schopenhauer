@@ -68,7 +68,7 @@ def lobby_view(request, template="game/lobby.html"):
     """
     Lobby view
     """
-    if request.user:
+    if request.user.is_authenticated:
         tournaments = request.user.tournament_set.filter(in_progress=True)
     return render(request, template, locals())
 
