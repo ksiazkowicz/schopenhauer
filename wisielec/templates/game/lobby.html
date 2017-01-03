@@ -28,6 +28,8 @@
                 update_players("players-list", String(players).split(","));
             }
         };
+        socket.onerror = function(e) { alert("umarlo z bledem"); };
+        socket.onclose = function(e) { alert("umarlo bo tak"); };
 
         function append_game(session_id) {
             if (!document.getElementById("game-" + session_id)) {

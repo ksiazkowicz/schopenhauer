@@ -11,7 +11,9 @@
             if (bread.redirect && bread.username == "{{ request.user }}") {
                 location.href = "/game/g/" + bread.game + "/";
             }
-        }
+        };
+        socket.onerror = function(e) { alert("umarlo z bledem"); };
+        socket.onclose = function(e) { alert("umarlo bo tak"); };
     </script>
 
     <div class="col-md-8">

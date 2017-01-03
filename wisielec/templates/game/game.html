@@ -51,6 +51,8 @@
         socket.onopen = function() {
             //socket.send("hello world");
         }
+        socket.onerror = function(e) { alert("umarlo z bledem"); };
+        socket.onclose = function(e) { alert("umarlo bo tak"); };
         // Call onopen directly if socket is already open
         if (socket.readyState == WebSocket.OPEN) socket.onopen();
 
