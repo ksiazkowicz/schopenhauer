@@ -34,21 +34,24 @@ def push_list_current_players():
 
 
 def push_list_current_players_game(game_id):
-    game = Game.objects.get(session_id=game_id)
+    try:
+        game = Game.objects.get(session_id=game_id)
 
-    Group("lobby").send({
-        "text": json.dumps({
-            "session_id": game_id,
-            "players": game_players.get(game_id, [])
-        }),
-    })
-    Group("game-%s" % game_id).send({
-        "text": json.dumps({
-            "session_id": game_id,
-            "player_list_only": True,
-            "players": game_players.get(game_id, [])
+        Group("lobby").send({
+            "text": json.dumps({
+                "session_id": game_id,
+                "players": game_players.get(game_id, [])
+            }),
         })
-    })
+        Group("game-%s" % game_id).send({
+            "text": json.dumps({
+                "session_id": game_id,
+                "player_list_only": True,
+                "players": game_players.get(game_id, [])
+            })
+        })
+    except:
+        pass
 
 @channel_session_user_from_http
 def lobby_connect(message):
