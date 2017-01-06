@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.template import Context, Template, loader
 
-@csrf_exempt
+
 def generate_html(request):
     """
     Generates HTML code from request. You should send a JSON through post this way:
