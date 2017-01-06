@@ -3,11 +3,6 @@
 
 {% block content %}
     <script>
-        var game_template = "<div class='lobby-game' id='game-[[ session_id ]]'>" +
-            "<p class='game-name'>[[ session_id ]]</p>" +
-            "<p><i class='fa fa-user'></i> gracze: <span id='players-for-[[ session_id ]]'></span> | <a href='/game/g/[[ session_id ]]'>Dołącz</a></p>" +
-            "</div>";
-
         socket = new WebSocket("ws://" + window.location.host + "/lobby/");
         socket.onmessage = function(e) {
             var data_json = JSON.parse(e.data);
@@ -33,8 +28,7 @@
 
         function append_game(session_id) {
             if (!document.getElementById("game-" + session_id)) {
-                var t = generate_from_template(game_template, {"session_id": session_id});
-                document.getElementById("running-games-list").innerHTML += t;
+                include_from_template("#running-games-list", "includes/decadence/lobby_game.html", {"session_id": session_id}, "beforeend");
             }
         }
     </script>

@@ -1,11 +1,42 @@
 # -*- coding: utf-8 -*-
 import json
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseServerError
 from profiles.models import UserProfile
 from game.models import Tournament
 from django.shortcuts import get_object_or_404
 
 from django.views.decorators.csrf import csrf_exempt
+from django.template import Context, Template, loader
+
+@csrf_exempt
+def generate_html(request):
+    """
+    Generates HTML code from request. You should send a JSON through post this way:
+
+    csrfmiddlewaretoken=token&data={"template": "includes/decadence/cancer.html", ...}
+
+    Data should have a template + context.
+    """
+    # get request data from JSON first
+    request_data = request.POST.get("data", "{}")
+    # parse as JSON
+    request_data = json.loads(request_data)
+
+    # get template file path
+    template_file = request_data.get("template", "")
+
+    # check if path is valid
+    if not template_file.startswith("includes/decadence/"):
+        return HttpResponseServerError("<h1>Invalid template</h1>")
+
+    # load the template
+    t = loader.get_template(template_file)
+    c = Context(request_data)
+    # render and return as response
+    rendered = t.render(c)
+
+    return HttpResponse(rendered, content_type="text/html")
+
 
 @csrf_exempt
 def tournament_invite_api(request):

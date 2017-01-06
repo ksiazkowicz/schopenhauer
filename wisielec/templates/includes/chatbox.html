@@ -32,10 +32,9 @@
     chat_socket = new WebSocket("ws://" + window.location.host + "/chat/"+chat_context);
     chat_socket.addEventListener("message", function(e) {
         var data = JSON.parse(e.data);
-        // create message string
-        var message = generate_from_template(chat_template, {
+        // use API to insert a message into chat block
+        include_from_template(chat_block, "includes/decadence/chat_message.html", {
             "author": data.author, "message": data.message
-        });
-        $(chat_block).prepend(message);
+        }, "afterbegin");
     });
 </script>

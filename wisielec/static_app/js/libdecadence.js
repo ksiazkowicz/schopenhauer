@@ -13,27 +13,43 @@ function update_players(block_id, players) {
         players_list.innerHTML = "nie żyją!";
 }
 
-function generate_from_template(template, data) {
+function show_info_block(error_level, string, options) {
     /*
-    Takes template and fills it with given data.
-    Takes:
-        - template - string, defined like this: <p>[[ bread ]] is kinda awesome</p>
-        - data - js object, defined like this: { "bread": "Myself", }
-
-    Returns a string with all tags replaced with strings from JSON object.
+        Shows notification block at the top of the page.
      */
-    // get all keys from JS object
-    var keys = Object.keys(data);
-    // copy given template
-    var new_template = template;
+    // lol add it laters
+    alert(error_level + ": " + string);
+}
 
-    // replace every occurrence of each [[ key ]] with object data
-    for (var i=0; i<keys.length; i++) {
-        // find all occurrences
-        while (new_template.indexOf(keys[i]) != -1)
-            // replace
-            new_template = new_template.replace("[[ "+keys[i]+" ]]", data[keys[i]]);
-    }
+function include_from_template(selector, template, data, mode) {
+    /*
+        Uses API to generate blocks from Django templates and includes them in the page.
+        Takes css selector (like "#bread"), template file name ("includes/cancer.html") and context data.
+        Also you can switch between different inclusion modes.
 
-    return new_template;
+        wow, this is probably insecure as fuck
+     */
+    // create Ajax request
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/api/v1/decadence/template/', true);
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    data.template = template;
+
+    // connect signal that gets fired up after request is finished
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                // get block by css selector
+                var block = document.querySelector(selector);
+
+                // insert HTML
+                block.insertAdjacentHTML(mode, xhr.responseText)
+            } else {
+                // stuff broke, show error
+                show_info_block("error", "Decadence failed to render template '"+template+"' with error '"+xhr.status+"'. Except stuff to be broken", false);
+            }
+        }
+    };
+    // send a request
+    xhr.send("csrfmiddlewaretoken="+readCookie("csrftoken")+"&data="+JSON.stringify(data));
 }
