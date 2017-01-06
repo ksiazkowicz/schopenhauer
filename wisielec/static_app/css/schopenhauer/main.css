@@ -82,6 +82,23 @@ a {
   .achievement img {
     width: 100%; }
 
+#body-alerts {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 100; }
+
+.alert-body {
+  border-radius: 0px;
+  margin-bottom: 0px; }
+
+.btn-alert {
+  margin-top: -5px;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: black !important;
+  text-shadow: none !important;
+  border: 1px solid rgba(33, 33, 33, 0.3) !important; }
+
 /*!
  * Bootstrap v3.3.7 (http://getbootstrap.com)
  * Copyright 2011-2016 Twitter, Inc.

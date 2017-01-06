@@ -1,0 +1,5 @@
+<div class="alert fade in alert-body alert-{{ error_level }} alert-dismissible" {% if alert_id %}id="alert-{{ alert_id }}"{% endif %} role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    {% if has_button %}<a href="{{ button_href }}" class="btn btn-default btn-alert btn-sm pull-right">{{ button_text }}</a>{% endif %}
+    {% if icon %}<i class="{{ icon }}"></i>{% endif %} {% block content %}{{ string }}{% endblock %}
+</div>
