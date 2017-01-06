@@ -6,8 +6,12 @@
 
     <div class="col-md-3">
         <div class="panel panel-default">
-            <div class="panel-body" style="text-align: center;">
-                <img src="{% static 'img/schopenhauer.jpg' %}" style="border-radius: 100%; margin-bottom: 20px; width: 100px; height: 100px;">
+            <div class="panel-body player-info">
+                {% if user.avatar %}
+                <img class="player-avatar" src="{% get_media_prefix %}{{ user.avatar }}">
+                {% else %}
+                <img class="player-avatar" src="{% static 'img/schopenhauer.jpg' %}">
+                {% endif %}
                 <h3>{{ user.username }}</h3>
 
                 {% if not user == request.user %}
@@ -20,7 +24,7 @@
 
                 <hr/>
                 <h4>Statystyki</h4>
-                <ul style="list-style-type: none; padding: 0; margin: 0; text-align: left;">
+                <ul class="stats-list">
                     <li><b>Wygrane gry</b>: {{ user.won_games }}</li>
                     <li><b>Przegrane gry</b>: {{ user.lost_games }}</li>
                     <li><b>Wygrane turnieje</b>: {{ user.won_tournaments }}</li>
@@ -34,9 +38,19 @@
     </div>
     <div class="col-md-6">
         <div class="panel panel-default">
-            <div class="panel-heading">Osiągnięcia (0%)</div>
+            <div class="panel-heading">Osiągnięcia ({{ percentage }}%)</div>
             <div class="panel-body">
-                Brak!
+                {% if achievements %}
+                    {% for achievement in achievements %}
+                    <div class="achievement" data-placement="bottom" data-toggle="tooltip" data-html="true" data-original-title="<b>{{ achievement.name }}</b><br/>{{ achievement.description }}">
+                        {% if achievement in unlocked_achievements %}
+                            <img src="{% get_media_prefix %}{{ achievement.icon }}">
+                        {% else %}
+                            <img src="{% static "img/achievement_locked.png" %}">
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% else %}Brak!{% endif %}
             </div>
         </div>
         <div class="panel panel-default">

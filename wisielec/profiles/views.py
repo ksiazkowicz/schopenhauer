@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 
 from profiles.forms import ProfileForm
-from profiles.models import UserProfile
+from profiles.models import UserProfile, Achievement
 
 from django.contrib.auth.decorators import login_required
 
@@ -29,7 +29,29 @@ def ranking_view(request, template="profiles/ranking_view.html"):
 
 @login_required
 def profile_view(request, username=None, template='profiles/profile_view.html'):
+    """
+    Shows profile view.
+    """
+    # check if username is provided, if not, use current user
     if not username:
         username = request.user.username
     user = get_object_or_404(UserProfile, username=username)
+
+    # get a list of achievements
+    achievements = Achievement.objects.all().order_by('pk')
+    unlocked_achievements = []
+
+    # iterate through all of them and evaluate
+    for achievement in achievements:
+        if achievement.evaluate(user):
+            # unlocked, add to list
+            unlocked_achievements += [achievement, ]
+
+    # calculate achievement unlock percentage
+    try:
+        percentage = int(100 * float(len(unlocked_achievements)) / float(len(achievements)))
+    except:
+        percentage = 0
+
+    # render view
     return render(request, template, locals())

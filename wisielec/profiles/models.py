@@ -55,3 +55,22 @@ class UserProfile(AbstractUser):
         users = sorted(UserProfile.objects.all(), key=lambda t: t.ranking_score, reverse=True)
         return users.index(self)+1
 
+
+class Achievement(models.Model):
+    icon = models.ImageField(upload_to="achievements/", null=True, blank=True, verbose_name=u"Icon")
+    name = models.CharField(verbose_name="Name", default="", max_length=128)
+    description = models.CharField(verbose_name="Description", max_length=255, blank=True, null=True)
+    expression = models.CharField(verbose_name="Expression", default="", max_length=255,
+                                  help_text="A piece of code used for checking if achievement is unlocked. "
+                                            "User profile is exposed as 'user' variable.")
+
+    def evaluate(self, user):
+        """
+        Checks whether achievement is unlocked or not.
+        """
+        try:
+            result = eval(self.expression)
+            return result
+        except:
+            return False
+

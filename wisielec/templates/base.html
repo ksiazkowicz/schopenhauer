@@ -8,7 +8,8 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/font-awesome.min.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/application.css' %}">
-    <!--<script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>-->
+    <script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
+    <script src="{% static "js/bootstrap.min.js" %}"></script>
     <script src="{% static 'js/food.js' %}"></script>
     <script src="{% static 'js/libdecadence.js' %}"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -51,5 +52,11 @@
             </div>&nbsp;
         </div>
     </div>
+
+    <script>
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
 </body>
 </html>
