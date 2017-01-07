@@ -2,6 +2,8 @@ import QtQuick 2.0
 import QtQuick.Controls 2.0
 
 Page {
+    Component.onCompleted: gameClient.switchChatChannel("lobby")
+
     SwipeView {
         id: swipeView
         anchors.fill: parent

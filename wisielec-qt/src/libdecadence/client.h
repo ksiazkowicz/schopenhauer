@@ -11,6 +11,7 @@
 #include "api.h"
 #include "src/models/gamemodel.h"
 #include "src/models/TournamentModel.h"
+#include "src/models/ChatMessageModel.h"
 
 class SchopenhauerClient : public QObject
 {
@@ -23,6 +24,7 @@ class SchopenhauerClient : public QObject
     Q_PROPERTY(QVariant games READ get_games NOTIFY games_changed)
     Q_PROPERTY(QVariant tournaments READ getTournaments NOTIFY tournamentsChanged)
     Q_PROPERTY(QVariant lobbyPlayers READ getLobbyPlayers NOTIFY lobbyPlayersChanged)
+    Q_PROPERTY(QVariant chatMessages READ getChatMessages NOTIFY chatMessagesChanged)
 
 public:
     explicit SchopenhauerClient(SchopenhauerApi *api, QObject *parent = 0);
@@ -42,6 +44,11 @@ public:
 
     QVariant getLobbyPlayers() { return QVariant::fromValue(this->lobbyPlayers); }
     QVariant getTournaments() { return QVariant::fromValue(this->tournaments.values()); }
+    QVariant getChatMessages() { return QVariant::fromValue(this->chatMessages); }
+
+
+    Q_INVOKABLE void sendChatMessage(QString message_text);
+    Q_INVOKABLE void switchChatChannel(QString channel);
 
 signals:
     void score_changed();
@@ -53,10 +60,12 @@ signals:
 
     void lobbyPlayersChanged();
     void tournamentsChanged();
+    void chatMessagesChanged();
 
 public slots:
     void onContentReceived(QString message);
     void onLobbyContentReceived(QString message);
+    void onChatContentReceived(QString message);
     void onStateChanged(QAbstractSocket::SocketState state);
 
     void invalidateSockets();
@@ -66,6 +75,8 @@ public slots:
 private:
     QWebSocket socket;
     QWebSocket lobby_socket;
+    QWebSocket chat_socket;
+
     int score = 0;
     int mistakes = 0;
     QString progress = "____";
@@ -74,6 +85,9 @@ private:
 
     QMap<QString,QObject*> games;
     QMap<QString,QObject*> tournaments;
+
+    QList<QObject*> chatMessages;
+    QString currentChatRoom = "lobby";
 
     GameModel* currentGame;
 

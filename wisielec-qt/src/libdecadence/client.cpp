@@ -15,6 +15,11 @@ SchopenhauerClient::SchopenhauerClient(SchopenhauerApi *api, QObject *parent) : 
     connect(&lobby_socket, &QWebSocket::stateChanged, this, &SchopenhauerClient::onStateChanged);
     connect(&socket, &QWebSocket::stateChanged, this, &SchopenhauerClient::onStateChanged);
 
+    // enable chat
+    currentChatRoom = "";
+    connect(&chat_socket, &QWebSocket::textMessageReceived, this, &SchopenhauerClient::onChatContentReceived);
+    connect(&chat_socket, &QWebSocket::stateChanged, this, &SchopenhauerClient::onStateChanged);
+
     // connect to lobby
     //this->refresh_lobby();
 }
@@ -154,6 +159,7 @@ void SchopenhauerClient::onLobbyContentReceived(QString message)
 void SchopenhauerClient::invalidateSockets() {
     qDebug() << "Invalidating sockets";
     this->refresh_lobby();
+    this->switchChatChannel(currentChatRoom);
 }
 
 void SchopenhauerClient::parseTournaments(QString reply) {
@@ -196,4 +202,37 @@ void SchopenhauerClient::parseTournaments(QString reply) {
         tournaments.insert(sessionId, tournament);
         emit tournamentsChanged();
     }
+}
+
+void SchopenhauerClient::sendChatMessage(QString message_text) {
+    chat_socket.sendTextMessage(message_text);
+}
+
+void SchopenhauerClient::onChatContentReceived(QString message) {
+    // parse content as JSON
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(message.toUtf8());
+    QJsonObject jsonObject = jsonResponse.object();
+
+    // create chat message object if request is valid
+    if (jsonObject.keys().contains("author") && jsonObject.keys().contains("message")) {
+        ChatMessageModel* chatMessage = new ChatMessageModel();
+        chatMessage->setUsername(jsonObject["author"].toString());
+        chatMessage->setMessage(jsonObject["message"].toString());
+
+        chatMessages.append(chatMessage);
+        emit chatMessagesChanged();
+    }
+}
+
+void SchopenhauerClient::switchChatChannel(QString channel) {
+    // clear current message queue
+    chatMessages.clear();
+    emit chatMessagesChanged();
+
+    // change current channel name
+    currentChatRoom = channel;
+
+    // reconnect
+    chat_socket.close();
+    chat_socket.open(QUrl(api->getUrl(SchopenhauerApi::Websocket, "/chat/"+channel)));
 }
