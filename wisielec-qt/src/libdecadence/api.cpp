@@ -67,11 +67,11 @@ void SchopenhauerApi::attemptLogin(QString login, QString password) {
     qDebug() << "attempting login as" << login;
     // prepare form data
     QUrlQuery postData;
-    postData.addQueryItem("username", login);
+    postData.addQueryItem("login", login);
     postData.addQueryItem("password", password);
     auth->login = postData;
     // start login sequence
-    auth->sendGetRequest(QUrl(getUrl(Http,"/profiles/login",true)));
+    auth->sendGetRequest(QUrl(getUrl(Http,"/accounts/login/",true)));
 }
 
 void SchopenhauerApi::getRanking() {
