@@ -55,6 +55,8 @@ signals:
 
     void omgToDziala();
 
+    void authFailed();
+
 public slots:
     void setSessionToken(QString token);
     void parseReply(QNetworkReply *reply);

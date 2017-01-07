@@ -9,6 +9,26 @@ ApplicationWindow {
     height: 720
     title: qsTr("wisielec schopenhauera")
 
+    Item {
+        id: busyOverlay
+        anchors { fill: parent }
+        visible: false
+        z: 100
+        Rectangle {
+            anchors { fill: parent }
+            color: "black"
+            opacity: 0.9
+            visible: busyOverlay.visible
+        }
+        BusyIndicator {
+            width: 64
+            height: 64
+            anchors.centerIn: parent
+            running: busyOverlay.visible
+            visible: busyOverlay.visible
+        }
+    }
+
     StackView {
         id: stack
         anchors { top: parent.top; left: parent.left; right: parent.right; bottom: toolbar.top }

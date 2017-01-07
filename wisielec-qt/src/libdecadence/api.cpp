@@ -10,6 +10,7 @@ SchopenhauerApi::SchopenhauerApi(QObject *parent) : QObject(parent)
     auth = new SchopenhauerCookies();
     manager = auth->getManager();
     connect(auth, &SchopenhauerCookies::sessionFound, this, &SchopenhauerApi::setSessionToken);
+    connect(auth, &SchopenhauerCookies::authFailed, this, &SchopenhauerApi::authFailed);
     connect(manager, &QNetworkAccessManager::finished, this, &SchopenhauerApi::parseReply);
 
     // user stuff

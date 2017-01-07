@@ -9,7 +9,6 @@ Page {
         id: columnLayout1
         anchors.fill: parent
 
-
         Rectangle {
             id: rectangle1
             width: 200

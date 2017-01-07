@@ -23,9 +23,17 @@ public:
 
     QUrlQuery login;
 
+    enum Status {
+        Idle = 0,
+        Busy
+    };
+    Status status = Idle;
+
 signals:
     void sessionFound(QString session_id);
     void error(QString errorString);
+    void statusChanged();
+    void authFailed();
 
 private slots:
     void replyFinished(QNetworkReply *reply);
@@ -35,6 +43,7 @@ private:
     QUrl mUrl;
     QUrl rUrl;
     QUrl test;
+
 };
 
 #endif // SCHOPENHAUERCOOKIES_H

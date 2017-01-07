@@ -5,11 +5,23 @@ import QtQuick.Layouts 1.1
 Page {
     id: page1
 
+    Connections {
+        target: api
+        onUserChanged: {
+            stack.replace("qrc:/Pages/MainPage.qml")
+            busyOverlay.visible = false
+        }
+        onAuthFailed: {
+            busyOverlay.visible = false
+            errorLabel.text = "Logowanie nie powiodło się. Sprawdź login i hasło."
+        }
+    }
+
     ColumnLayout {
         id: loginForm
         width: parent.width > 300 ? 300 : parent.width - 40
         height: implicitHeight
-        anchors { horizontalCenter: parent.horizontalCenter; top: rabbit.bottom; topMargin: 30; }
+        anchors { horizontalCenter: parent.horizontalCenter; top: rabbit.bottom; topMargin: 70 }
 
         Label { text: qsTr("Login")}
 
@@ -41,8 +53,8 @@ Page {
             text: qsTr("Zaloguj")
             Layout.fillWidth: true
             onClicked: {
+                busyOverlay.visible = true
                 api.attemptLogin(textField1.text, textField2.text)
-                stack.replace("qrc:/Pages/MainPage.qml")
             }
         }
 
@@ -67,6 +79,19 @@ Page {
     Label {
         text: api.getApiServer()
         anchors { horizontalCenter: parent.horizontalCenter; bottom: parent.bottom; bottomMargin: 10 }
+    }
+
+    Label {
+        id: errorLabel;
+        text: "";
+        wrapMode: Text.WordWrap
+        anchors {
+            top: rabbit.bottom
+            topMargin: 20
+            right: loginForm.right
+            left: loginForm.left
+        }
+        color: "red";
     }
 
 }
