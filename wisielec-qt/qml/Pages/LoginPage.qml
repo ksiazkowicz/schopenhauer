@@ -58,8 +58,9 @@ Page {
 
     Image {
         id: rabbit
+        anchors.topMargin: 40
         anchors { top: parent.top; left: parent.left; right: parent.right; }
-        source: "qrc:/img/suicide_rabbit.png"
+        source: "qrc:/img/arthurlogo_small.png"
         fillMode: Image.PreserveAspectFit
     }
 

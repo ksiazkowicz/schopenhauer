@@ -11,6 +11,7 @@
         <file alias="wis06.png">img/wis06.png</file>
         <file alias="avatar.jpg">img/schopenhauer.jpg</file>
         <file alias="suicide_rabbit.png">img/suicide_rabbit.png</file>
+        <file alias="arthurlogo_small.png">img/arthurlogo_small.png</file>
     </qresource>
     <qresource prefix="/Pages">
         <file alias="LoginPage.qml">qml/Pages/LoginPage.qml</file>

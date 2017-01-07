@@ -9,16 +9,11 @@ Page {
         anchors.fill: parent
         currentIndex: tabBar.currentIndex
 
-        AboutPage {
-            id: aboutPage
-            //renderlabel.text: renderer
-            //serverlabel.text: "127.0.0.1:8000" //gameClient.api_url
-        }
+        AboutPage { id: aboutPage }
         LobbyPage {
             new_button.onClicked: gameClient.refresh_lobby()
             newer_button.onClicked: gameClient.new_game()
         }
-        GamePage { id: gamePage }
         RankingPage { id: rankingPage }
     }
 
@@ -27,16 +22,11 @@ Page {
         currentIndex: swipeView.currentIndex
         TabButton {
             font.family: "Segoe UI"
-            text: qsTr("profile")
+            text: qsTr("profil")
         }
         TabButton {
             font.family: "Segoe UI"
-            text: qsTr("lobby")
-        }
-
-        TabButton {
-            font.family: "Segoe UI"
-            text: qsTr("game")
+            text: qsTr("trwające gry")
         }
 
         TabButton {
@@ -46,7 +36,7 @@ Page {
         onCurrentIndexChanged: {
             switch (currentIndex) {
             case 0: { aboutPage.viewingMe = true; api.getUserData(); break; };
-            case 3: { api.getRanking(); break; };
+            case 2: { api.getRanking(); break; };
             }
         }
     }
