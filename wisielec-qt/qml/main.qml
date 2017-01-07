@@ -16,7 +16,7 @@ ApplicationWindow {
         z: 100
         Rectangle {
             anchors { fill: parent }
-            color: "black"
+            color: "white"
             opacity: 0.9
             visible: busyOverlay.visible
         }
@@ -40,16 +40,21 @@ ApplicationWindow {
         RowLayout {
             anchors.fill: parent
             ToolButton {
+                id: backButton
+                text: qsTr("\uE72B")
+                font.family: "Segoe MDL2 Assets"
+                enabled: stack.depth > 1
+                onClicked: stack.pop()
+            }
+            Item { Layout.fillWidth: true }
+            ToolButton {
+                id: chatButton
                 text: qsTr("\uE8F2")
-                font.pixelSize: 24
+                enabled: api.user.username != "AnonymousUser"
+                visible: enabled
                 font.family: "Segoe MDL2 Assets"
                 onClicked: chatBox.visible = true
             }
-            Item { Layout.fillWidth: true }
-            /*Switch {
-                checked: true
-                text: qsTr("Notifications")
-            }*/
         }
     }
 

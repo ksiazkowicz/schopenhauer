@@ -73,12 +73,6 @@ Rectangle {
         anchors { bottom: parent.bottom; left: parent.left; right: parent.right }
         RowLayout {
             anchors.fill: parent
-            ToolButton {
-                text: qsTr("\uE72B")
-                font.pixelSize: 24
-                font.family: "Segoe MDL2 Assets"
-                onClicked: chatBox.visible = false
-            }
             TextField {
                 id: messageInput
                 placeholderText: "Wpisz wiadomość..."
@@ -88,9 +82,13 @@ Rectangle {
             }
             ToolButton {
                 text: qsTr("\uE724")
-                font.pixelSize: 24
                 font.family: "Segoe MDL2 Assets"
                 onClicked: chatBox.sendChatMessage()
+            }
+            ToolButton {
+                text: qsTr("\uE89B")
+                font.family: "Segoe MDL2 Assets"
+                onClicked: chatBox.visible = false
             }
         }
     }

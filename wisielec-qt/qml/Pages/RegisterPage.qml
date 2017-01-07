@@ -9,24 +9,13 @@ Page {
         url: "about:blank"
         anchors.fill: parent
         onUrlChanged: {
-            console.log(url)
             var urlString = url.toString();
 
-            if (!urlString.match("profiles\/register")) {
+            if (!urlString.match("accounts\/signup")) {
                 // back on lobby page, quit
                 stack.pop()
             }
         }
-        Component.onCompleted: url = "http://" + api.getApiServer() + "/profiles/register"
-    }
-    footer: ToolBar {
-        RowLayout {
-            anchors.fill: parent;
-            ToolButton {
-                text: "\uE72B"
-                font.family: "Segoe MDL2 Assets"
-                onClicked: stack.pop()
-            }
-        }
+        Component.onCompleted: url = "http://" + api.getApiServer() + "/accounts/signup?headless=1"
     }
 }

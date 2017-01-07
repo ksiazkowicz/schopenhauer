@@ -3,6 +3,11 @@ import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.1
 
 Page {
+    Connections {
+        target: api
+        onRankingChanged: busyOverlay.visible = false
+    }
+
     ColumnLayout {
         id: columnLayout1
         anchors.fill: parent
@@ -11,7 +16,7 @@ Page {
             id: refreshButton
             text: qsTr("Refresh")
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            onClicked: api.getRanking()
+            onClicked: { busyOverlay.visible = true; api.getRanking() }
             width: 300
         }
 

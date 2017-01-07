@@ -9,15 +9,18 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/font-awesome.min.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/application.css' %}">
     <script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
+    {% if not request.GET.headless %}
     <script src="{% static "js/bootstrap.min.js" %}"></script>
     <script src="{% static 'js/food.js' %}"></script>
     <script src="{% static 'js/libdecadence.js' %}"></script>
+    {% endif %}
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
     <div id="body-alerts"></div>
     <div class="container" id="wrap">
         <div class="row">
+            {% if not request.GET.headless %}
             <div class="col-md-12">
                 {% block header %}
                 <div class="headerbar clearfix">
@@ -40,9 +43,11 @@
                 {% endblock %}
             </div>
             <div class="clearfix"></div>
+            {% endif %}
             <div class="col-md-12">
                 {% block content %}{% endblock %}
             </div>
+            {% if not request.GET.headless %}
             <div class="col-md-12" id="page-footer">
                 {% block footer %}
                 <hr/>
@@ -51,14 +56,17 @@
                 </div>
                 {% endblock %}
             </div>&nbsp;
+            {% endif %}
         </div>
     </div>
 
+    {% if not request.GET.headless %}
     <script>
         $(document).ready(function(){
             $('[data-toggle="tooltip"]').tooltip();
             $().alert()
         });
     </script>
+    {% endif %}
 </body>
 </html>

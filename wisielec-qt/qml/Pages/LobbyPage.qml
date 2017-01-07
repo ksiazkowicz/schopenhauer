@@ -47,9 +47,9 @@ Page {
                 }
                 Button {
                     text: "Dołącz";
-                    onClicked:  {
+                    onClicked: {
+                        stack.push("qrc:/Pages/GamePage.qml")
                         gameClient.join_game(modelData.sessionId)
-                        swipeView.currentIndex = 2
                     }
                 }
             }

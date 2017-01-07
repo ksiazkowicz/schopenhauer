@@ -2,19 +2,18 @@ import QtQuick 2.0
 import QtQuick.Controls 2.0
 
 Page {
-    Component.onCompleted: gameClient.switchChatChannel("lobby")
-
     SwipeView {
         id: swipeView
         anchors.fill: parent
         currentIndex: tabBar.currentIndex
 
-        AboutPage { id: aboutPage }
+        WelcomePage { id: welcomePage }
         LobbyPage {
             new_button.onClicked: gameClient.refresh_lobby()
             newer_button.onClicked: gameClient.new_game()
         }
         RankingPage { id: rankingPage }
+        AboutPage { id: aboutPage }
     }
 
     header: TabBar {
@@ -22,27 +21,31 @@ Page {
         currentIndex: swipeView.currentIndex
         TabButton {
             font.family: "Segoe UI"
-            text: qsTr("profil")
+            text: qsTr("witaj")
         }
         TabButton {
             font.family: "Segoe UI"
-            text: qsTr("trwające gry")
+            text: qsTr("gry")
         }
 
         TabButton {
             font.family: "Segoe UI"
             text: qsTr("ranking")
         }
+        TabButton {
+            font.family: "Segoe UI"
+            text: qsTr("profil")
+        }
         onCurrentIndexChanged: {
             switch (currentIndex) {
-            case 0: { aboutPage.viewingMe = true; api.getUserData(); break; };
             case 2: { api.getRanking(); break; };
+            case 3: { aboutPage.viewingMe = true; api.getUserData(); break; };
             }
         }
     }
 
     function switchToProfile() {
-        swipeView.currentIndex = 0
+        swipeView.currentIndex = 3
         aboutPage.viewingMe = false
     }
 }

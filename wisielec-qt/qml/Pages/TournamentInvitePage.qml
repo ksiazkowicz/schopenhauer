@@ -89,15 +89,4 @@ Page {
             model: gameClient.tournaments
         }
     }
-
-    footer: ToolBar {
-        RowLayout {
-            anchors.fill: parent;
-            ToolButton {
-                text: "\uE72B"
-                font.family: "Segoe MDL2 Assets"
-                onClicked: stack.pop()
-            }
-        }
-    }
 }
