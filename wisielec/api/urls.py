@@ -1,7 +1,8 @@
 from django.conf.urls import url
-from views import user_api, ranking_api, tournament_api, tournament_invite_api, generate_html
+from views import *
 
 urlpatterns = [
+    url(r'^user/(?P<username>.*)/achievements$', achievement_api, name='achievement_api'),
     url(r'^user/(?P<username>.*)$', user_api, name='user_api'),
     url(r'^user/', user_api, name='user_api'),
     url(r'^ranking/', ranking_api, name='ranking_api'),

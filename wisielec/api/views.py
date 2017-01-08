@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 from django.http import HttpResponse, HttpResponseServerError
-from profiles.models import UserProfile
+from profiles.models import UserProfile, Achievement
 from game.models import Tournament
 from django.shortcuts import get_object_or_404
 
@@ -70,6 +70,36 @@ def tournament_api(request, session_id=None):
         "players": [x.username for x in t.players.all()],
     } for t in tournaments]}
 
+    return HttpResponse(json.dumps(response), content_type="application/json")
+
+
+def achievement_api(request, username):
+    """
+    Returns a list of achievements, count and progress for player.
+    """
+    user = get_object_or_404(UserProfile, username=username)
+
+    if user.is_authenticated():
+        achievements = Achievement.objects.all().order_by("pk")
+        unlocked_achievements = [x for x in achievements if x.evaluate(user)]
+        # calculate achievement unlock percentage
+        try:
+            percentage = int(100 * float(len(unlocked_achievements)) / float(len(achievements)))
+        except:
+            percentage = 0
+        response = {
+            "achievements": [{
+                "pk": x.pk,
+                "name": x.name,
+                "description": x.description,
+                "unlocked": x in unlocked_achievements,
+                "icon": x.icon.url if x.icon else "",
+            } for x in achievements],
+            "progress": percentage,
+            "achievement_count": len(achievements),
+        }
+    else:
+        return HttpResponseServerError("<h1>Server Error</h1>")
     return HttpResponse(json.dumps(response), content_type="application/json")
 
 
