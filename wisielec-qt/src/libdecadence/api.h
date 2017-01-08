@@ -35,6 +35,8 @@ public:
     Q_INVOKABLE void getRanking();
     Q_INVOKABLE void getUserData();
     Q_INVOKABLE void getUserData(QString username);
+    Q_INVOKABLE void getUserAchievements();
+    Q_INVOKABLE void getUserAchievements(QString username);
 
     Q_INVOKABLE void getTournamentList();
     //Q_INVOKABLE void getTournament(QString tournament);

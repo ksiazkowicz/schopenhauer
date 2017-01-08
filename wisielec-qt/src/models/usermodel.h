@@ -2,6 +2,8 @@
 #define USERMODEL_H
 
 #include <QObject>
+#include <QVariant>
+#include "AchievementModel.h"
 
 class UserModel : public QObject
 {
@@ -15,6 +17,9 @@ class UserModel : public QObject
     Q_PROPERTY(int lostGames READ getLostGames WRITE setLostGames NOTIFY lostGamesChanged)
     Q_PROPERTY(int wonTournaments READ getWonTournaments WRITE setWonTournaments NOTIFY wonTournamentsChanged)
     Q_PROPERTY(int lostTournaments READ getLostTournaments WRITE setLostTournaments NOTIFY lostTournamentsChanged)
+
+    Q_PROPERTY(int progress READ getProgress WRITE setProgress NOTIFY progressChanged)
+    Q_PROPERTY(QVariant achievements READ getAchievements NOTIFY achievementsChanged)
 public:
     explicit UserModel(QObject *parent = 0) : QObject(parent) {
         this->reset();
@@ -56,10 +61,24 @@ public:
     const int getWonTournaments() { return this->wonTournaments; }
     const int getLostTournaments() { return this->lostTournaments; }
 
+    const int getProgress() { return this->progress; }
+    QVariant getAchievements() { return QVariant::fromValue(this->achievements); }
+
     void setWonGames(int a) { this->wonGames = a; emit wonGamesChanged(); }
     void setLostGames(int a) { this->lostGames = a; emit lostGamesChanged(); }
     void setWonTournaments(int a) { this->wonTournaments = a; emit wonTournamentsChanged(); }
     void setLostTournaments(int a) { this->lostTournaments = a; emit lostTournamentsChanged(); }
+
+    void setProgress(int a) { this->progress = a; emit progressChanged(); }
+
+    void clearAchievements() { achievements.clear(); }
+    void appendAchievement(QString name, QString description, QString icon, bool unlocked) {
+        AchievementModel *achievement = new AchievementModel();
+        achievement->setName(name);
+        achievement->setDescription(description);
+        achievement->setIcon(icon);
+        achievement->setUnlocked(unlocked);
+    }
 
 signals:
     void usernameChanged();
@@ -71,6 +90,9 @@ signals:
     void lostGamesChanged();
     void wonTournamentsChanged();
     void lostTournamentsChanged();
+
+    void progressChanged();
+    void achievementsChanged();
 
 public slots:
 
@@ -84,6 +106,9 @@ private:
     int lostGames;
     int wonTournaments;
     int lostTournaments;
+
+    int progress;
+    QList<QObject*> achievements;
 };
 
 #endif // USERMODEL_H

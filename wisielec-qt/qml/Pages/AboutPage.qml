@@ -14,7 +14,8 @@ Page {
         wonTournaments.text = viewingMe ? api.user.wonTournaments : api.viewedUser.wonTournaments
         lostGames.text = viewingMe ? api.user.lostTournaments : api.viewedUser.lostTournaments
         rankingPosition.text = viewingMe ? api.user.position : api.viewedUser.position
-
+        achievementView.model = viewingMe ? api.user.achievements : api.viewedUser.achievements
+        api.getUserAchievements(usernameLabel.text)
     }
 
     Connections {
@@ -75,141 +76,193 @@ Page {
         }
     }
 
-    Label {
-        id: wonGamesLabel
-        text: qsTr("Wygrane gry")
-        anchors.top: headerContainer.bottom
-        anchors.topMargin: 20
-        anchors.left: parent.left
-        anchors.leftMargin: 69
-        font.bold: true
-    }
-
-    Label {
-        id: wonGames
-        text: "0"
-        anchors { left: wonGamesLabel.left; leftMargin: 0; top: wonGamesLabel.bottom; topMargin: 6 }
-    }
-
-    Label {
-        id: lostGamesLabel
-        text: qsTr("Przegrane gry")
-        anchors.top: wonGames.bottom
-        anchors.topMargin: 10
-        anchors.left: parent.left
-        anchors.leftMargin: 69
-        font.bold: true
-    }
-
-    Label {
-        id: lostGames
-        text: "0"
-        anchors { top: lostGamesLabel.bottom; topMargin: 6; left: lostGamesLabel.left; leftMargin: 0 }
-    }
-
-    Label {
-        id: wonTournamentsLabel
-        x: -5
-        text: qsTr("Wygrane turnieje")
-        anchors.top: headerContainer.bottom
-        anchors.topMargin: 20
-        anchors.left: wonGamesLabel.right
-        anchors.leftMargin: 30
-        font.bold: true
-    }
-
-    Label {
-        id: wonTournaments
-        text: "0"
-        anchors { top: wonTournamentsLabel.bottom; topMargin: 6; left: wonTournamentsLabel.left; leftMargin: 0 }
-    }
-
-    Label {
-        id: lostTournamentsLabel
-        x: -9
-        text: qsTr("Przegrane turnieje")
-        anchors { top: wonTournaments.bottom; topMargin: 10; left: wonTournamentsLabel.left; leftMargin: 0 }
-        font.bold: true
-    }
-
-    Label {
-        id: lostTournaments
-        text: "0"
-        anchors { top: lostTournamentsLabel.bottom; topMargin: 6; left: lostTournamentsLabel.left; leftMargin: 0 }
-    }
-
-    Label {
-        id: rankingPosition
-        x: 509
-        text: "-1"
-        anchors.top: headerContainer.bottom
-        anchors.topMargin: 6
-        anchors.right: parent.right
-        anchors.rightMargin: 8
-        horizontalAlignment: Text.AlignRight
-        font.pointSize: 50
-    }
-
-    Label {
-        id: rankingPositionLabel
-        x: 579
-        y: 298
-        text: qsTr("w rankingu")
-        anchors.bottom: lostTournaments.bottom
-        anchors.bottomMargin: 0
-        anchors.right: parent.right
-        anchors.rightMargin: 8
-        horizontalAlignment: Text.AlignRight
-    }
-
     Button {
         id: button1
-        x: 532
+        x: 270
+        y: 174
         visible: !viewingMe
         text: qsTr("zaproś")
-        anchors.top: rectangle2.bottom
+        anchors.top: separator.bottom
         anchors.topMargin: 10
         anchors.right: parent.right
-        anchors.rightMargin: 8
+        anchors.rightMargin: 270
         onClicked: {
             stack.push("qrc:/Pages/TournamentInvitePage.qml", {"username": usernameLabel.text})
         }
     }
 
-    Label {
-        id: label1
-        text: "\uE7C1"
-        anchors.left: parent.left
-        anchors.leftMargin: 8
-        anchors.top: wonGamesLabel.top
-        anchors.topMargin: 0
-        font.pointSize: 30
-        font.family: "Segoe MDL2 Assets"
-    }
 
-    Rectangle {
-        id: rectangle2
-        height: 2
-        color: "#797979"
-        anchors.top: rankingPositionLabel.bottom
-        anchors.topMargin: 10
-        border.color: "#a2a2a2"
-        border.width: 2
+    Column {
+        id: column
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 0
+        anchors.top: parent.top
+        anchors.topMargin: 228
+        anchors.left: parent.left
+        anchors.leftMargin: 0
         anchors.right: parent.right
-        anchors.rightMargin: 8
-        anchors.left: parent.left
-        anchors.leftMargin: 8
-    }
+        anchors.rightMargin: 0
 
-    Label {
-        id: label2
-        x: 1
-        text: "\uE774"
-        font.family: "Segoe MDL2 Assets"
-        font.pointSize: 30
-        anchors.left: parent.left
-        anchors.top: rectangle2.bottom
-        anchors.leftMargin: 8
-        anchors.topMargin: 10
+        Rectangle {
+            id: statsContainer
+            height: 101
+            color: "transparent"
+            anchors.right: parent.right
+            anchors.rightMargin: 0
+            anchors.left: parent.left
+            anchors.leftMargin: 0
+            Layout.fillWidth: true
+
+            Label {
+                id: statsIcon
+                x: 0
+                y: 15
+                text: "\uE7C1"
+                anchors.left: parent.left
+                anchors.leftMargin: 8
+                anchors.top: wonGamesLabel.top
+                anchors.topMargin: 0
+                font.pointSize: 30
+                font.family: "Segoe MDL2 Assets"
+            }
+
+            Label {
+                id: rankingPositionLabel
+                x: 571
+                y: 76
+                text: qsTr("w rankingu")
+                anchors.bottom: lostTournaments.bottom
+                anchors.bottomMargin: 0
+                anchors.right: parent.right
+                anchors.rightMargin: 8
+                horizontalAlignment: Text.AlignRight
+            }
+
+            Label {
+                id: rankingPosition
+                x: 563
+                y: 1
+                text: "-1"
+                anchors.top: headerContainer.bottom
+                anchors.topMargin: 6
+                anchors.right: parent.right
+                anchors.rightMargin: 8
+                horizontalAlignment: Text.AlignRight
+                font.pointSize: 50
+            }
+
+            Label {
+                id: lostTournaments
+                x: 162
+                y: 76
+                text: "0"
+                anchors { top: lostTournamentsLabel.bottom; topMargin: 6; left: lostTournamentsLabel.left; leftMargin: 0 }
+            }
+
+            Label {
+                id: lostTournamentsLabel
+                x: 162
+                y: 57
+                text: qsTr("Przegrane turnieje")
+                anchors { top: wonTournaments.bottom; topMargin: 10; left: wonTournamentsLabel.left; leftMargin: 0 }
+                font.bold: true
+            }
+
+            Label {
+                id: wonTournaments
+                x: 162
+                y: 34
+                text: "0"
+                anchors { top: wonTournamentsLabel.bottom; topMargin: 6; left: wonTournamentsLabel.left; leftMargin: 0 }
+            }
+
+            Label {
+                id: wonTournamentsLabel
+                x: 162
+                y: 15
+                text: qsTr("Wygrane turnieje")
+                anchors.top: headerContainer.bottom
+                anchors.topMargin: 20
+                anchors.left: wonGamesLabel.right
+                anchors.leftMargin: 30
+                font.bold: true
+            }
+
+            Label {
+                id: lostGames
+                x: 61
+                y: 76
+                text: "0"
+                anchors { top: lostGamesLabel.bottom; topMargin: 6; left: lostGamesLabel.left; leftMargin: 0 }
+            }
+
+            Label {
+                id: lostGamesLabel
+                x: 61
+                y: 57
+                text: qsTr("Przegrane gry")
+                anchors.top: wonGames.bottom
+                anchors.topMargin: 10
+                anchors.left: parent.left
+                anchors.leftMargin: 69
+                font.bold: true
+            }
+
+            Label {
+                id: wonGames
+                x: 61
+                y: 34
+                text: "0"
+                anchors { left: wonGamesLabel.left; leftMargin: 0; top: wonGamesLabel.bottom; topMargin: 6 }
+            }
+
+            Label {
+                id: wonGamesLabel
+                x: 61
+                y: 15
+                text: qsTr("Wygrane gry")
+                anchors.top: headerContainer.bottom
+                anchors.topMargin: 20
+                anchors.left: parent.left
+                anchors.leftMargin: 69
+                font.bold: true
+            }
+        }
+
+        Rectangle {
+            id: separator
+            height: 2
+            color: "#797979"
+            anchors.right: parent.right
+            anchors.rightMargin: 0
+            anchors.left: parent.left
+            anchors.leftMargin: 0
+            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+            Layout.fillWidth: true
+            border.color: "#a2a2a2"
+            border.width: 2
+        }
+
+        Rectangle {
+            id: rectangle2
+            width: 200
+            height: 200
+            color: "#ffffff"
+            anchors.right: parent.right
+            anchors.rightMargin: 0
+            anchors.left: parent.left
+            anchors.leftMargin: 0
+            GridView {
+                id: achievementView
+                anchors.fill: parent
+                model: viewingMe ? api.me.achievements : api.viewedUser.achievements
+                delegate: Rectangle {
+                    Image {
+                        id: achievementIcon
+                        source: "http://schopenhauer.krojony.pl/"+modelData.icon
+                    }
+                }
+            }
+        }
     }
 }

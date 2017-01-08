@@ -122,6 +122,37 @@ void SchopenhauerApi::parseReply(QNetworkReply *reply) {
         emit foundTournaments(content);
     }
 
+    if (jsonObject.keys().contains("achievements")) {
+        // this request should contain achievements. first, let's check for which user are those though
+        UserModel* user;
+        // check if either me or viewedUser is defined and compare the username
+        if (this->me)
+            if (reply->url().toString().contains("/user/"+this->me->getUsername())) user = me;
+        else if (this->viewedUser)
+            if (reply->url().toString().contains("/user/"+this->viewedUser->getUsername())) user = viewedUser;
+
+        // don't continue if no user was found
+        if (user) {
+            // reset achievement list
+            user->clearAchievements();
+
+            // iterate through all the received achievements
+            QJsonArray achievements = jsonObject["achievements"].toArray();
+            for (int i=0; i < achievements.size(); i++) {
+                // parse json
+                QJsonObject achJson = achievements.at(i).toObject();
+                QString name = achJson["name"].toString();
+                QString description = achJson["description"].toString();
+                QString icon = achJson["icon"].toString();
+                bool unlocked = achJson["unlocked"].toBool();
+                // append to players achievement list
+                user->appendAchievement(name, description, icon, unlocked);
+            }
+            // update progress variable
+            user->setProgress(jsonObject["progress"].toInt());
+        }
+    }
+
     if (jsonObject.keys().contains("username")) {
         UserModel* user;
 
@@ -159,10 +190,14 @@ void SchopenhauerApi::parseReply(QNetworkReply *reply) {
     }
 
     if (jsonObject.keys().contains("players")) {
+        // assume it's the ranking list
         QJsonArray playersArray = jsonObject["players"].toArray();
 
+        // don't proceed if there isn't actually any data though
         if (!playersArray.isEmpty()) {
+            // clear the list
             bestPlayers.clear();
+            // iterate through it and append all players
             for (int i=0; i < playersArray.size(); i++) {
                 QJsonObject playerJson = playersArray.at(i).toObject();
                 RankingModel *player = new RankingModel();
@@ -170,7 +205,6 @@ void SchopenhauerApi::parseReply(QNetworkReply *reply) {
                 player->setScore((float)(playerJson["score"].toDouble()));
                 player->setPosition(playerJson["position"].toInt());
                 bestPlayers.append(player);
-                qDebug() << playerJson["username"] << playerJson["score"] << playerJson["position"];
             }
             emit rankingChanged();
         }
@@ -185,6 +219,14 @@ void SchopenhauerApi::getUserData() {
 void SchopenhauerApi::getUserData(QString username) {
     tempUsername = username;
     manager->get(QNetworkRequest(QUrl(getUrl(Http, "/api/v1/user/"+username, true))));
+}
+
+void SchopenhauerApi::getUserAchievements() {
+    this->getUserAchievements(me->getUsername());
+}
+
+void SchopenhauerApi::getUserAchievements(QString username) {
+    manager->get(QNetworkRequest(QUrl(getUrl(Http, "/api/v1/user/"+username+"/achievements", true))));
 }
 
 void SchopenhauerApi::getTournamentList() {
