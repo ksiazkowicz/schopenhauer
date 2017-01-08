@@ -8,6 +8,7 @@ Page {
     Connections {
         target: api
         onAuthSuccess: {
+            gameClient.switchChatChannel("lobby")
             stack.replace("qrc:/Pages/MainPage.qml")
             busyOverlay.visible = false
         }

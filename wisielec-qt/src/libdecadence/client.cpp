@@ -231,8 +231,19 @@ void SchopenhauerClient::switchChatChannel(QString channel) {
 
     // change current channel name
     currentChatRoom = channel;
+    emit channelNameChanged();
 
     // reconnect
     chat_socket.close();
     chat_socket.open(QUrl(api->getUrl(SchopenhauerApi::Websocket, "/chat/"+channel)));
+}
+
+QString SchopenhauerClient::getChannelName() {
+    // returns verbose name of chat context
+    if (currentChatRoom == "lobby") {
+        return "Lobby";
+    } else {
+        // lol stub
+        return currentChatRoom;
+    }
 }

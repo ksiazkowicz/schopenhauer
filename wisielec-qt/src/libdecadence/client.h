@@ -25,6 +25,7 @@ class SchopenhauerClient : public QObject
     Q_PROPERTY(QVariant tournaments READ getTournaments NOTIFY tournamentsChanged)
     Q_PROPERTY(QVariant lobbyPlayers READ getLobbyPlayers NOTIFY lobbyPlayersChanged)
     Q_PROPERTY(QVariant chatMessages READ getChatMessages NOTIFY chatMessagesChanged)
+    Q_PROPERTY(QString channelName READ getChannelName NOTIFY channelNameChanged)
 
 public:
     explicit SchopenhauerClient(SchopenhauerApi *api, QObject *parent = 0);
@@ -46,6 +47,7 @@ public:
     QVariant getTournaments() { return QVariant::fromValue(this->tournaments.values()); }
     QVariant getChatMessages() { return QVariant::fromValue(this->chatMessages); }
 
+    QString getChannelName();
 
     Q_INVOKABLE void sendChatMessage(QString message_text);
     Q_INVOKABLE void switchChatChannel(QString channel);
@@ -61,6 +63,7 @@ signals:
     void lobbyPlayersChanged();
     void tournamentsChanged();
     void chatMessagesChanged();
+    void channelNameChanged();
 
 public slots:
     void onContentReceived(QString message);

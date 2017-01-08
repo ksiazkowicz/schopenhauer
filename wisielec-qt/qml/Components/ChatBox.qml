@@ -29,10 +29,17 @@ Rectangle {
             font.weight: Font.Bold
             text: "Czat"
         }
-        Label {
+        Rectangle {
+            color: "#bbb"
             anchors { right: parent.right; rightMargin: 10; verticalCenter: parent.verticalCenter }
-            text: qsTr("\uE8F2")
-            font.family: "Segoe MDL2 Assets"
+            radius: 8
+            width: channelNameLabel.paintedWidth + 20
+            height: 24
+            Label {
+                id: channelNameLabel
+                anchors.centerIn: parent
+                text: gameClient.channelName
+            }
         }
     }
 
@@ -45,7 +52,7 @@ Rectangle {
         model: gameClient.chatMessages
         clip: true
         onModelChanged: positionViewAtEnd()
-        anchors { top: header.bottom; left: parent.left; right: parent.right; bottom: chatToolbar.top; }
+        anchors { top: header.bottom; left: parent.left; leftMargin: 5; rightMargin: 5; right: parent.right; bottom: chatToolbar.top; }
         delegate: ItemDelegate {
             width: parent.width
             contentItem: Column {
@@ -73,6 +80,7 @@ Rectangle {
         anchors { bottom: parent.bottom; left: parent.left; right: parent.right }
         RowLayout {
             anchors.fill: parent
+            Item { width: 2; }
             TextField {
                 id: messageInput
                 placeholderText: "Wpisz wiadomość..."
