@@ -23,9 +23,13 @@ SchopenhauerApi::SchopenhauerApi(Settings *appSettings, QObject *parent) : QObje
     // use app settings
     settings = appSettings;
     if (settings->authCredentialsPresent()) {
-        // token present, attempt login
+        // get data
+        QString token = settings->getAuthToken();
         expectedUsername = settings->getUsername();
-        this->setSessionToken(settings->getAuthToken());
+
+        // token present, attempt login
+        auth->injectSessionCookie(token, getUrl(Http, "/", true));
+        this->setSessionToken(token);
     }
 }
 

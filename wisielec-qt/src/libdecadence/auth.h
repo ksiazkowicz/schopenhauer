@@ -21,6 +21,8 @@ public:
     void sendGetRequest(const QUrl &url);
     QNetworkAccessManager* getManager() { return mManager; }
 
+    void injectSessionCookie(QString token, QString apiUrl);
+
     QUrlQuery login;
 
     enum Status {

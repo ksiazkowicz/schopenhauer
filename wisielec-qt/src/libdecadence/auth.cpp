@@ -28,6 +28,15 @@ void SchopenhauerCookies::sendGetRequest(const QUrl &url) {
     emit statusChanged();
 }
 
+void SchopenhauerCookies::injectSessionCookie(QString token, QString apiUrl) {
+    // create an empty list of cookies
+    QList<QNetworkCookie> cookies;
+    // forge session cookie
+    QNetworkCookie session_cookie("sessionid", token.toLatin1());
+    cookies.append(session_cookie);
+    // update cookie jar
+    mManager->cookieJar()->setCookiesFromUrl(cookies, apiUrl);
+}
 
 void SchopenhauerCookies::replyFinished(QNetworkReply *reply) {
     // if we're not on a login page, abort
