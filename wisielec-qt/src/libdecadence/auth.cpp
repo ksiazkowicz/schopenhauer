@@ -61,7 +61,7 @@ void SchopenhauerCookies::replyFinished(QNetworkReply *reply) {
         if (reply->readAll().contains("<ul class=\"errorlist nonfield\">")) {
             // assume something broke
             qDebug() << "Login failed";
-            emit authFailed();
+            emit authFailed("Logowanie nie powiodło się. Sprawdź login i hasło.");
             status = Idle;
             emit statusChanged();
         } else {
@@ -75,5 +75,7 @@ void SchopenhauerCookies::replyFinished(QNetworkReply *reply) {
         emit sessionFound(session_id);
         status = Idle;
         emit statusChanged();
+    } else if (v > 400) {
+        emit authFailed("Błąd serwera. Spróbuj ponownie później.");
     }
 }

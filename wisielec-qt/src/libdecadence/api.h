@@ -9,6 +9,7 @@
 #include "src/models/RankingModel.h"
 #include "src/models/UserModel.h"
 #include "auth.h"
+#include "src/settings.h"
 
 class SchopenhauerApi : public QObject
 {
@@ -24,7 +25,7 @@ public:
         Https,
     };
 
-    explicit SchopenhauerApi(QObject *parent = 0);
+    explicit SchopenhauerApi(Settings *appSettings, QObject *parent = 0);
 
     QString getUrl(Protocol proto, QString path);
     QString getUrl(Protocol proto, QString path, bool ignoreSessionToken);
@@ -55,11 +56,13 @@ signals:
 
     void omgToDziala();
 
-    void authFailed();
+    void authSuccess();
+    void authFailed(QString reason);
 
 public slots:
     void setSessionToken(QString token);
     void parseReply(QNetworkReply *reply);
+    void handleFailure(QString reason);
 
 private:
     QString apiUrl;
@@ -73,6 +76,9 @@ private:
     QList<QObject*> bestPlayers;
     UserModel *me;
     UserModel *viewedUser;
+
+    Settings *settings;
+    QString expectedUsername = "";
 };
 
 #endif // SCHOPENHAUERAPI_H

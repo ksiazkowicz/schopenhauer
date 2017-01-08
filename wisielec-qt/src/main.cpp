@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
 
     // register QML types
     Settings appSettings;
-    SchopenhauerApi libdecadence;
+    SchopenhauerApi libdecadence(&appSettings);
     SchopenhauerClient schopenhauer(&libdecadence);
 
     //QQuickWindow::setSceneGraphBackend(QSGRendererInterface::OpenGL);

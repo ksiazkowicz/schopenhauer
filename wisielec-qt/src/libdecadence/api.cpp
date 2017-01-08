@@ -1,16 +1,17 @@
 #include "api.h"
 
-SchopenhauerApi::SchopenhauerApi(QObject *parent) : QObject(parent)
+SchopenhauerApi::SchopenhauerApi(Settings *appSettings, QObject *parent) : QObject(parent)
 {
     // initialize api things
-    apiUrl = "schopenhauer.krojony.pl";
+    apiUrl = "127.0.0.1:8000";
+    //apiUrl = "schopenhauer.krojony.pl";
     sessionToken = "";
 
     // and auth things
     auth = new SchopenhauerCookies();
     manager = auth->getManager();
     connect(auth, &SchopenhauerCookies::sessionFound, this, &SchopenhauerApi::setSessionToken);
-    connect(auth, &SchopenhauerCookies::authFailed, this, &SchopenhauerApi::authFailed);
+    connect(auth, &SchopenhauerCookies::authFailed, this, &SchopenhauerApi::handleFailure);
     connect(manager, &QNetworkAccessManager::finished, this, &SchopenhauerApi::parseReply);
 
     // user stuff
@@ -18,10 +19,24 @@ SchopenhauerApi::SchopenhauerApi(QObject *parent) : QObject(parent)
     viewedUser = new UserModel();
 
     tempUsername = "";
+
+    // use app settings
+    settings = appSettings;
+    if (settings->authCredentialsPresent()) {
+        // token present, attempt login
+        expectedUsername = settings->getUsername();
+        this->setSessionToken(settings->getAuthToken());
+    }
 }
 
 
 void SchopenhauerApi::setSessionToken(QString token) {
+    // save credentials if not present
+    if (!settings->authCredentialsPresent()) {
+        settings->setAuthToken(token);
+        settings->setUsername(expectedUsername);
+    }
+
     // don't invalidate anything unless token is different
     if (token != this->sessionToken) {
         this->sessionToken = token;
@@ -71,13 +86,16 @@ void SchopenhauerApi::attemptLogin(QString login, QString password) {
     postData.addQueryItem("login", login);
     postData.addQueryItem("password", password);
     auth->login = postData;
+
+    // to make sure we're authed, keep login for reference
+    expectedUsername = login;
+
     // start login sequence
     auth->sendGetRequest(QUrl(getUrl(Http,"/accounts/login/?headless=1",true)));
 }
 
 void SchopenhauerApi::getRanking() {
     // call ranking API
-    qDebug() << getUrl(Http, "/api/v1/ranking/", true);
     manager->get(QNetworkRequest(QUrl(getUrl(Http, "/api/v1/ranking/", true))));
 }
 
@@ -125,6 +143,13 @@ void SchopenhauerApi::parseReply(QNetworkReply *reply) {
             user->reset();
         }
 
+        if (!expectedUsername.isEmpty()) {
+            if (user->getUsername() == expectedUsername)
+                emit authSuccess();
+            else handleFailure("Token jest nieprawidłowy. Spróbuj zalogować się ponownie.");
+            expectedUsername = "";
+        }
+
         emit userChanged();
         emit viewedUserChanged();
     }
@@ -170,4 +195,10 @@ void SchopenhauerApi::invitePlayerToTournament(QString tournament, QString usern
     // push request
 
     auth->sendPostRequest(QUrl(getUrl(Http,"/api/v1/tournament/invite/",true)),postData);
+}
+
+void SchopenhauerApi::handleFailure(QString reason) {
+    // clear credentials and let app know that we failed
+    settings->clearAuthCredentials();
+    emit authFailed(reason);
 }

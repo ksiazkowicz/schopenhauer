@@ -7,13 +7,13 @@ Page {
 
     Connections {
         target: api
-        onUserChanged: {
+        onAuthSuccess: {
             stack.replace("qrc:/Pages/MainPage.qml")
             busyOverlay.visible = false
         }
         onAuthFailed: {
             busyOverlay.visible = false
-            errorLabel.text = "Logowanie nie powiodło się. Sprawdź login i hasło."
+            errorLabel.text = reason;
         }
     }
 

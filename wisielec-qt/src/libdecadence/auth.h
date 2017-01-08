@@ -33,7 +33,7 @@ signals:
     void sessionFound(QString session_id);
     void error(QString errorString);
     void statusChanged();
-    void authFailed();
+    void authFailed(QString reason);
 
 private slots:
     void replyFinished(QNetworkReply *reply);

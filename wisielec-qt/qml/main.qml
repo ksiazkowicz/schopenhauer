@@ -64,11 +64,8 @@ ApplicationWindow {
     }
 
     Component.onCompleted: {
-        /*if (appSettings.isLoggedIn) {
-            stack.push("qrc:/Pages/MainPage.qml")
-        } else {
-            stack.push("qrc:/Pages/LoginPage.qml")
-        }*/
         stack.push("qrc:/Pages/LoginPage.qml")
+        if (appSettings.authCredentialsPresent())
+            busyOverlay.visible = true
     }
 }
