@@ -63,13 +63,13 @@
                 </div>
                 <div class="panel-body">
                     <div id="tournament-list">
-                        {% if not tournaments %}Nie uczestniczysz w żadnym turnieju.{% else %}
+                        {% comment %}{% if not tournaments %}Nie uczestniczysz w żadnym turnieju.{% else %}
                             {% for tournament in tournaments %}
                                 <div>
                                     <a href="{% url 'tournament_view' tournament.session_id %}">{{ tournament.name }}</a>
                                 </div>
                             {% endfor %}
-                        {% endif %}
+                        {% endif %}{% endcomment %}
                     </div>
                 </div>
             </div>

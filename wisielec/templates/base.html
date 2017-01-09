@@ -31,7 +31,7 @@
                         <div class="login-block">
                             {% if request.user.is_authenticated %}Witaj <b>{{ request.user }}</b>, życie nie ma sensu{% else %}Nie jesteś zalogowany. Załóż konto!{% endif %}
                         </div>
-                        <h4><a href="{% url 'lobby_view' %}">Lobby</a> |
+                        <h4><a href="{% url 'lobby_view' %}">Gry</a> |
                         {% if not request.user.is_anonymous %}
                         <a href="{% url 'ranking_view' %}">Ranking</a> | <a href="{% url 'profile_view' request.user.username %}">Profil</a> | <a href="{% url 'account_logout' %}">Wyloguj</a>
                         {% else %}

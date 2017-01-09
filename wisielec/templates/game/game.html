@@ -42,7 +42,7 @@
                     document.getElementById("mistakes").innerText = bread.mistakes;
                     document.getElementById("progress").innerText = bread.progress;
 
-                    var img_mistakes = bread.mistakes < 5 ? bread.mistakes+1 : 6;
+                    var img_mistakes = bread.hangman_pic < 5 ? bread.hangman_pic+1 : 6;
 
                     document.getElementById("pikczer").setAttribute("src", "/static/img/wis0"+(img_mistakes)+".png");
                 }
@@ -81,7 +81,7 @@
     <input type="text" style="color: #000; background-color: #000; height: 0; opacity: 0;" onkeypress="uniCharCode(event)" onfocusout="zaznacz_rzeczy()" autofocus id="wpisywacz">
 
     <div>
-        {% if game.mistakes < 5 %}
+        {% if game.get_mistake_count < 5 %}
         {% for x in alphabet %}
         <a href="javascript:test('{{x}}');">{{ x }}</a>
         {% endfor %}{% else %}PRZEGRALES ZYCIE LOL{% endif %}
@@ -92,6 +92,7 @@
     <div>
         <label>Punkty</label> <p id="score">{{ game.score }}</p>
         <label>Błędy</label> <p id="mistakes">{{ game.mistakes }}</p>
+        <label>Tryb</label> <p>{{ game.verbose_mode }}</p>
     </div>
     <div><b>Lista uczestników:</b> <div id="players-list">nie żyją</div></div>
 

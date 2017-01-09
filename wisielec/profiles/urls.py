@@ -1,6 +1,6 @@
 from django.conf.urls import url
 from views import profile_view, ranking_view, profile_edit_view
-from django.contrib.auth import views
+
 
 urlpatterns = [
     url(r'^ranking', ranking_view, name='ranking_view'),

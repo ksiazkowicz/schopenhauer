@@ -79,3 +79,13 @@ a { color: $blood-red; }
   text-shadow: none !important;
   border: 1px solid rgba(33,33,33,0.3) !important;
 }
+
+.mode { width: 100%; }
+.current-mode {
+  box-sizing: border-box;
+  border: 3px solid lightblue;
+}
+
+.title {
+  text-align: center;
+}

@@ -5,11 +5,34 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 
 from profiles.models import UserProfile
+from helpers import get_quote, fallback_quotes
+import random
+import uuid
+import json
+from channels import Group
 
 
 GAME_STATES = [
     "IN_PROGRESS", "FAIL", "WIN",
 ]
+
+MODIFIERS_VERBOSE = {
+    "inverse_death": u"Born To Die",
+    "only_one_mistake": u"YOLO",
+    "cooperation": u"Wszyscy mamy źle w głowach, że żyjemy",
+    "no_modifiers": u"Eutanazol",
+}
+
+
+def get_verbose_modifiers(modifiers):
+    """
+    Parses the list of modifiers and returns a verbose string.
+    """
+    modifier_list = modifiers.split(";")
+    if not modifier_list:
+        return MODIFIERS_VERBOSE["no_modifiers"]
+    else:
+        return ", ".join([MODIFIERS_VERBOSE.get(x, "") for x in modifier_list if x in MODIFIERS_VERBOSE.keys()])
 
 
 class Game(models.Model):
@@ -19,15 +42,41 @@ class Game(models.Model):
     used_characters = models.CharField(_("Used letters"), max_length=128, blank=False)
     score = models.IntegerField(_("Score"), default=0)
     mistakes = models.IntegerField(_("Mistakes"), default=0)
-    max_mistakes = models.IntegerField(_("Max mistakes"), default=5)
     player = models.ForeignKey(UserProfile, null=True)
-    inverse_death = models.BooleanField(_("Inverse death"), default=False)
+    modifiers = models.CharField(_("Modifiers"), max_length=256, blank=True, null=True)
+
+    @property
+    def is_ranking_game(self):
+        return "cooperation" not in self.modifiers
+
+    def verbose_mode(self):
+        return get_verbose_modifiers(self.modifiers)
+
+    @property
+    def get_mistake_count(self):
+        if "only_one_mistake" in self.modifiers:
+            if self.mistakes != 0:
+                return 5
+        return self.mistakes
+
+    @property
+    def max_mistakes(self):
+        """
+        Return max mistake count.
+        """
+        if "only_one_mistake" in self.modifiers:
+            return 1
+        else:
+            return 5
 
     @property
     def progress_string(self):
         return "%s/%s" % (len(self.progress)-self.progress.count("_"), len(self.progress))
 
     def update_round(self):
+        """
+        Checks if any game in round ended and ends it if we won.
+        """
         all_rounds = self.round_set.all()
         if len(all_rounds) <= 0:
             return
@@ -43,26 +92,166 @@ class Game(models.Model):
     @property
     def state(self):
         condition = self.get_winning_condition()
-        if condition == GAME_STATES[2] and self.inverse_death:
-            return GAME_STATES[1]
-        elif condition == GAME_STATES[1] and self.inverse_death:
-            return GAME_STATES[2]
-
         return condition
 
     def __unicode__(self):
         return "%s [%s]" % (self.progress, self.session_id)
 
     def get_winning_condition(self):
-        # if phrase is guessed
-        if self.phrase == self.progress:
-            return GAME_STATES[2]
-        # if used more than 5 incorrect chars, fail
-        elif self.mistakes >= self.max_mistakes:
-            return GAME_STATES[1]
+        """
+        Checks if game is in progress, won or failed.
+        :return: returns a string, either "IN_PROGRESS", "WIN" or "FAIL"
+        """
+        # check how many mistakes were made already
+        if self.mistakes >= self.max_mistakes:
+            return "FAIL"
+
+        # with modifiers, it's more complicated
+        if "inverse_death" in self.modifiers:
+            if self.phrase == self.progress:
+                # you're not supposed to guess phrases
+                return "FAIL"
+            # ok, this is complicated, cause we need to check if ALL LETTERS THAT AREN'T IN THAT PHRASE ARE USED
+            # let's make a set of all letters, the ones that are in the phrase and substract them
+            remaining_letters = set(u"aąbcćdeęfghijklłmnńoprsśtuówyzżź")
+            phrase_letters = set(self.phrase)
+            # this should give us letters that aren't in the phrase
+            remaining_letters.difference_update(phrase_letters)
+            # substract used characters
+            remaining_letters.difference_update(set(self.used_characters))
+            if len(remaining_letters) == 0:
+                # yay we won
+                return "WIN"
+        else:
+            # follow regular rules
+            if self.phrase == self.progress:
+                return "WIN"
 
         # game still in progress
         return GAME_STATES[0]
+
+    def get_user_permissions(self, user):
+        """
+        Check if user has permission to guess letters in this game.
+        """
+        if len(self.round_set.all()) > 0:
+            # if we have cooperation enabled, every tournament participant can guess
+            if "cooperation" in self.modifiers:
+                this_round = self.round_set.all().first()
+                return user in this_round.tournament.players.all()
+        # if player is defined, compare given user to that, otherwise let the shitfest begin
+        if self.player:
+            return self.player == user
+        else:
+            return True
+
+    def guess(self, user, letter):
+        """
+        Guesses the letter.
+        :param letter: letter to guess
+        :param user: user who is guessing
+        :return: outcome (fail/win)
+        """
+        # check if user has permissions to guess letters
+        if not self.get_user_permissions(user):
+            return False
+
+        # check if game is in progress
+        if not self.state == "IN_PROGRESS":
+            return False
+
+        player = self.player
+
+        # assume we failed
+        outcome = False
+
+        # check if character is already used
+        if letter in self.used_characters:
+            # well, it's obviously a fail, but check mode before counting it as mistake
+            if not "inverse_death" in self.modifiers:
+                # because it would be way to easy to finish inverse_death mode
+                self.mistakes += 1
+        else:
+            # ok, we can do stuff, count the letter as used first
+            self.used_characters += letter
+
+            # check if letter is guessed
+            guessed = letter in self.phrase
+
+            # update game progress data if guessed
+            if guessed:
+                # create a new variable for new progress string
+                new_progress = ""
+
+                # iterate through all letters
+                for index, org_letter in enumerate(self.phrase.lower()):
+                    if letter == org_letter:
+                        new_progress += self.phrase[index]
+                        outcome = True
+                    else:
+                        new_progress += self.progress[index]
+
+                # update progress
+                self.progress = new_progress
+
+            # time to get those modifiers to work
+            if "inverse_death" in self.modifiers:
+                # you shouldn't be guessing letters in this mode, you know
+                if guessed:
+                    self.mistakes += 1
+                else:
+                    # get as many points as there are remaining spaces
+                    self.score += self.progress.count("_")
+                    if self.is_ranking_game:
+                        player.score += self.progress.count("_")
+                        player.save()
+
+            else:
+                # regular rules enforced
+                if not guessed:
+                    self.mistakes += 1
+                else:
+                    self.score += self.phrase.count(letter)
+                    if self.is_ranking_game:
+                        player.score += self.phrase.count(letter)
+                        player.save()
+
+        # save changes
+        self.save()
+        self.update_round()
+
+        # update player if it's a ranking game
+        if self.state != "IN_PROGRESS" and self.is_ranking_game:
+            if self.state == "WIN":
+                player.won_games += 1
+            else:
+                player.lost_games += 1
+            player.save()
+
+        return outcome
+
+
+def create_game(user, modifiers=None, phrase=None):
+    """
+    Creates a game for given user, with given parameters (modifiers, phrase)
+    Returns game object.
+    """
+    if not phrase:
+        try:
+            phrase = get_quote()
+        except:
+            phrase = fallback_quotes[random.randint(0, len(fallback_quotes) - 1)]
+
+    game_progress = ""
+    for x in phrase:
+        if x.isalpha():
+            game_progress += "_"
+        else:
+            game_progress += x
+
+    game = Game.objects.create(session_id=uuid.uuid1().hex, phrase=phrase, progress=game_progress,
+                               used_characters="", player=user, modifiers=modifiers)
+    return game
 
 
 class Tournament(models.Model):
@@ -70,10 +259,12 @@ class Tournament(models.Model):
     players = models.ManyToManyField(UserProfile)
     admin = models.ForeignKey(UserProfile, related_name="tournament_admin", default=True)
     current_round = models.IntegerField(_("Current round"), default=0)
-    mode = models.IntegerField(_("Game mode"), default=0)
-    tournament_mode = models.IntegerField(_("Tournament mode"), default=0)
     session_id = models.CharField(_("Session ID"), max_length=128, blank=False)
     in_progress = models.BooleanField(_("Is in progress?"), default=True)
+    modifiers = models.CharField(_("Modifiers"), max_length=256, blank=True, null=True)
+
+    def verbose_mode(self):
+        return get_verbose_modifiers(self.modifiers)
 
     def get_admin(self):
         """
@@ -83,6 +274,44 @@ class Tournament(models.Model):
             return self.admin
         else:
             return self.players.all()[0]
+
+    def create_new_round(self):
+        """
+        Creates a new round and games that are a part of it.
+        """
+        # create a new round object
+        new_round = Round.objects.create(round_id=self.current_round+1, tournament=self)
+        self.current_round += 1
+        self.save()
+
+        # generate a common phrase
+        try:
+            phrase = get_quote()
+        except:
+            phrase = fallback_quotes[random.randint(0, len(fallback_quotes) - 1)]
+
+        # if cooperation enabled, create just one game
+        game = None
+        coop_game = None
+        if "cooperation" in self.modifiers:
+            coop_game = create_game(None, phrase=phrase, modifiers=self.modifiers)
+            new_round.games.add(coop_game)
+            game = coop_game
+
+        # iterate through list of players, create games and push out redirects
+        for player in self.players.all():
+            # create new game if we're not in coop mode
+            if not coop_game:
+                game = create_game(player, phrase=phrase, modifiers=self.modifiers)
+                new_round.games.add(game)
+
+            Group("tournament-%s" % self.session_id).send({
+                "text": json.dumps({
+                    "game": game.session_id,
+                    "player": player.username,
+                    "redirect": True
+                })
+            })
 
     @property
     def winner(self):

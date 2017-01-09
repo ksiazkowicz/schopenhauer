@@ -1,8 +1,6 @@
 from django.shortcuts import get_object_or_404
 from models import Game
-from views import create_game
 from channels import Group
-from datetime import datetime
 from channels.sessions import channel_session
 from channels.auth import http_session_user, channel_session_user, channel_session_user_from_http
 import json
@@ -92,7 +90,7 @@ def lobby_receive(message):
                 content = value
 
     action = content['action']
-    if action == "new":
+    """if action == "new":
         game = create_game(message.user)
         session_id = game.session_id
         Group("lobby").send({
@@ -104,7 +102,7 @@ def lobby_receive(message):
                 "score": game.score,
                 "used_chars": game.used_characters,
             }),
-        })
+        })"""
 
 
 def push_game_status(channel):
@@ -130,7 +128,7 @@ def push_round_status(round):
     for game in round.games.all():
         status_updates += [{
             "session_id": game.session_id,
-            "player": game.player.username,
+            "player": game.player.username if game.player else "Wszyscy",
             "mistakes": game.mistakes,
             "progress": game.progress_string
         }, ]
@@ -148,7 +146,7 @@ def push_round_status(round):
             Group("game-%s" % game.session_id).send({
                 "text": json.dumps({
                     "tournament": round.tournament.session_id,
-                    "winner": round.winner.username,
+                    "winner": round.winner.username if round.winner else "",
                     "round": round.round_id,
                     "redirect": True,
                 })
@@ -174,15 +172,6 @@ def ws_connect(message):
     push_list_current_players_game(game_id)
 
 
-# Connected to websocket.receive
-@channel_session_user
-@channel_session
-def ws_message(message):
-    Group("game-%s" % message.channel_session['game']).send({
-        "text": "[user] %s" % message.content['text'],
-    })
-
-
 @http_session_user
 @channel_session_user
 @channel_session
@@ -197,70 +186,33 @@ def ws_guess(message):
                 content = value
 
     session_id = content['session_id']
-    letter = content['letter']
+    letter = content['letter'][:1]
 
+    # get the game and attempt to guess a letter
     game = get_object_or_404(Game, session_id=session_id)
-    player = game.player
+    outcome = game.guess(message.user, letter)
 
-    if player:
-        if player != message.user:
-            return
+    # push round status too
+    if len(game.round_set.all()):
+        # get game winner
+        this_round = game.round_set.all()[0]
 
-    yes = False
+        # push a message to all clients that the round in tournament has finished
+        push_round_status(this_round)
 
-    if game.state == "IN_PROGRESS":
-        if letter in game.used_characters:
-            if not game.inverse_death:
-                game.mistakes += 1
-        elif letter in game.phrase.lower():
-            game.used_characters += letter
-            new_progress = ""
-
-            for index, org_letter in enumerate(game.phrase.lower()):
-                if letter == org_letter:
-                    game.score += 1
-                    if player:
-                        player.score += 1
-                    new_progress += game.phrase[index]
-                else:
-                    new_progress += game.progress[index]
-
-            game.progress = new_progress
-            yes = True
-        else:
-            game.mistakes += 1
-            game.used_characters += letter
-
-        game.update_round()
-        game.save()
-
-        if len(game.round_set.all()):
-            # get game winner
-            round = game.round_set.all()[0]
-
-            # push a message to all clients that the round in tournament has finished
-            push_round_status(round)
-
-        # keep track of won and lost games
-        if player:
-            if game.state == "FAIL":
-                player.lost_games += 1
-            elif game.state == "WIN":
-                player.won_games += 1
-            player.save()
-
-        # send updated game status to group
-        Group("game-%s" % message.channel_session['game']).send({
-            "text": json.dumps({
-                "mistakes": game.mistakes,
-                "session_id": session_id,
-                "progress": game.progress,
-                "letter": letter,
-                "score": game.score,
-                "outcome": yes,
-                "state": game.state,
-            }),
-        })
+    # send updated game status to group
+    Group("game-%s" % message.channel_session['game']).send({
+        "text": json.dumps({
+            "mistakes": game.mistakes,
+            "hangman_pic": game.get_mistake_count,
+            "session_id": session_id,
+            "progress": game.progress,
+            "letter": letter,
+            "score": game.score,
+            "outcome": outcome,
+            "state": game.state,
+        }),
+    })
 
 
 # Connected to websocket.disconnect

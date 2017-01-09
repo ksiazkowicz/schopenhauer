@@ -19,10 +19,7 @@
     <div class="col-md-8">
         <h1>{{ tournament.name }}</h1>
         <h4>
-            {% if tournament.mode == 0 %}Eutanazol{% endif %}
-            {% if tournament.mode == 1 %}Born To Die{% endif %}
-            {% if tournament.mode == 2 %}Masz tylko jedno życie{% endif %}
-            {% if not tournament.in_progress %}(zakończony){% endif %}
+            {{ tournament.verbose_mode }} {% if not tournament.in_progress %}(zakończony){% endif %}
         </h4>
     </div>
 
@@ -34,7 +31,7 @@
             <div class="panel-body">
                 <form action="" method="post">
                     {% csrf_token %}
-                    <input type="submit" name="new-round" class="btn btn-info" value="Nowa runda" />
+                    <button id="new_round_button" class="btn btn-info">Nowa runda</button>
                     <input type="submit" name="end-tournament" class="btn btn-info" value="Zakończ" />
                 </form>
             </div>
@@ -73,15 +70,12 @@
                     {% endfor %}
                 </table>
                 {% if request.user == tournament.get_admin %}
-                <form action="" method="post" style="margin-bottom: 30px;">
-                    {% csrf_token %}
                     <div class="input-group">
-                        <input type="text" name="name" placeholder="Nazwa" class="form-control" id="name_input">
+                        <input id="invite_name_input" type="text" name="name" placeholder="Nazwa" class="form-control">
                         <div class="input-group-btn">
-                            <input type="submit" class="btn btn-info" value="Zaproś" />
+                            <button id="invite_button" class="btn btn-info">Zaproś</button>
                         </div>
                     </div>
-                </form>
                 {% endif %}
             </div>
         </div>
@@ -97,12 +91,12 @@
                         <th>Zwycięzca</th>
                         <th>Akcje</th>
                     </tr>
-                {% for round in rounds %}
+                {% for round in tournament.round_set.all %}
                     <tr {% if round.round_id == tournament.current_round %}class="current"{% endif %}>
                         <td>{{ round.round_id }}</td>
                         <td>{{ round.status_verbose }}</td>
                         <td {% if round.winner == request.user %}class="me"{% endif %}>{{ round.winner|default:"Nikt" }}</td>
-                        <td>{% if round.status == "ROUND_IN_PROGRESS" %}{% for game in round.games.all %}{% if game.player == request.user %}
+                        <td>{% if round.status == "ROUND_IN_PROGRESS" %}{% for game in round.games.all %}{% if game in my_games %}
                             <a class="btn btn-sm btn-default" href="{% url 'game_view' game.session_id %}">Dołącz</a>
                             {% endif %}{% endfor %}{% endif %}</td>
                     </tr>
@@ -114,4 +108,18 @@
         {% include "includes/chatbox.html" with chat_context="tournament-"|add:session_id  %}
         {% endwith %}
     </div>
+
+    <script>
+        var session_id = "{{ tournament.session_id }}";
+
+        {% if request.user == tournament.get_admin %}
+        document.getElementById("invite_button").onclick = function() {
+            var username = document.getElementById("invite_name_input").value;
+            invite_to_tournament(session_id, username);
+        };
+        document.getElementById("new_round_button").onclick = function() {
+            new_round_tournament(session_id);
+        };
+        {% endif %}
+    </script>
 {% endblock %}

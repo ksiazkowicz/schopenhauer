@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="title">
+        <div class="col-md-4 col-md-offset-4 clearfix">
+            <h2>Wybierz tryb rozgrywki</h2>
+            <hr/>
+        </div>
+
+        <div class="clearfix"></div>
+
+        <div class="col-md-2 {% if is_tournament %}col-md-offset-2{% else %}col-md-offset-3{% endif %}">
+            <img id="modifier-no_modifiers" class="mode" src="{% static 'img/modes/eutanazol.png' %}">
+            <h4><a href="#" class="modifier-button" data-modifier="no_modifiers">Eutanazol</a></h4>
+            <p>Klasyczna gra w wisielca.</p>
+        </div>
+        <div class="col-md-2">
+            <img id="modifier-inverse_death" class="mode" src="{% static 'img/modes/born_to_die.png' %}">
+            <h4><a href="#" class="modifier-button" data-modifier="inverse_death">Born To Die</a></h4>
+            <p>Spróbuj poznać słodki smak porażki.</p>
+        </div>
+
+        <div class="col-md-2">
+            <img id="modifier-only_one_mistake" class="mode" src="{% static 'img/modes/yolo.jpg' %}">
+            <h4><a href="#" class="modifier-button" data-modifier="only_one_mistake">Masz tylko jedno życie</a></h4>
+            <p>I dobrze.</p>
+        </div>
+
+        {% if is_tournament %}
+        <div class="col-md-2 clearfix">
+            <img id="modifier-cooperation" class="mode" src="{% static 'img/modes/niekorzystne.png' %}">
+            <h4><a href="#" class="modifier-button" data-modifier="cooperation">Wszyscy mamy źle w głowach, że żyjemy</a></h4>
+            <p>Gracze zgadują wspólnie jedno hasło.</p>
+        </div>
+        {% endif %}
+
+
+        <div class="col-md-12">
+            {% if is_tournament %}
+            <div class="form-group">
+                <label for="name_input">Nazwa</label>
+                <input type="text" name="name" class="form-control" id="name_input" placeholder="np. Raz kozie śmierć">
+            </div>
+            {% endif %}
+            <button id="new_game_button" class="btn btn-info btn-lg">Zaczynamy</button>
+        </div>
+    </div>
+
+    <script>
+        var modifier_buttons = document.getElementsByClassName("modifier-button");
+        var modifiers = "";
+        for (var i=0; i<modifier_buttons.length; i++) {
+            modifier_buttons[i].onclick = function () {
+                var modifier_data = this.attributes['data-modifier'].value;
+                if (modifier_data == "no_modifiers") {
+                    $(".mode").removeClass("current-mode");
+                    $("#modifier-no_modifiers").addClass("current-mode");
+                    modifiers = "";
+                } else {
+                    $("#modifier-no_modifiers").removeClass("current-mode");
+                    var modifier_selector = $("#modifier-" + modifier_data);
+                    if (!modifier_selector.hasClass("current-mode")) {
+                        modifier_selector.addClass("current-mode");
+                    }
+                    modifiers = "";
+                    var modes = document.getElementsByClassName("current-mode");
+                    for (var i=0; i<modes.length; i++) {
+                        modifiers += modes[i].id.replace("modifier-", "");
+                        if (i != modes.length-1) modifiers += ";";
+                    }
+                }
+            };
+        }
+        document.getElementById("new_game_button").onclick = function() {
+            {% if is_tournament %}
+            var name = document.getElementById("name_input").value;
+            create_tournament(modifiers, name);
+            {% else %}
+            create_game(modifiers);
+            {% endif %}
+        }
+    </script>
+{% endblock %}

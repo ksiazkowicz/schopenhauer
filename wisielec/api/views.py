@@ -2,11 +2,12 @@
 import json
 from django.http import HttpResponse, HttpResponseServerError
 from profiles.models import UserProfile, Achievement
-from game.models import Tournament
+from game.models import Tournament, Game, create_game
 from django.shortcuts import get_object_or_404
 
 from django.views.decorators.csrf import csrf_exempt
 from django.template import Context, Template, loader
+import uuid
 
 
 def generate_html(request):
@@ -38,18 +39,27 @@ def generate_html(request):
     return HttpResponse(rendered, content_type="text/html")
 
 
-@csrf_exempt
-def tournament_invite_api(request):
+def tournament_invite_api(request, session_id=None):
     """
     Invites user to tournament.
     """
     if request.POST:
-        tournament = get_object_or_404(Tournament, session_id=request.POST.get("tournament_id"))
+        # extract tournament
+        if session_id:
+            tournament = get_object_or_404(Tournament, session_id=session_id)
+        else:
+            tournament = get_object_or_404(Tournament, session_id=request.POST.get("tournament_id"))
+
+        # check permissions
+        if request.user != tournament.admin:
+            return HttpResponseServerError("<h1>Server Error</h1>")
+
+        # try to get user by username and add to tournament
         user = get_object_or_404(UserProfile, username=request.POST.get("username"))
         tournament.players.add(user)
-        response = {"result": "success", "session_id": tournament.session_id}
+        response = {"session_id": tournament.session_id, "username": user.username}
     else:
-        response = {"result": "fail"}
+        return HttpResponseServerError("<h1>Invalid template</h1>")
 
     return HttpResponse(json.dumps(response), content_type="application/json")
 
@@ -71,6 +81,61 @@ def tournament_api(request, session_id=None):
     } for t in tournaments]}
 
     return HttpResponse(json.dumps(response), content_type="application/json")
+
+
+def tournament_create_api(request):
+    """
+    Creates a tournament with given parameters.
+    """
+    if request.POST:
+        name = request.POST.get("name", "")
+        modifiers = request.POST.get("modifiers", "")
+
+        tournament = Tournament.objects.create(session_id=uuid.uuid1().hex, name=name,
+                                               modifiers=modifiers, admin=request.user)
+        tournament.players.add(request.user)
+        response = {
+            "session_id": tournament.session_id,
+        }
+        return HttpResponse(json.dumps(response), content_type="application/json")
+    else:
+        return HttpResponseServerError("<h1>Server Error</h1>")
+
+
+def tournament_new_round_api(request, session_id):
+    """
+    Returns list of tournaments for player.
+    """
+    tournament = get_object_or_404(Tournament, session_id=session_id)
+
+    # check permissions
+    if request.user != tournament.admin:
+        return HttpResponseServerError("<h1>Server Error</h1>")
+
+    # create new round
+    tournament.create_new_round()
+
+    response = {
+        "current_round": tournament.current_round,
+    }
+
+    return HttpResponse(json.dumps(response), content_type="application/json")
+
+
+def game_create_api(request):
+    """
+    Creates a game with given parameters
+    """
+    if request.POST:
+        modifiers = request.POST.get("modifiers", "")
+        phrase = request.POST.get("phrase", None)
+        game = create_game(request.user, modifiers=modifiers, phrase=phrase)
+        response = {
+            "session_id": game.session_id,
+        }
+        return HttpResponse(json.dumps(response), content_type="application/json")
+    else:
+        return HttpResponseServerError("<h1>Server Error</h1>")
 
 
 def achievement_api(request, username):

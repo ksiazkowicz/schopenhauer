@@ -1,10 +1,5 @@
-from django.shortcuts import get_object_or_404
-from models import Game
-from views import create_game
 from channels import Group
-from datetime import datetime
-from channels.sessions import channel_session
-from channels.auth import http_session_user, channel_session_user, channel_session_user_from_http
+from channels.auth import channel_session_user, channel_session_user_from_http
 from models import ChatMessage
 import json
 

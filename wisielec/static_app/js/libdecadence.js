@@ -111,3 +111,111 @@ function include_from_template(selector, template, data, mode) {
     // send a request
     xhr.send("csrfmiddlewaretoken="+readCookie("csrftoken")+"&data="+JSON.stringify(data));
 }
+
+function create_game(modifiers, phrase) {
+    /*
+        Uses ajax to create a game with given parameters.
+     */
+    // create Ajax request
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/api/v1/game/create/', true);
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    var data = "csrfmiddlewaretoken="+readCookie("csrftoken")+"&modifiers="+encodeURIComponent(modifiers);
+    if (phrase)
+        data += "&phrase="+encodeURIComponent(phrase);
+
+    // connect signal that gets fired up after request is finished
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                var response = JSON.parse(xhr.responseText);
+                if (response.session_id)
+                    location.href = "/game/g/"+response.session_id;
+            } else {
+                // stuff broke, show error
+                show_info_block("danger", "Stworzenie gry nie powiodło się, spróbuj ponownie.", default_options);
+            }
+        }
+    };
+    // send a request
+    xhr.send(data);
+}
+
+function create_tournament(modifiers, name) {
+    /*
+        Uses ajax to create a game with given parameters.
+     */
+    // create Ajax request
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/api/v1/tournament/create/', true);
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+    // connect signal that gets fired up after request is finished
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                var response = JSON.parse(xhr.responseText);
+                if (response.session_id)
+                    location.href = "/game/t/"+response.session_id;
+            } else {
+                // stuff broke, show error
+                show_info_block("danger", "Stworzenie turnieju nie powiodło się, spróbuj ponownie.", default_options);
+            }
+        }
+    };
+    // send a request
+    xhr.send("csrfmiddlewaretoken="+readCookie("csrftoken")+"&name="+encodeURIComponent(name)+"&modifiers="+encodeURIComponent(modifiers));
+}
+
+function new_round_tournament(session_id) {
+    /*
+        Uses ajax to create a new round.
+     */
+    // create Ajax request
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/api/v1/tournament/'+session_id+'/new_round/', true);
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+    // connect signal that gets fired up after request is finished
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                var response = JSON.parse(xhr.responseText);
+                show_info_block("success", "Utworzono nową rundę.", default_options);
+            } else {
+                // stuff broke, show error
+                show_info_block("danger", "Dodanie użytkownika '" + username +"' do turnieju nie powiodło się.", default_options);
+            }
+        }
+    };
+    // send a request
+    xhr.send("csrfmiddlewaretoken="+readCookie("csrftoken"));
+}
+
+function invite_to_tournament(session_id, username) {
+    /*
+        Uses ajax to invite user with specified username to tournament.
+     */
+    // create Ajax request
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/api/v1/tournament/'+session_id+'/invite/', true);
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+    // connect signal that gets fired up after request is finished
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                var response = JSON.parse(xhr.responseText);
+                if (response.session_id)
+                    location.href = "/game/t/"+response.session_id;
+                show_info_block("success", "Wysłano zaproszenie do użytkownika '" + username +"'.", default_options);
+            } else {
+                // stuff broke, show error
+                show_info_block("danger", "Dodanie użytkownika '" + username +"' do turnieju nie powiodło się.", default_options);
+            }
+        }
+    };
+
+    // send a request
+    xhr.send("csrfmiddlewaretoken="+readCookie("csrftoken")+"&username="+encodeURIComponent(username));
+}
