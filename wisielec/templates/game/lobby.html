@@ -23,12 +23,8 @@
                 update_players("players-list", String(players).split(","));
             }
         };
-        socket.onerror = function(e) {
-            show_info_block("danger", "Wystąpił błąd: '"+e+"'. Oczekuj niedziałających rzeczy.", default_options);
-        };
-        socket.onclose = function(e) {
-            show_info_block("danger", "Utracono połączenie.", default_options);
-        };
+        socket.onerror = socket_error(e);
+        socket.onclose = socket_reconnect_silent(e);
 
         function append_game(session_id) {
             if (!document.getElementById("game-" + session_id)) {

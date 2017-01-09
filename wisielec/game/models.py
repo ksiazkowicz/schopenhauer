@@ -9,7 +9,7 @@ from helpers import get_quote, fallback_quotes
 import random
 import uuid
 import json
-from channels import Group
+from signals import *
 
 
 GAME_STATES = [
@@ -305,13 +305,8 @@ class Tournament(models.Model):
                 game = create_game(player, phrase=phrase, modifiers=self.modifiers)
                 new_round.games.add(game)
 
-            Group("tournament-%s" % self.session_id).send({
-                "text": json.dumps({
-                    "game": game.session_id,
-                    "player": player.username,
-                    "redirect": True
-                })
-            })
+            # push out info to everyone
+            new_tournament_round.send(sender=self.__class__, instance=self, game_id=game.session_id, player=player)
 
     @property
     def winner(self):

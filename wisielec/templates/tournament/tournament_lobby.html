@@ -8,12 +8,13 @@
         socket = new WebSocket("ws://" + window.location.host + "/tournament/{{ tournament.session_id }}");
         socket.onmessage = function(e) {
             var bread = JSON.parse(e.data);
-            if (bread.redirect && bread.username == "{{ request.user }}") {
+            if (bread.redirect && bread.player == "{{ request.user }}") {
                 location.href = "/game/g/" + bread.game + "/";
             }
         };
-        socket.onerror = function(e) { alert("umarlo z bledem"); };
-        socket.onclose = function(e) { alert("umarlo bo tak"); };
+        socket.onopen = socket_connect();
+        socket.onerror = socket_error(e);
+        socket.onclose = socket_reconnect(e);
     </script>
 
     <div class="col-md-8">

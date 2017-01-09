@@ -47,12 +47,10 @@
                     document.getElementById("pikczer").setAttribute("src", "/static/img/wis0"+(img_mistakes)+".png");
                 }
             }
-        }
-        socket.onopen = function() {
-            //socket.send("hello world");
-        }
-        socket.onerror = function(e) { alert("umarlo z bledem"); };
-        socket.onclose = function(e) { alert("umarlo bo tak"); };
+        };
+        socket.onopen = socket_connect();
+        socket.onerror = socket_error(e);
+        socket.onclose = socket_reconnect(e);
         // Call onopen directly if socket is already open
         if (socket.readyState == WebSocket.OPEN) socket.onopen();
 
@@ -107,7 +105,7 @@
             {% for game in round.games.all %}
                 <div class="tournament-status" id="game-{{ game.session_id }}">
                     <div class="game-mistakes" id="game-mistakes-{{ game.session_id }}">({{ game.mistakes }})</div>
-                    <span class="player-name">{{ game.player }}</span>
+                    <span class="player-name">{% if game.player %}{{ game.player }}{% else %}Wszyscy{% endif %}</span>
                     <div class="game-progress" id="game-progress-{{ game.session_id }}">{{ game.progress_string }}</div>
                 </div>
             {% endfor %}

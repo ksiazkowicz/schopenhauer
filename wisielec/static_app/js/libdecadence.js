@@ -112,6 +112,27 @@ function include_from_template(selector, template, data, mode) {
     xhr.send("csrfmiddlewaretoken="+readCookie("csrftoken")+"&data="+JSON.stringify(data));
 }
 
+function socket_error(e) {
+    show_info_block("danger", "Wystąpił błąd: '"+e+"'. Oczekuj niedziałających rzeczy.", default_options);
+}
+
+function socket_reconnect_silent(e) {
+    setTimeout(function() {
+        start(this.url);
+    }, default_options.dismiss_timeout);
+}
+
+function socket_reconnect(e) {
+    show_info_block("danger", "Utracono połączenie z serwerem. Przywracanie...", default_options);
+    setTimeout(function() {
+        start(this.url);
+    }, default_options.dismiss_timeout)
+}
+
+function socket_connect() {
+    show_info_block("success", "Połączono z serwerem.", default_options)
+}
+
 function create_game(modifiers, phrase) {
     /*
         Uses ajax to create a game with given parameters.
