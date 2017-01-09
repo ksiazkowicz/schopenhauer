@@ -25,53 +25,105 @@ Page {
         anchors.leftMargin: 20
     }
 
-    Column {
-        id: column1
-        anchors.top: label2.bottom
-        anchors.topMargin: 5
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 20
-        anchors.right: parent.right
-        anchors.rightMargin: 20
-        anchors.left: parent.left
-        anchors.leftMargin: 20
-
-        Rectangle {
-            id: separator1
-            height: 1
-            color: "#8f8f8f"
-            anchors.right: parent.right
-            anchors.rightMargin: 0
-            anchors.left: parent.left
-            anchors.leftMargin: 0
+    Flickable {
+        clip: true
+        anchors {
+            top: label2.bottom
+            topMargin: 20;
+            bottom: parent.bottom
+            bottomMargin: 20
+            right: parent.right
+            left: parent.left
         }
 
-        RowLayout {
-            id: tournamentHeader
-            height: 42
-            anchors.right: parent.right
-            anchors.rightMargin: 0
-            anchors.left: parent.left
-            anchors.leftMargin: 0
+        contentHeight: column1.height
+        Column {
+            id: column1
+            anchors.fill: parent
 
-            Label {
-                id: tournamentHeaderLabel
-                text: qsTr("Trwające turnieje")
-                Layout.fillWidth: true
-                font.bold: true
-                font.pointSize: 11
+            Rectangle {
+                height: 1
+                color: "#8f8f8f"
+                anchors { right: parent.right; left: parent.left; }
             }
 
-            Label {
-                id: tournamentHeaderIcon
-                text: qsTr("\uE7FC")
-                font.family: "Segoe MDL2 Assets"
-                font.pixelSize: 24
+            RowLayout {
+                id: tournamentHeader
+                height: 42
+                anchors { right: parent.right; left: parent.left; margins: 10 }
+
+                Label {
+                    id: tournamentHeaderLabel
+                    text: qsTr("Trwające turnieje")
+                    Layout.fillWidth: true
+                    font.bold: true
+                    font.pointSize: 11
+                }
+
+                Label {
+                    id: tournamentHeaderIcon
+                    text: qsTr("\uE7FC")
+                    font.family: "Segoe MDL2 Assets"
+                    font.pixelSize: 24
+                }
             }
-        }
-        Label {
-            text: "nie no"
+            ListView {
+                id: tournamentList
+                anchors { left: parent.left; right: parent.right }
+                height: contentHeight
+                interactive: false
+                delegate: ItemDelegate {
+                    width: parent.width
+                    height: modelData.inProgress ? 20 + tournamentDelegateHeader.height : 0
+                    clip: true
+                    Rectangle {
+                        height: 1
+                        color: "#aaa"
+                        anchors { left: parent.left; right: parent.right }
+                    }
+                    Column {
+                        id: tournamentDelegateHeader
+                        anchors { left: parent.left; right: parent.right; margins: 10; top: parent.top }
+                        height: tournamentNameLabel.paintedHeight + tournamentModesLabel.paintedHeight
+                        Label {
+                            id: tournamentNameLabel
+                            text: modelData.name
+                            font.pixelSize: 16
+                        }
+                        Label {
+                            id: tournamentModesLabel
+                            text: "("+ modelData.modes+")"
+                            font.pixelSize: 16
+                            color: "#555"
+                        }
+                    }
+                }
+                model: gameClient.tournaments
+            }
+            Rectangle {
+                height: 1
+                color: "#8f8f8f"
+                anchors { right: parent.right; left: parent.left; }
+            }
+            RowLayout {
+                id: antisocialHeader
+                height: 42
+                anchors { right: parent.right; left: parent.left; margins: 10 }
+
+                Label {
+                    id: antisocialHeaderLabel
+                    text: qsTr("Nie masz znajomych?")
+                    Layout.fillWidth: true
+                    font.bold: true
+                    font.pointSize: 11
+                }
+
+                Button {
+                    id: antisocialButton
+                    text: qsTr("Zagraj samemu!")
+                    onClicked: stack.push("qrc:/Pages/NewGamePage.qml")
+                }
+            }
         }
     }
-
 }

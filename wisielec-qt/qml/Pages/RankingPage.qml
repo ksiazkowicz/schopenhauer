@@ -29,11 +29,17 @@ Page {
             delegate: ItemDelegate {
                 width: parent.width
                 height: row1.height+20
+
                 onClicked: {
                     if (modelData.username != api.user.username) {
                         api.getUserData(modelData.username)
                         switchToProfile()
                     } else { swipeView.currentIndex = 3; }
+                }
+                Rectangle {
+                    height: 1
+                    color: "#aaa"
+                    anchors { left: parent.left; right: parent.right }
                 }
                 RowLayout {
                     id: row1
