@@ -60,6 +60,11 @@ Page {
                     font.pointSize: 11
                 }
 
+                Button {
+                    text: qsTr("Utwórz!")
+                    onClicked: stack.push("qrc:/Pages/NewTournamentPage.qml")
+                }
+
                 Label {
                     id: tournamentHeaderIcon
                     text: qsTr("\uE7FC")

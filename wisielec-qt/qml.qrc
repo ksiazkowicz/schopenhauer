@@ -30,6 +30,8 @@
         <file alias="TournamentInvitePage.qml">qml/Pages/TournamentInvitePage.qml</file>
         <file alias="NewGamePage.qml">qml/Pages/NewGamePage.qml</file>
         <file alias="WelcomePage.qml">qml/Pages/WelcomePage.qml</file>
+        <file alias="NewTournamentPage.qml">qml/Pages/NewTournamentPage.qml</file>
+        <file alias="TournamentPage.qml">qml/Pages/TournamentPage.qml</file>
     </qresource>
     <qresource prefix="/Components">
         <file alias="ChatBox.qml">qml/Components/ChatBox.qml</file>

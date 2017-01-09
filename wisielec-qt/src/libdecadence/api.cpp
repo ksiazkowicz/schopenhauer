@@ -116,6 +116,12 @@ void SchopenhauerApi::parseReply(QNetworkReply *reply) {
     // get url for figuring out what exactly have we got
     QString url = reply->url().toString();
 
+    if (url.contains("/api/v1/tournament") && url.contains("/create")) {
+        QString sessionId = jsonObject["session_id"].toString();
+        emit tournamentCreated(sessionId);
+        this->getTournamentList();
+    }
+
     if (url.contains("/api/v1/game/create/")) {
         QString sessionId = jsonObject["session_id"].toString();
         emit gameCreated(sessionId);

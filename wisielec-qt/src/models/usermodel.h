@@ -45,6 +45,7 @@ public:
         this->lostGames = 0;
         this->wonTournaments = 0;
         this->lostTournaments = 0;
+        this->progress = 0;
     }
 
     void setUsername(QString username) { this->username = username; emit usernameChanged(); }

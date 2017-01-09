@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.0
 import "Components"
 
 ApplicationWindow {
+    id: mainWindow
     visible: true
     width: 540
     height: 720
