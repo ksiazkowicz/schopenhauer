@@ -31,6 +31,8 @@ public:
     };
     Status status = Idle;
 
+    QString getCachedCsrftoken();
+
 signals:
     void sessionFound(QString session_id);
     void error(QString errorString);
@@ -45,6 +47,8 @@ private:
     QUrl mUrl;
     QUrl rUrl;
     QUrl test;
+
+    QString csrftoken = "";
 
 };
 

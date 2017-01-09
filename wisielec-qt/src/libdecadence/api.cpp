@@ -15,6 +15,9 @@ SchopenhauerApi::SchopenhauerApi(Settings *appSettings, QObject *parent) : QObje
     connect(auth, &SchopenhauerCookies::authFailed, this, &SchopenhauerApi::handleFailure);
     connect(manager, &QNetworkAccessManager::finished, this, &SchopenhauerApi::parseReply);
 
+    // get a csrftoken
+    auth->sendGetRequest(QUrl(getUrl(Http, "/accounts/login/", true)));
+
     // user stuff
     me = new UserModel();
     viewedUser = new UserModel();
@@ -112,6 +115,18 @@ void SchopenhauerApi::parseReply(QNetworkReply *reply) {
 
     // get url for figuring out what exactly have we got
     QString url = reply->url().toString();
+
+    if (url.contains("/api/v1/game/create/")) {
+        QString sessionId = jsonObject["session_id"].toString();
+        emit gameCreated(sessionId);
+    }
+
+    if (url.contains("/api/v1/tournament") && url.contains("/invite")) {
+        if (jsonObject.keys().contains("username") && jsonObject.keys().contains("session_id")) {
+            this->getTournamentList();
+        }
+        return;
+    }
 
     if (url.contains("/api/v1/tournament")) {
         // we're dealing with tournaments here
@@ -224,14 +239,6 @@ void SchopenhauerApi::parseReply(QNetworkReply *reply) {
 
     qDebug() << url;
     qDebug() << content;
-
-    if (jsonObject.keys().contains("result")) {
-        qDebug() << "REZULTNELO SIE UWAGA ------------";
-        qDebug() << jsonObject["result"].toString();
-        emit omgToDziala();
-        this->getTournamentList();
-        qDebug() << "no dzienki";
-    }
 }
 
 void SchopenhauerApi::getUserData() {
@@ -256,13 +263,33 @@ void SchopenhauerApi::getTournamentList() {
 }
 
 void SchopenhauerApi::invitePlayerToTournament(QString tournament, QString username) {
-    qDebug() << tournament << username;
     QUrlQuery postData;
     postData.addQueryItem("tournament_id", tournament);
     postData.addQueryItem("username", username);
+    postData.addQueryItem("csrfmiddlewaretoken", auth->getCachedCsrftoken());
     // push request
-
     auth->sendPostRequest(QUrl(getUrl(Http,"/api/v1/tournament/invite/",true)),postData);
+}
+
+void SchopenhauerApi::createGame(QString modifiers) {
+    QUrlQuery postData;
+    postData.addQueryItem("modifiers", modifiers);
+    postData.addQueryItem("csrfmiddlewaretoken", auth->getCachedCsrftoken());
+    auth->sendPostRequest(QUrl(getUrl(Http,"/api/v1/game/create/",true)),postData);
+}
+
+void SchopenhauerApi::createTournament(QString modifiers, QString name) {
+    QUrlQuery postData;
+    postData.addQueryItem("modifiers", modifiers);
+    postData.addQueryItem("name", name);
+    postData.addQueryItem("csrfmiddlewaretoken", auth->getCachedCsrftoken());
+    auth->sendPostRequest(QUrl(getUrl(Http,"/api/v1/tournament/create/",true)),postData);
+}
+
+void SchopenhauerApi::newRoundTournament(QString sessionId) {
+    QUrlQuery postData;
+    postData.addQueryItem("csrfmiddlewaretoken", auth->getCachedCsrftoken());
+    auth->sendPostRequest(QUrl(getUrl(Http,"/api/v1/tournament/"+sessionId+"/new_round/",true)),postData);
 }
 
 void SchopenhauerApi::handleFailure(QString reason) {

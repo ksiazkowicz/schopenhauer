@@ -28,6 +28,10 @@ void SchopenhauerCookies::sendGetRequest(const QUrl &url) {
     emit statusChanged();
 }
 
+QString SchopenhauerCookies::getCachedCsrftoken() {
+    return csrftoken;
+}
+
 void SchopenhauerCookies::injectSessionCookie(QString token, QString apiUrl) {
     // create an empty list of cookies
     QList<QNetworkCookie> cookies;
@@ -39,10 +43,6 @@ void SchopenhauerCookies::injectSessionCookie(QString token, QString apiUrl) {
 }
 
 void SchopenhauerCookies::replyFinished(QNetworkReply *reply) {
-    // if we're not on a login page, abort
-    if (!reply->url().toString().contains("/accounts/login"))
-        return;
-
     // if error occured, abort
     if (reply->error() != QNetworkReply::NoError){
         qWarning() << "ERROR:" << reply->errorString();
@@ -51,7 +51,6 @@ void SchopenhauerCookies::replyFinished(QNetworkReply *reply) {
     }
 
     // initialize variables
-    QString csrftoken;
     QString session_id;
     // get cookie jar for url
     QList<QNetworkCookie> cookies = mManager->cookieJar()->cookiesForUrl(mUrl);
@@ -60,6 +59,10 @@ void SchopenhauerCookies::replyFinished(QNetworkReply *reply) {
         if (cookies.at(i).name() == "csrftoken") csrftoken = cookies.at(i).value();
         if (cookies.at(i).name() == "sessionid") session_id = cookies.at(i).value();
     }
+
+    // ignore if it's not login page though
+    if (!reply->url().toString().contains("/accounts/login"))
+        return;
 
     // get response code
     int v = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();

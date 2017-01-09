@@ -13,6 +13,12 @@
         <file alias="suicide_rabbit.png">img/suicide_rabbit.png</file>
         <file alias="arthurlogo_small.png">img/arthurlogo_small.png</file>
     </qresource>
+    <qresource prefix="/img/modes">
+        <file alias="born_to_die.png">img/modes/born_to_die.png</file>
+        <file alias="eutanazol.png">img/modes/eutanazol.png</file>
+        <file alias="niekorzystne.png">img/modes/niekorzystne.png</file>
+        <file alias="yolo.jpg">img/modes/yolo.jpg</file>
+    </qresource>
     <qresource prefix="/Pages">
         <file alias="LoginPage.qml">qml/Pages/LoginPage.qml</file>
         <file alias="MainPage.qml">qml/Pages/MainPage.qml</file>

@@ -38,6 +38,10 @@ public:
     Q_INVOKABLE void getUserAchievements();
     Q_INVOKABLE void getUserAchievements(QString username);
 
+    Q_INVOKABLE void createGame(QString modifiers);
+    Q_INVOKABLE void createTournament(QString modifiers, QString name);
+    Q_INVOKABLE void newRoundTournament(QString sessionId);
+
     Q_INVOKABLE void getTournamentList();
     //Q_INVOKABLE void getTournament(QString tournament);
     Q_INVOKABLE void invitePlayerToTournament(QString tournament, QString username);
@@ -56,10 +60,11 @@ signals:
     void viewedUserChanged();
     void foundTournaments(QString reply);
 
-    void omgToDziala();
-
     void authSuccess();
     void authFailed(QString reason);
+
+    void gameCreated(QString sessionId);
+    void tournamentCreated(QString sessionId);
 
 public slots:
     void setSessionToken(QString token);
@@ -69,6 +74,7 @@ public slots:
 private:
     QString apiUrl;
     QString sessionToken;
+    QString csrfToken;
 
     SchopenhauerCookies *auth;
     QNetworkAccessManager *manager;
