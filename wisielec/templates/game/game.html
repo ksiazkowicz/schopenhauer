@@ -48,9 +48,9 @@
                 }
             }
         };
-        socket.onopen = socket_connect();
-        socket.onerror = socket_error(e);
-        socket.onclose = socket_reconnect(e);
+        socket.onopen = socket_connect;
+        socket.onerror = socket_error;
+        socket.onclose = socket_reconnect;
         // Call onopen directly if socket is already open
         if (socket.readyState == WebSocket.OPEN) socket.onopen();
 

@@ -68,15 +68,22 @@ def tournament_api(request, session_id=None):
     """
     Returns list of tournaments for player.
     """
-    if session_id:
-        tournaments = Tournament.objects.filter(session_id=session_id)
+    if request.GET.get("all", False):
+        tournaments = Tournament.objects.all()
     else:
-        tournaments = request.user.tournament_set.all()
+        if session_id:
+            tournaments = Tournament.objects.filter(session_id=session_id)
+        else:
+            tournaments = request.user.tournament_set.all()
+
+    if request.GET.get("in_progress", False):
+        tournaments = tournaments.filter(in_progress=True)
 
     response = {"tournaments": [{
         "name": t.name,
         "session_id": t.session_id,
         "in_progress": t.in_progress,
+        "modes": t.verbose_mode(),
         "players": [x.username for x in t.players.all()],
     } for t in tournaments]}
 

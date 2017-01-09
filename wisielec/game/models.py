@@ -28,11 +28,14 @@ def get_verbose_modifiers(modifiers):
     """
     Parses the list of modifiers and returns a verbose string.
     """
-    modifier_list = modifiers.split(";")
-    if not modifier_list:
-        return MODIFIERS_VERBOSE["no_modifiers"]
+    if modifiers:
+        modifier_list = modifiers.split(";")
+        if not modifier_list:
+            return MODIFIERS_VERBOSE["no_modifiers"]
+        else:
+            return ", ".join([MODIFIERS_VERBOSE.get(x, "") for x in modifier_list if x in MODIFIERS_VERBOSE.keys()])
     else:
-        return ", ".join([MODIFIERS_VERBOSE.get(x, "") for x in modifier_list if x in MODIFIERS_VERBOSE.keys()])
+        return "Eutanazol"
 
 
 class Game(models.Model):

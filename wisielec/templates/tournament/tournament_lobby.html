@@ -12,9 +12,9 @@
                 location.href = "/game/g/" + bread.game + "/";
             }
         };
-        socket.onopen = socket_connect();
-        socket.onerror = socket_error(e);
-        socket.onclose = socket_reconnect(e);
+        socket.onopen = socket_connect;
+        socket.onerror = socket_error;
+        socket.onclose = socket_reconnect;
     </script>
 
     <div class="col-md-8">

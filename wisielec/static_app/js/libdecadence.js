@@ -133,6 +133,39 @@ function socket_connect() {
     show_info_block("success", "Połączono z serwerem.", default_options)
 }
 
+function refresh_your_tournaments() {
+    /*
+        Uses ajax to get a list of all tournaments.
+     */
+    // create Ajax request
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/api/v1/tournament/?in_progress=1', true);
+
+    // connect signal that gets fired up after request is finished
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                var response = JSON.parse(xhr.responseText);
+                var list = document.getElementById("your-tournament-list");
+                list.innerHTML = "";
+                for (var i=0; i<response.tournaments.length; i++) {
+                    include_from_template("#your-tournament-list", "includes/decadence/tournament_item.html",
+                        {
+                            "session_id": response.tournaments[i].session_id,
+                            "name": response.tournaments[i].name,
+                            "modes": response.tournaments[i].modes
+                        }, "beforeEnd");
+                }
+            } else {
+                // stuff broke, show error
+                show_info_block("danger", "Odświeżenie listy turniejów nie powiodło się.", default_options);
+            }
+        }
+    };
+    // send a request
+    xhr.send(null);
+}
+
 function create_game(modifiers, phrase) {
     /*
         Uses ajax to create a game with given parameters.

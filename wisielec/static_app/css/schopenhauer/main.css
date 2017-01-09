@@ -106,6 +106,22 @@ a {
   box-sizing: border-box;
   border: 3px solid lightblue; }
 
+.title {
+  text-align: center; }
+
+#your-tournament-list .tournament:first-child {
+  border-top: none;
+  padding-top: 0px; }
+
+.tournament {
+  border-top: 1px solid #ccc;
+  padding-top: 10px; }
+  .tournament .tournament-modes {
+    font-size: 8pt;
+    color: #999; }
+  .tournament .tournament-join-btn {
+    margin-left: 5px; }
+
 /*!
  * Bootstrap v3.3.7 (http://getbootstrap.com)
  * Copyright 2011-2016 Twitter, Inc.

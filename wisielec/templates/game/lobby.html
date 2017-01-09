@@ -23,8 +23,8 @@
                 update_players("players-list", String(players).split(","));
             }
         };
-        socket.onerror = socket_error(e);
-        socket.onclose = socket_reconnect_silent(e);
+        socket.onerror = socket_error;
+        socket.onclose = socket_reconnect_silent;
 
         function append_game(session_id) {
             if (!document.getElementById("game-" + session_id)) {
@@ -52,20 +52,14 @@
             {% if request.user.is_authenticated %}
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    Turnieje
+                    Twoje turnieje
                     <div class="pull-right">
                         <a href="{% url "new_tournament_view" %}" type="submit" class="btn btn-sm btn-info"><i class="fa fa-plus"></i> Nowy turniej</a>
                     </div>
                 </div>
                 <div class="panel-body">
-                    <div id="tournament-list">
-                        {% comment %}{% if not tournaments %}Nie uczestniczysz w żadnym turnieju.{% else %}
-                            {% for tournament in tournaments %}
-                                <div>
-                                    <a href="{% url 'tournament_view' tournament.session_id %}">{{ tournament.name }}</a>
-                                </div>
-                            {% endfor %}
-                        {% endif %}{% endcomment %}
+                    <div id="your-tournament-list">
+                        Ładowanie...
                     </div>
                 </div>
             </div>
@@ -73,10 +67,14 @@
             <div class="panel panel-default">
                 <div class="panel-heading">Gracze</div>
                 <div class="panel-body">
-                    <div id="players-list">nie żyją</div>
+                    <div id="players-list">Ładowanie...</div>
                 </div>
             </div>
             {% include "includes/chatbox.html" with chat_context="lobby" %}
         </div>
     </div>
+
+    <script>
+        refresh_your_tournaments();
+    </script>
 {% endblock %}

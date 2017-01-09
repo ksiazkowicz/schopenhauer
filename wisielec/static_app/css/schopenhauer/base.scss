@@ -89,3 +89,13 @@ a { color: $blood-red; }
 .title {
   text-align: center;
 }
+
+#your-tournament-list .tournament:first-child { border-top: none; padding-top: 0px; }
+
+.tournament {
+  border-top: 1px solid #ccc; padding-top: 10px;
+  .tournament-modes {
+    font-size: 8pt; color: #999;
+  }
+  .tournament-join-btn { margin-left: 5px; }
+}
