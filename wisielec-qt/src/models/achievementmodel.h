@@ -9,7 +9,7 @@ class AchievementModel : public QObject
     Q_OBJECT
     Q_PROPERTY(QString name READ getName WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(QString description READ getDescription WRITE setDescription NOTIFY descriptionChanged)
-    Q_PROPERTY(QString icon READ getName WRITE setName NOTIFY nameChanged)
+    Q_PROPERTY(QString icon READ getIcon WRITE setIcon NOTIFY iconChanged)
     Q_PROPERTY(bool unlocked READ getUnlocked WRITE setUnlocked NOTIFY unlockedChanged)
 public:
     explicit AchievementModel(QObject *parent = 0) : QObject(parent) {

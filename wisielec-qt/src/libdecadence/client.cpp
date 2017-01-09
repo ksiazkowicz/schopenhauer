@@ -186,6 +186,7 @@ void SchopenhauerClient::parseTournaments(QString reply) {
         tournament->setName(json["name"].toString());
         tournament->setSessionId(sessionId);
         tournament->setInProgress(json["in_progress"].toBool());
+        tournament->setModes(json["modes"].toString());
 
         // parse players array
         QJsonArray players = json["players"].toArray();
@@ -196,7 +197,6 @@ void SchopenhauerClient::parseTournaments(QString reply) {
 
         // set players list
         tournament->setPlayerList(playerList);
-        qDebug() << playerList;
 
         // add to our map and push out a signal
         tournaments.insert(sessionId, tournament);

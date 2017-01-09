@@ -1,10 +1,11 @@
 #include "api.h"
 
+
 SchopenhauerApi::SchopenhauerApi(Settings *appSettings, QObject *parent) : QObject(parent)
 {
     // initialize api things
     apiUrl = "127.0.0.1:8000";
-    //apiUrl = "schopenhauer.krojony.pl";
+    apiUrl = "schopenhauer.krojony.pl";
     sessionToken = "";
 
     // and auth things
@@ -104,25 +105,22 @@ void SchopenhauerApi::getRanking() {
 }
 
 void SchopenhauerApi::parseReply(QNetworkReply *reply) {
+    // get content and parse it as JSON Object
     QString content = reply->readAll();
     QJsonDocument jsonResponse = QJsonDocument::fromJson(content.toUtf8());
     QJsonObject jsonObject = jsonResponse.object();
 
-    qDebug() << content;
+    // get url for figuring out what exactly have we got
+    QString url = reply->url().toString();
 
-    if (jsonObject.keys().contains("result")) {
-        qDebug() << "REZULTNELO SIE UWAGA ------------";
-        qDebug() << jsonObject["result"].toString();
-        emit omgToDziala();
-        this->getTournamentList();
-        qDebug() << "no dzienki";
+    if (url.contains("/api/v1/tournament")) {
+        // we're dealing with tournaments here
+        if (jsonObject.keys().contains("tournaments"))
+            emit foundTournaments(content);
+        return;
     }
 
-    if (jsonObject.keys().contains("tournaments") && reply->url().toString().contains("/api/v1/tournament")) {
-        emit foundTournaments(content);
-    }
-
-    if (jsonObject.keys().contains("achievements")) {
+    if (url.contains("/api/v1/user") && url.contains("/achievements")) {
         // this request should contain achievements. first, let's check for which user are those though
         UserModel* user;
         // check if either me or viewedUser is defined and compare the username
@@ -130,6 +128,7 @@ void SchopenhauerApi::parseReply(QNetworkReply *reply) {
             if (reply->url().toString().contains("/user/"+this->me->getUsername())) user = me;
         else if (this->viewedUser)
             if (reply->url().toString().contains("/user/"+this->viewedUser->getUsername())) user = viewedUser;
+
 
         // don't continue if no user was found
         if (user) {
@@ -151,64 +150,87 @@ void SchopenhauerApi::parseReply(QNetworkReply *reply) {
             // update progress variable
             user->setProgress(jsonObject["progress"].toInt());
         }
+        // nothing to do here
+        return;
     }
 
-    if (jsonObject.keys().contains("username")) {
-        UserModel* user;
+    if (url.contains("/api/v1/user")) {
+        if (jsonObject.keys().contains("username")) {
+            UserModel* user;
 
-        bool updatingMe = false;
-        if (reply->url().toString().contains("/user/"+tempUsername) && !tempUsername.isEmpty()) {
-            user = viewedUser;
-            tempUsername = "";
-        } else {
-            user = me;
-            updatingMe = true;
+            bool updatingMe = false;
+            if (reply->url().toString().contains("/user/"+tempUsername) && !tempUsername.isEmpty()) {
+                user = viewedUser;
+                tempUsername = "";
+            } else {
+                user = me;
+                updatingMe = true;
+            }
+
+            if (jsonObject["authenticated"].toBool()) {
+                user->setUsername(jsonObject["username"].toString());
+                user->setAvatar(jsonObject["avatar"].toString());
+                user->setScore(jsonObject["score"].toDouble());
+                user->setPosition(jsonObject["position"].toInt());
+                user->setWonGames(jsonObject["won_games"].toInt());
+                user->setLostGames(jsonObject["lost_games"].toInt());
+                user->setWonTournaments(jsonObject["won_tournaments"].toInt());
+                user->setLostTournaments(jsonObject["lost_tournaments"].toInt());
+            } else {
+                user->reset();
+            }
+
+            if (!expectedUsername.isEmpty()) {
+                if (user->getUsername() == expectedUsername)
+                    emit authSuccess();
+                else handleFailure("Token jest nieprawidłowy. Spróbuj zalogować się ponownie.");
+                expectedUsername = "";
+            }
+
+            emit userChanged();
+            emit viewedUserChanged();
+
+            // nothing to do here
+            return;
         }
-
-        if (jsonObject["authenticated"].toBool()) {
-            user->setUsername(jsonObject["username"].toString());
-            user->setAvatar(jsonObject["avatar"].toString());
-            user->setScore(jsonObject["score"].toDouble());
-            user->setPosition(jsonObject["position"].toInt());
-            user->setWonGames(jsonObject["won_games"].toInt());
-            user->setLostGames(jsonObject["lost_games"].toInt());
-            user->setWonTournaments(jsonObject["won_tournaments"].toInt());
-            user->setLostTournaments(jsonObject["lost_tournaments"].toInt());
-        } else {
-            user->reset();
-        }
-
-        if (!expectedUsername.isEmpty()) {
-            if (user->getUsername() == expectedUsername)
-                emit authSuccess();
-            else handleFailure("Token jest nieprawidłowy. Spróbuj zalogować się ponownie.");
-            expectedUsername = "";
-        }
-
-        emit userChanged();
-        emit viewedUserChanged();
     }
 
-    if (jsonObject.keys().contains("players")) {
-        // assume it's the ranking list
-        QJsonArray playersArray = jsonObject["players"].toArray();
+    if (url.contains("/api/v1/ranking")) {
+        if (jsonObject.keys().contains("players")) {
+            // assume it's the ranking list
+            QJsonArray playersArray = jsonObject["players"].toArray();
 
-        // don't proceed if there isn't actually any data though
-        if (!playersArray.isEmpty()) {
-            // clear the list
-            bestPlayers.clear();
-            // iterate through it and append all players
-            for (int i=0; i < playersArray.size(); i++) {
-                QJsonObject playerJson = playersArray.at(i).toObject();
-                RankingModel *player = new RankingModel();
-                player->setUsername(playerJson["username"].toString());
-                player->setScore((float)(playerJson["score"].toDouble()));
-                player->setPosition(playerJson["position"].toInt());
-                bestPlayers.append(player);
+            // don't proceed if there isn't actually any data though
+            if (!playersArray.isEmpty()) {
+                // clear the list
+                bestPlayers.clear();
+                // iterate through it and append all players
+                for (int i=0; i < playersArray.size(); i++) {
+                    QJsonObject playerJson = playersArray.at(i).toObject();
+                    RankingModel *player = new RankingModel();
+                    player->setUsername(playerJson["username"].toString());
+                    player->setScore((float)(playerJson["score"].toDouble()));
+                    player->setPosition(playerJson["position"].toInt());
+                    bestPlayers.append(player);
+                }
+                emit rankingChanged();
             }
             emit rankingChanged();
         }
-        emit rankingChanged();
+        // nothing to do here
+        return;
+    }
+
+
+    qDebug() << url;
+    qDebug() << content;
+
+    if (jsonObject.keys().contains("result")) {
+        qDebug() << "REZULTNELO SIE UWAGA ------------";
+        qDebug() << jsonObject["result"].toString();
+        emit omgToDziala();
+        this->getTournamentList();
+        qDebug() << "no dzienki";
     }
 }
 

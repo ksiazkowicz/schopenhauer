@@ -2,6 +2,7 @@
 #define USERMODEL_H
 
 #include <QObject>
+#include <QDebug>
 #include <QVariant>
 #include "AchievementModel.h"
 
@@ -78,6 +79,7 @@ public:
         achievement->setDescription(description);
         achievement->setIcon(icon);
         achievement->setUnlocked(unlocked);
+        this->achievements.append(achievement);
     }
 
 signals:

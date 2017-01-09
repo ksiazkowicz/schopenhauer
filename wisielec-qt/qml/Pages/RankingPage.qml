@@ -22,18 +22,23 @@ Page {
 
         ListView {
             id: listView1
-            width: 300
-            height: 400
+            width: parent.width
+            height: parent.height - refreshButton.height
             Layout.fillWidth: true
             Layout.fillHeight: true
-            delegate: Item {
-                x: 5
+            delegate: ItemDelegate {
                 width: parent.width
-                height: 21
+                height: row1.height+20
+                onClicked: {
+                    if (modelData.username != api.user.username) {
+                        api.getUserData(modelData.username)
+                        switchToProfile()
+                    } else { swipeView.currentIndex = 3; }
+                }
                 RowLayout {
                     id: row1
                     spacing: 10
-                    width: parent.width-10
+                    anchors { margins: 10; top: parent.top; left: parent.left; right: parent.right; }
                     Text {
                         text: modelData.position
                         font.pixelSize: 14
@@ -43,6 +48,7 @@ Page {
                     Text {
                         text: modelData.username
                         font.pixelSize: 14
+                        font.weight: modelData.username == api.user.username ? Font.Bold : Font.Normal
                         anchors.verticalCenter: parent.verticalCenter
                     }
                     Text {
