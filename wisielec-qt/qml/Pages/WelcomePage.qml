@@ -31,12 +31,12 @@ Page {
             top: label2.bottom
             topMargin: 20;
             bottom: parent.bottom
-            bottomMargin: 20
+            bottomMargin: 0
             right: parent.right
             left: parent.left
         }
 
-        contentHeight: column1.height
+        contentHeight: tournamentHeader.height + tournamentList.contentHeight + antisocialHeader.height
         Column {
             id: column1
             anchors.fill: parent

@@ -142,7 +142,7 @@ void SchopenhauerApi::parseReply(QNetworkReply *reply) {
 
     if (url.contains("/api/v1/user") && url.contains("/achievements")) {
         // this request should contain achievements. first, let's check for which user are those though
-        UserModel* user;
+        UserModel* user = 0;
         // check if either me or viewedUser is defined and compare the username
         if (this->me)
             if (reply->url().toString().contains("/user/"+this->me->getUsername())) user = me;

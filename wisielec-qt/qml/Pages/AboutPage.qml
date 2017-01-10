@@ -87,7 +87,7 @@ Page {
             right: parent.right;
         }
         ScrollBar.vertical: ScrollBar {}
-        contentHeight: column.height
+        contentHeight: statsContainer.height + 2 + achievementBlock.height + 2
         z: -2
 
         Column {
@@ -206,7 +206,7 @@ Page {
             }
 
             Rectangle {
-                id: achievmentBlock
+                id: achievementBlock
                 height: achievementView.contentHeight + 40
                 color: "#ffffff"
                 anchors { left: parent.left; right: parent.right }
