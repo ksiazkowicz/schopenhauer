@@ -315,7 +315,7 @@ void SchopenhauerApi::getTournamentRounds(QString sessionId) {
 }
 
 void SchopenhauerApi::getGameInfo(QString sessionId) {
-    manager->get(QNetworkRequest(QUrl(getUrl(Http, "/api/v1/game/"+sessionId+"//", true))));
+    manager->get(QNetworkRequest(QUrl(getUrl(Http, "/api/v1/game/"+sessionId+"/", true))));
 }
 
 void SchopenhauerApi::invitePlayerToTournament(QString tournament, QString username) {

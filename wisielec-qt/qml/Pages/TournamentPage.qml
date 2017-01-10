@@ -250,7 +250,6 @@ Page {
                             enabled: modelData.inProgress()
                             onClicked: {
                                 var game_sessionId = modelData.getGameForPlayer(api.user.username);
-                                console.log("dupa "+ game_sessionId);
                                 if (game_sessionId) {
                                     stack.push("qrc:/Pages/GamePage.qml")
                                     gameClient.join_game(game_sessionId);

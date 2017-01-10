@@ -62,8 +62,9 @@ void SchopenhauerClient::guess_letter(QString letter) {
 void SchopenhauerClient::join_game(QString _new_id) {
     this->session_id = _new_id;
     api->getGameInfo(_new_id);
+    qDebug() << this->session_id;
     socket.close();
-    socket.open(QUrl(api->getUrl(SchopenhauerApi::Websocket,"/game/" + this->session_id +"/")));
+    socket.open(QUrl(api->getUrl(SchopenhauerApi::Websocket,"/game/" + this->session_id)));
 }
 
 void SchopenhauerClient::new_game() {
