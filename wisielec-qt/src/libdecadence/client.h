@@ -55,6 +55,7 @@ public:
     Q_INVOKABLE void switchChatChannel(QString channel);
 
     Q_INVOKABLE void joinTournament(QString sessionId);
+    Q_INVOKABLE void leaveTournament();
     Q_INVOKABLE QString currentTournamentName();
     Q_INVOKABLE QString currentTournamentModes();
     Q_INVOKABLE QString getTournamentId() { return currentTournamentId; }

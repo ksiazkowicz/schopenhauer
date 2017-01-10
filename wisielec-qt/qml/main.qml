@@ -37,7 +37,7 @@ ApplicationWindow {
             if (depth == 1) {
                 // if we're logged in, assume we went back to lobby
                 if (api.user.username != "AnonymousUser")
-                    gameClient.switchChatChannel("lobby");
+                    gameClient.leaveTournament();
             }
         }
     }

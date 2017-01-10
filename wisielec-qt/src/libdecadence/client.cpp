@@ -34,10 +34,10 @@ SchopenhauerClient::SchopenhauerClient(SchopenhauerApi *api, QObject *parent) : 
 }
 
 void SchopenhauerClient::onStateChanged(QAbstractSocket::SocketState state) {
-    qDebug() << "socket jest na" << state;
-    QWebSocket* socket = (QWebSocket*)QObject::sender();
+    //qDebug() << "socket jest na" << state;
+    /*QWebSocket* socket = (QWebSocket*)QObject::sender();
     if (socket->error() != QAbstractSocket::UnknownSocketError)
-        qDebug() << socket->errorString();
+        qDebug() << socket->errorString();*/
 }
 
 void SchopenhauerClient::refresh_lobby() {
@@ -178,6 +178,7 @@ void SchopenhauerClient::invalidateSockets() {
     qDebug() << "Invalidating sockets";
     this->refresh_lobby();
     this->switchChatChannel(currentChatRoom);
+    this->leaveTournament();
 }
 
 void SchopenhauerClient::parseTournaments(QString reply) {
@@ -287,6 +288,14 @@ void SchopenhauerClient::joinTournament(QString sessionId) {
 
     // connect to tournament lobby
     tournament_socket.open(QUrl(api->getUrl(SchopenhauerApi::Websocket, "/tournament/"+sessionId)));
+}
+
+void SchopenhauerClient::leaveTournament() {
+    // return to lobby
+    this->switchChatChannel("lobby");
+
+    currentTournamentId = "";
+    tournament_socket.close();
 }
 
 QString SchopenhauerClient::currentTournamentName() {
