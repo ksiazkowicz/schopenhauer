@@ -87,14 +87,16 @@ void SchopenhauerClient::onContentReceived(QString message)
         }
 
         if (jsonObject["session_id"].toString() == session_id) {
-            progress = jsonObject["progress"].toString();
-            score = jsonObject["score"].toInt();
-            QString letter = jsonObject["letter"].toString();
-            mistakes = jsonObject["mistakes"].toInt();
-            used_chars.append(letter);
-            emit progress_changed();
-            emit score_changed();
-            emit mistakes_changed();
+            if (jsonObject.keys().contains("progress")) {
+                progress = jsonObject["progress"].toString();
+                score = jsonObject["score"].toInt();
+                QString letter = jsonObject["letter"].toString();
+                mistakes = jsonObject["mistakes"].toInt();
+                used_chars.append(letter);
+                emit progress_changed();
+                emit score_changed();
+                emit mistakes_changed();
+            }
         }
     }
 }
