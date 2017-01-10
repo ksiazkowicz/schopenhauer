@@ -35,5 +35,6 @@
     </qresource>
     <qresource prefix="/Components">
         <file alias="ChatBox.qml">qml/Components/ChatBox.qml</file>
+        <file alias="BlockHeader.qml">BlockHeader.qml</file>
     </qresource>
 </RCC>

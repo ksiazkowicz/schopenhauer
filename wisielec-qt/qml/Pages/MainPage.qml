@@ -8,10 +8,10 @@ Page {
         currentIndex: tabBar.currentIndex
 
         WelcomePage { id: welcomePage }
-        LobbyPage {
+        /*LobbyPage {
             new_button.onClicked: gameClient.refresh_lobby()
             newer_button.onClicked: gameClient.new_game()
-        }
+        }*/
         RankingPage { id: rankingPage }
         AboutPage { id: aboutPage }
     }
@@ -23,10 +23,10 @@ Page {
             font.family: "Segoe UI"
             text: qsTr("witaj")
         }
-        TabButton {
+        /*TabButton {
             font.family: "Segoe UI"
             text: qsTr("gry")
-        }
+        }*/
 
         TabButton {
             font.family: "Segoe UI"
@@ -38,14 +38,14 @@ Page {
         }
         onCurrentIndexChanged: {
             switch (currentIndex) {
-            case 2: { api.getRanking(); break; };
-            case 3: { aboutPage.viewingMe = true; api.getUserData(); break; };
+            case 1: { api.getRanking(); break; };
+            case 2: { aboutPage.viewingMe = true; api.getUserData(); break; };
             }
         }
     }
 
     function switchToProfile() {
-        swipeView.currentIndex = 3
+        swipeView.currentIndex = 2
         aboutPage.viewingMe = false
     }
 }

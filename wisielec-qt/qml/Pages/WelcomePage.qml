@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.0
+import "../Components"
 
 Page {
     id: welcomePage
@@ -36,41 +37,16 @@ Page {
             left: parent.left
         }
 
-        contentHeight: tournamentHeader.height + tournamentList.contentHeight + antisocialHeader.height
+        contentHeight: column1.implicitHeight
         Column {
             id: column1
             anchors.fill: parent
-
-            Rectangle {
-                height: 1
-                color: "#8f8f8f"
-                anchors { right: parent.right; left: parent.left; }
-            }
-
-            RowLayout {
-                id: tournamentHeader
-                height: 42
-                anchors { right: parent.right; left: parent.left; margins: 10 }
-
-                Label {
-                    id: tournamentHeaderLabel
-                    text: qsTr("Trwające turnieje")
-                    Layout.fillWidth: true
-                    font.bold: true
-                    font.pointSize: 11
-                }
-
-                Button {
-                    text: qsTr("Utwórz!")
-                    onClicked: stack.push("qrc:/Pages/NewTournamentPage.qml")
-                }
-
-                Label {
-                    id: tournamentHeaderIcon
-                    text: qsTr("\uE7FC")
-                    font.family: "Segoe MDL2 Assets"
-                    font.pixelSize: 24
-                }
+            BlockHeader {
+                icon: qsTr("\uE7FC")
+                title: qsTr("Turnieje w których uczestniczysz")
+                button.text: qsTr("Utwórz!")
+                button.onClicked: stack.push("qrc:/Pages/NewTournamentPage.qml")
+                hasButton: true
             }
             ListView {
                 id: tournamentList
@@ -110,28 +86,89 @@ Page {
                 }
                 model: gameClient.tournaments
             }
-            Rectangle {
-                height: 1
-                color: "#8f8f8f"
-                anchors { right: parent.right; left: parent.left; }
+            Label {
+                anchors { horizontalCenter: parent.horizontalCenter }
+                color: "#666"
+                verticalAlignment: Text.AlignVCenter
+                height: tournamentList.count == 0 ? paintedHeight + 40 : 0
+                clip: true
+                text: "Nie uczestniczysz w żadnych turniejach"
             }
-            RowLayout {
-                id: antisocialHeader
-                height: 42
-                anchors { right: parent.right; left: parent.left; margins: 10 }
 
-                Label {
-                    id: antisocialHeaderLabel
-                    text: qsTr("Nie masz znajomych?")
-                    Layout.fillWidth: true
-                    font.bold: true
-                    font.pointSize: 11
+
+            BlockHeader {
+                icon: qsTr("\uE716")
+                title: qsTr("Grają teraz")
+                hasButton: false
+            }
+            Rectangle {
+                id: lobbyContainer
+                anchors { left: parent.left; right: parent.right; }
+                height: playersRow.implicitHeight + 40
+                Row {
+                    id: playersRow
+                    anchors.topMargin: 10
+                    spacing: 10;
+                    anchors { left: parent.left; right: parent.right; margins: 20; }
+                    Repeater {
+                        id: playersList
+                        model: gameClient.lobbyPlayers
+                        Button {
+                            text: modelData;
+                            onClicked: {
+                                api.getUserData(modelData)
+                                switchToProfile()
+                            }
+                        }
+                    }
                 }
+                Label {
+                    anchors { horizontalCenter: parent.horizontalCenter }
+                    color: "#666"
+                    verticalAlignment: Text.AlignVCenter
+                    height: playersList.count == 0 ? paintedHeight : 0
+                    clip: true
+                    text: "Nie ma żadnych graczy"
+                }
+            }
+            BlockHeader {
+                title: qsTr("Nie masz znajomych?")
+                hasButton: true
+                button.text: qsTr("Zagraj samemu!")
+                button.onClicked: stack.push("qrc:/Pages/NewGamePage.qml")
+            }
+            BlockHeader {
+                title: qsTr("Wróć do tych gier")
+                hasButton: false
+            }
+            Label {
+                anchors { horizontalCenter: parent.horizontalCenter }
+                color: "#666"
+                verticalAlignment: Text.AlignVCenter
+                height: gamesList.count == 0 ? paintedHeight + 40 : 0
+                clip: true
+                text: "Nie masz żadnych gier"
+            }
 
-                Button {
-                    id: antisocialButton
-                    text: qsTr("Zagraj samemu!")
-                    onClicked: stack.push("qrc:/Pages/NewGamePage.qml")
+            ListView {
+                id: gamesList
+                interactive: false
+                model: gameClient.games
+                anchors { left: parent.left; right: parent.right; }
+                delegate: ItemDelegate {
+                    width: parent.width
+                    height: 64
+                    anchors { left: parent.left; leftMargin: 20; right: parent.right; rightMargin: 20 }
+                    onClicked: {
+                        stack.push("qrc:/Pages/GamePage.qml")
+                        gameClient.join_game(modelData.sessionId)
+                    }
+                    Label {
+                        text: modelData.progress
+                        anchors { fill: parent; margins: 15; }
+                        wrapMode: Text.WordWrap
+                        font.pointSize: 12
+                    }
                 }
             }
         }

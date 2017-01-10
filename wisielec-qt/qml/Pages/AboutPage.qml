@@ -87,7 +87,7 @@ Page {
             right: parent.right;
         }
         ScrollBar.vertical: ScrollBar {}
-        contentHeight: statsContainer.height + 2 + achievementBlock.height + 2
+        contentHeight: column.implicitHeight
         z: -2
 
         Column {

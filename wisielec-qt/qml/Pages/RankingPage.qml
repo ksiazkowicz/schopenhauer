@@ -34,7 +34,7 @@ Page {
                     if (modelData.username != api.user.username) {
                         api.getUserData(modelData.username)
                         switchToProfile()
-                    } else { swipeView.currentIndex = 3; }
+                    } else { swipeView.currentIndex = 2; }
                 }
                 Rectangle {
                     height: 1
