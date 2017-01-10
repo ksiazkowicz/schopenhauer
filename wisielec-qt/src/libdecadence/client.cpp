@@ -236,17 +236,20 @@ void SchopenhauerClient::onChatContentReceived(QString message) {
 }
 
 void SchopenhauerClient::switchChatChannel(QString channel) {
-    // clear current message queue
-    chatMessages.clear();
-    emit chatMessagesChanged();
+    // ignore if we're in that channel unless our socket is dead
+    if (currentChatRoom != channel || chat_socket.state() != QAbstractSocket::ConnectedState) {
+        // clear current message queue
+        chatMessages.clear();
+        emit chatMessagesChanged();
 
-    // change current channel name
-    currentChatRoom = channel;
-    emit channelNameChanged();
+        // change current channel name
+        currentChatRoom = channel;
+        emit channelNameChanged();
 
-    // reconnect
-    chat_socket.close();
-    chat_socket.open(QUrl(api->getUrl(SchopenhauerApi::Websocket, "/chat/"+channel)));
+        // reconnect
+        chat_socket.close();
+        chat_socket.open(QUrl(api->getUrl(SchopenhauerApi::Websocket, "/chat/"+channel)));
+    }
 }
 
 QString SchopenhauerClient::getChannelName() {

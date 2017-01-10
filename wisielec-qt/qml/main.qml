@@ -33,6 +33,13 @@ ApplicationWindow {
     StackView {
         id: stack
         anchors { top: parent.top; left: parent.left; right: parent.right; bottom: toolbar.top }
+        onDepthChanged: {
+            if (depth == 1) {
+                // if we're logged in, assume we went back to lobby
+                if (api.user.username != "AnonymousUser")
+                    gameClient.switchChatChannel("lobby");
+            }
+        }
     }
 
     ToolBar {
