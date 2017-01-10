@@ -24,7 +24,10 @@ def tournament_connect(message):
 @channel_session
 @channel_session_user
 def tournament_disconnect(message):
-    tournament_id = message.channel_session['tournament']
+    try:
+        tournament_id = message.channel_session['tournament']
+    except:
+        tournament_id = message.content['path'].replace("/tournament/", "")
     Group("tournament-%s" % tournament_id).discard(message.reply_channel)
 
 

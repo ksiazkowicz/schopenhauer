@@ -109,7 +109,7 @@ def tournament_scoreboard_api(request, session_id):
             {
                 "username": x.username,
                 "score": round_winners.count(x),
-            } for x in tournament.players],
+            } for x in tournament.players.all()],
     }
 
     return HttpResponse(json.dumps(response), content_type="application/json")
@@ -134,7 +134,7 @@ def tournament_end_api(request, session_id):
     # prepare response
     response = {
         "session_id": session_id,
-        "winner": tournament.winner if tournament.winner else "",
+        "winner": tournament.winner.username if tournament.winner else "",
         "rounds": tournament.current_round,
     }
 
