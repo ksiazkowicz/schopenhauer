@@ -51,17 +51,7 @@ def tournament_view(request, session_id, template="tournament/tournament_lobby.h
 
     if request.POST:
         if "end-tournament" in request.POST.keys():
-            tournament.in_progress = False
-
-            if tournament.winner:
-                winner = tournament.winner
-                winner.won_tournaments += 1
-                winner.save()
-            for player in tournament.players.all():
-                if player != tournament.winner:
-                    player.lost_tournaments += 1
-                    player.save()
-            tournament.save()
+            tournament.end_tournament()
             return HttpResponseRedirect("/game/t/%s" % tournament.session_id)
 
     return render(request, template, locals())

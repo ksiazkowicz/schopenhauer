@@ -64,6 +64,83 @@ def tournament_invite_api(request, session_id=None):
     return HttpResponse(json.dumps(response), content_type="application/json")
 
 
+def tournament_rounds_api(request, session_id):
+    """
+    Returns a list of round for given tournament.
+    :param session_id: tournament ID
+    :return: json of all rounds and their winners
+    """
+    # get tournament
+    tournament = get_object_or_404(Tournament, session_id=session_id)
+    rounds = tournament.round_set.all().order_by("round_id")
+
+    # prepare response
+    response = {
+        "session_id": session_id,
+        "rounds": [{
+            "id": x.round_id,
+            "winner": x.winner.username if x.winner else "",
+            "status": x.status,
+            "games": [{
+                "session_id": y.session_id,
+                "player": y.player.username if y.player else "",
+            } for y in x.games.all()],
+        } for x in rounds]
+    }
+
+    return HttpResponse(json.dumps(response), content_type="application/json")
+
+
+def tournament_scoreboard_api(request, session_id):
+    """
+    Returns the tournament scoreboard.
+    :param session_id: tournament ID
+    :return: list of players and their scores
+    """
+    # get tournament
+    tournament = get_object_or_404(Tournament, session_id=session_id)
+    round_winners = [x.winner for x in tournament.round_set.all()]
+
+    # prepare response
+    response = {
+        "session_id": session_id,
+        "winner": tournament.winner.username if tournament.winner else "",
+        "players": [
+            {
+                "username": x.username,
+                "score": round_winners.count(x),
+            } for x in tournament.players],
+    }
+
+    return HttpResponse(json.dumps(response), content_type="application/json")
+
+
+def tournament_end_api(request, session_id):
+    """
+    Ends the tournament with given ID
+    :param session_id: tournament ID
+    :return: json containing final result (winner, his points etc.)
+    """
+    # get tournament
+    tournament = get_object_or_404(Tournament, session_id=session_id)
+
+    # check for permissions
+    if request.user != tournament.admin:
+        return HttpResponseServerError("<h1>Server error</h1>")
+
+    # end the tournament
+    tournament.end_tournament()
+
+    # prepare response
+    response = {
+        "session_id": session_id,
+        "winner": tournament.winner if tournament.winner else "",
+        "rounds": tournament.current_round,
+    }
+
+    return HttpResponse(json.dumps(response), content_type="application/json")
+
+
 def tournament_api(request, session_id=None):
     """
     Returns list of tournaments for player.

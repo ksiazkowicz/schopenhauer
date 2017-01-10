@@ -311,6 +311,22 @@ class Tournament(models.Model):
             # push out info to everyone
             new_tournament_round.send(sender=self.__class__, instance=self, game_id=game.session_id, player=player)
 
+    def end_tournament(self):
+        """
+        Ends the tournament and updates the scoreboard.
+        """
+        self.in_progress = False
+
+        if self.winner:
+            winner = self.winner
+            winner.won_tournaments += 1
+            winner.save()
+        for player in self.players.all():
+            if player != self.winner:
+                player.lost_tournaments += 1
+                player.save()
+        self.save()
+
     @property
     def winner(self):
         """

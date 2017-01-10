@@ -9,6 +9,9 @@ urlpatterns = [
 
     url(r'^tournament/create/', tournament_create_api, name='tournament_create_api'),
     url(r'^tournament/invite/', tournament_invite_api, name='tournament_invite_api'),
+    url(r'^tournament/(?P<session_id>.*)/scoreboard/', tournament_scoreboard_api, name='tournament_scoreboard_api'),
+    url(r'^tournament/(?P<session_id>.*)/rounds/$', tournament_rounds_api, name='tournament_rounds_api'),
+    url(r'^tournament/(?P<session_id>.*)/end/$', tournament_end_api, name='tournament_end_api'),
     url(r'^tournament/(?P<session_id>.*)/invite/$', tournament_invite_api, name='tournament_invite_api'),
     url(r'^tournament/(?P<session_id>.*)/new_round/$', tournament_new_round_api, name='tournament_new_round_api'),
     url(r'^tournament/(?P<session_id>.*)$', tournament_api, name='tournament_api'),
