@@ -102,6 +102,11 @@ Page {
                             color: "#555"
                         }
                     }
+                    onClicked: {
+                        busyOverlay.visible = false;
+                        stack.push("qrc:/Pages/TournamentPage.qml")
+                        gameClient.joinTournament(modelData.sessionId)
+                    }
                 }
                 model: gameClient.tournaments
             }

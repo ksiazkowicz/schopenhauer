@@ -35,6 +35,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("gameClient", &schopenhauer);
 
     qmlRegisterUncreatableType<UserModel>("schopenhauer", 1,0, "User", "because I said so");
+    qmlRegisterUncreatableType<TournamentModel>("schopenhauer", 1,0, "Tournament", "because I said so");
 
     QString renderer_string = "Unknown";
     /*int graphics_api = app_window.rendererInterface()->graphicsApi();

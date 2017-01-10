@@ -43,7 +43,7 @@ public:
     Q_INVOKABLE void newRoundTournament(QString sessionId);
 
     Q_INVOKABLE void getTournamentList();
-    //Q_INVOKABLE void getTournament(QString tournament);
+    Q_INVOKABLE void getTournament(QString sessionId);
     Q_INVOKABLE void invitePlayerToTournament(QString tournament, QString username);
 
     Q_INVOKABLE void attemptLogin(QString login, QString password);

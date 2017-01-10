@@ -20,6 +20,11 @@ SchopenhauerClient::SchopenhauerClient(SchopenhauerApi *api, QObject *parent) : 
     connect(&chat_socket, &QWebSocket::textMessageReceived, this, &SchopenhauerClient::onChatContentReceived);
     connect(&chat_socket, &QWebSocket::stateChanged, this, &SchopenhauerClient::onStateChanged);
 
+    // enable tournaments
+    currentTournamentId = "";
+    connect(&tournament_socket, &QWebSocket::textMessageReceived, this, &SchopenhauerClient::onTournamentContentReceived);
+    connect(&tournament_socket, &QWebSocket::stateChanged, this, &SchopenhauerClient::onStateChanged);
+
     // connect to lobby
     //this->refresh_lobby();
 }
@@ -201,6 +206,10 @@ void SchopenhauerClient::parseTournaments(QString reply) {
         // add to our map and push out a signal
         tournaments.insert(sessionId, tournament);
         emit tournamentsChanged();
+
+        // update tournament view
+        if (sessionId == currentTournamentId)
+            emit tournamentInfoFound();
     }
 }
 
@@ -242,8 +251,47 @@ QString SchopenhauerClient::getChannelName() {
     // returns verbose name of chat context
     if (currentChatRoom == "lobby") {
         return "Lobby";
+    } else if (currentChatRoom.startsWith("tournament-")) {
+        return "Turniej";
     } else {
         // lol stub
         return currentChatRoom;
+    }
+}
+
+void SchopenhauerClient::joinTournament(QString sessionId) {
+    api->getTournamentList();
+    this->switchChatChannel("tournament-" + sessionId);
+    currentTournamentId = sessionId;
+
+    tournament_socket.open(QUrl(api->getUrl(SchopenhauerApi::Websocket, "/tournament/"+sessionId)));
+}
+
+QString SchopenhauerClient::currentTournamentName() {
+    if (tournaments.keys().contains(currentTournamentId)) {
+        return ((TournamentModel*)(tournaments.value(currentTournamentId)))->getName();
+    } else return "Ładowanie...";
+}
+
+QString SchopenhauerClient::currentTournamentModes() {
+    if (tournaments.keys().contains(currentTournamentId)) {
+        return ((TournamentModel*)(tournaments.value(currentTournamentId)))->getModes();
+    } else return "Ładowanie...";
+}
+
+void SchopenhauerClient::onTournamentContentReceived(QString message) {
+    // parse content as JSON
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(message.toUtf8());
+    QJsonObject jsonObject = jsonResponse.object();
+
+    // if redirect, join the game
+    if (jsonObject.keys().contains("redirect")) {
+        // check if it's meant for us
+        QString username = api->getUser()->getUsername();
+        if (jsonObject["player"].toString() == username) {
+            // yeah, let's push it
+            QString sessionId = jsonObject["game"].toString();
+            emit gameFound(sessionId);
+        }
     }
 }

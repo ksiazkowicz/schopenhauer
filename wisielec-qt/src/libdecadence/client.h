@@ -26,6 +26,8 @@ class SchopenhauerClient : public QObject
     Q_PROPERTY(QVariant lobbyPlayers READ getLobbyPlayers NOTIFY lobbyPlayersChanged)
     Q_PROPERTY(QVariant chatMessages READ getChatMessages NOTIFY chatMessagesChanged)
     Q_PROPERTY(QString channelName READ getChannelName NOTIFY channelNameChanged)
+    Q_PROPERTY(QString tournamentId READ getTournamentId NOTIFY tournamentIdChanged)
+    Q_PROPERTY(TournamentModel* currentTournament READ getCurrentTournament NOTIFY tournamentIdChanged)
 
 public:
     explicit SchopenhauerClient(SchopenhauerApi *api, QObject *parent = 0);
@@ -52,6 +54,16 @@ public:
     Q_INVOKABLE void sendChatMessage(QString message_text);
     Q_INVOKABLE void switchChatChannel(QString channel);
 
+    Q_INVOKABLE void joinTournament(QString sessionId);
+    Q_INVOKABLE QString currentTournamentName();
+    Q_INVOKABLE QString currentTournamentModes();
+    Q_INVOKABLE QString getTournamentId() { return currentTournamentId; }
+    Q_INVOKABLE TournamentModel* getCurrentTournament() {
+        if (tournaments.keys().contains(currentTournamentId)) {
+            return (TournamentModel*)(tournaments.value(currentTournamentId));
+        } else return false;
+    }
+
 signals:
     void score_changed();
     void progress_changed();
@@ -65,10 +77,17 @@ signals:
     void chatMessagesChanged();
     void channelNameChanged();
 
+    void gameFound(QString sessionId);
+    void roundEnded();
+
+    void tournamentInfoFound();
+    void tournamentIdChanged();
+
 public slots:
     void onContentReceived(QString message);
     void onLobbyContentReceived(QString message);
     void onChatContentReceived(QString message);
+    void onTournamentContentReceived(QString message);
     void onStateChanged(QAbstractSocket::SocketState state);
 
     void invalidateSockets();
@@ -79,6 +98,7 @@ private:
     QWebSocket socket;
     QWebSocket lobby_socket;
     QWebSocket chat_socket;
+    QWebSocket tournament_socket;
 
     int score = 0;
     int mistakes = 0;
@@ -96,6 +116,8 @@ private:
 
     SchopenhauerApi *api;
     QString session_id;
+
+    QString currentTournamentId;
 };
 
 #endif // SCHOPENHAUERCLIENT_H

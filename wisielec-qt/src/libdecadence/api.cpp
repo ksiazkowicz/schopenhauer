@@ -119,7 +119,6 @@ void SchopenhauerApi::parseReply(QNetworkReply *reply) {
     if (url.contains("/api/v1/tournament") && url.contains("/create")) {
         QString sessionId = jsonObject["session_id"].toString();
         emit tournamentCreated(sessionId);
-        this->getTournamentList();
     }
 
     if (url.contains("/api/v1/game/create/")) {
@@ -266,6 +265,10 @@ void SchopenhauerApi::getUserAchievements(QString username) {
 
 void SchopenhauerApi::getTournamentList() {
     manager->get(QNetworkRequest(QUrl(getUrl(Http, "/api/v1/tournament/", true))));
+}
+
+void SchopenhauerApi::getTournament(QString sessionId) {
+    manager->get(QNetworkRequest(QUrl(getUrl(Http, "/api/v1/tournament/"+sessionId, true))));
 }
 
 void SchopenhauerApi::invitePlayerToTournament(QString tournament, QString username) {
