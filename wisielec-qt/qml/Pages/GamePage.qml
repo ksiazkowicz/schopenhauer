@@ -6,6 +6,7 @@ Page {
     Connections {
         target: gameClient
         onMistakesChanged: wisielecImicz.source = "qrc:/img/wis0"+(gameClient.mistakes+1)+".png"
+        onRoundEnded: stack.pop()
     }
 
     Image {

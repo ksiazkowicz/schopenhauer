@@ -20,6 +20,12 @@ Page {
         }
     }
 
+    Component.onCompleted: {
+        // refresh data
+        if (gameClient.currentTournament)
+            gameClient.joinTournament(gameClient.currentTournament.sessionId)
+    }
+
     Connections {
         target: gameClient
         onTournamentInfoFound: {
@@ -236,6 +242,7 @@ Page {
                             horizontalAlignment: Text.AlignHCenter
                             anchors { verticalCenter: parent.verticalCenter }
                             width: parent.width - 160 - playButton.width
+                            font.bold: modelData.winner == api.user.username
                         }
                         Button {
                             id: playButton
@@ -243,8 +250,11 @@ Page {
                             enabled: modelData.inProgress()
                             onClicked: {
                                 var game_sessionId = modelData.getGameForPlayer(api.user.username);
-                                stack.push("qrc:/Pages/GamePage.qml")
-                                gameClient.join_game(modelData.getGameForPlayer(game_sessionId));
+                                console.log("dupa "+ game_sessionId);
+                                if (game_sessionId) {
+                                    stack.push("qrc:/Pages/GamePage.qml")
+                                    gameClient.join_game(game_sessionId);
+                                }
                             }
                         }
                     }

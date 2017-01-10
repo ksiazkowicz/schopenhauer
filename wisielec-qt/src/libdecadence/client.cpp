@@ -9,6 +9,7 @@ SchopenhauerClient::SchopenhauerClient(SchopenhauerApi *api, QObject *parent) : 
     connect(api, &SchopenhauerApi::tournamentEnded, this, &SchopenhauerClient::endTournament);
     connect(api, &SchopenhauerApi::tournamentRoundsFound, this, &SchopenhauerClient::parseRounds);
     connect(api, &SchopenhauerApi::tournamentScoresFound, this, &SchopenhauerClient::parseScoreboard);
+    connect(api, &SchopenhauerApi::gameInfoFound, this, &SchopenhauerClient::updateGameInfo);
 
     // connect sockets to signals and slots
     connect(&socket, &QWebSocket::textMessageReceived,
@@ -60,6 +61,7 @@ void SchopenhauerClient::guess_letter(QString letter) {
 
 void SchopenhauerClient::join_game(QString _new_id) {
     this->session_id = _new_id;
+    api->getGameInfo(_new_id);
     socket.close();
     socket.open(QUrl(api->getUrl(SchopenhauerApi::Websocket,"/game/" + this->session_id +"/")));
 }
@@ -82,6 +84,11 @@ void SchopenhauerClient::onContentReceived(QString message)
     QJsonObject jsonObject = jsonResponse.object();
 
     qDebug() << jsonObject.keys();
+
+    if (jsonObject["tournament"].toString() == currentTournamentId && !currentTournamentId.isEmpty()) {
+        if (jsonObject["redirect"].toBool())
+            emit roundEnded();
+    }
 
     if (jsonObject["session_id"].toString() != "") {
         if (this->session_id == "") {
@@ -387,5 +394,22 @@ void SchopenhauerClient::parseRounds(QString reply) {
                 tournament->updateRoundGame(pk, sessionId, player);
             }
         }
+    }
+}
+
+void SchopenhauerClient::updateGameInfo(QString reply) {
+    // parse reply as JSON document
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(reply.toUtf8());
+    QJsonObject jsonObject = jsonResponse.object();
+
+    QString sessionId = jsonObject["session_id"].toString();
+
+    if (sessionId == this->session_id) {
+        this->progress = jsonObject["progress"].toString();
+        this->score = jsonObject["score"].toInt();
+        this->mistakes = jsonObject["mistakes"].toInt();
+        emit score_changed();
+        emit progress_changed();
+        emit score_changed();
     }
 }

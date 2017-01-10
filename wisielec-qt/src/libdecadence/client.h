@@ -91,6 +91,7 @@ public slots:
     void parseTournaments(QString content);
     void parseRounds(QString reply);
     void parseScoreboard(QString reply);
+    void updateGameInfo(QString reply);
 
     void endTournament(QString sessionId, QString winner, int roundCount);
 
