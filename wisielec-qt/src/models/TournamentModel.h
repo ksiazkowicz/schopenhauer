@@ -6,7 +6,8 @@
 #include <QVariant>
 #include <QList>
 #include <QStringList>
-#include "scoreboardmodel.h"
+#include "ScoreboardModel.h"
+#include "RoundModel.h"
 
 class TournamentModel : public QObject
 {
@@ -40,31 +41,65 @@ public:
 
     void setPlayer(QString username, int score, bool isWinner, bool noScore) {
         // try to find the player on scoreboard first
+        ScoreboardModel *player = 0;
         for (int i=0; i < scoreboard.count(); i++) {
-            ScoreboardModel *player = (ScoreboardModel*)scoreboard.at(i);
-            if (player->getUsername() == username) {
-                player->setIsWinner(isWinner);
-                if (!noScore)
-                    player->setScore(score);
-                emit scoreboardChanged();
-                return;
+            ScoreboardModel *fPlayer = (ScoreboardModel*)scoreboard.at(i);
+            if (fPlayer->getUsername() == username) {
+                player = fPlayer;
+                break;
             }
         }
+
         // player not found, add it to list
-        ScoreboardModel *player = new ScoreboardModel();
+        if (player == 0) {
+            player = new ScoreboardModel();
+            scoreboard.append(player);
+            emit scoreboardChanged();
+        }
+
+        // update player
         player->setUsername(username);
         if (!noScore)
             player->setScore(score);
         player->setIsWinner(isWinner);
-        scoreboard.append(player);
-        emit scoreboardChanged();
     }
 
-    void updateRounds(QString content) {
-        emit currentRoundChanged();
+    void updateRound(int pk, QString status, QString winner) {
+        // make sure we're not duplicating those though
+        RoundModel *round = 0;
+        for (int i=0; i < rounds.count(); i++) {
+            RoundModel *foundRound = (RoundModel*)rounds.at(i);
+            if (foundRound->getRoundId() == pk) {
+                round = foundRound;
+                break;
+            }
+        }
+        // create round if doesn't exist
+        if (round == 0) {
+            round = new RoundModel();
+            round->setRoundId(pk);
+            rounds.append(round);
+        }
+
+        // update data
+        round->setWinner(winner);
+        round->setStatus(status);
+
+        emit roundsChanged();
     }
 
-    int getCurrentRound() { return 3; }
+    void updateRoundGame(int pk, QString sessionId, QString player) {
+        RoundModel *round = 0;
+        for (int i=0; i < rounds.count(); i++) {
+            round = (RoundModel*)rounds.at(i);
+            if (round->getRoundId() == pk) {
+                round->setGame(player, sessionId);
+                return;
+            }
+        }
+    }
+
+    int getCurrentRound() { return rounds.count()+1; }
 
 signals:
     void sessionIdChanged();

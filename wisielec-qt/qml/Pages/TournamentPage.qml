@@ -26,6 +26,7 @@ Page {
             label1.text = gameClient.currentTournament.name;
             label2.text = gameClient.currentTournament.modes;
             playersList.model = gameClient.currentTournament.scoreboard;
+            roundList.model = gameClient.currentTournament.rounds;
             finalHeader.visible = !gameClient.currentTournament.inProgress
             finalHeader.title = "Turniej wygrał " + gameClient.currentTournament.winner
             tournamentManagementHeader.visible = !finalHeader.visible
@@ -195,10 +196,60 @@ Page {
                 }
                 model: gameClient.currentTournament ? gameClient.currentTournament.scoreboard : null
             }
-            Rectangle {
-                height: 1
-                color: "#8f8f8f"
-                anchors { right: parent.right; left: parent.left; }
+
+            BlockHeader {
+                title: "Rundy"
+            }
+            ListView {
+                id: roundList
+                anchors { left: parent.left; right: parent.right }
+                height: contentHeight
+                interactive: false
+                delegate: ItemDelegate {
+                    width: parent.width
+                    height: 20 + roundRow.implicitHeight
+                    clip: true
+                    Rectangle {
+                        height: 1
+                        color: "#aaa"
+                        anchors { left: parent.left; right: parent.right }
+                    }
+                    Row {
+                        id: roundRow
+                        anchors { left: parent.left; right: parent.right; margins: 10; top: parent.top }
+                        Label {
+                            text: modelData.roundId
+                            horizontalAlignment: Text.AlignLeft
+                            anchors { verticalCenter: parent.verticalCenter }
+                            font.pixelSize: 16
+                            width: 60
+                        }
+                        Label {
+                            text: modelData.inProgress() ? "W trakcie" : "Zakończona"
+                            horizontalAlignment: Text.AlignHCenter
+                            anchors { verticalCenter: parent.verticalCenter }
+                            width: 100
+                        }
+                        Label {
+                            text: modelData.winner ? modelData.winner : "nikt nie wygrał"
+                            color: "#555"
+                            horizontalAlignment: Text.AlignHCenter
+                            anchors { verticalCenter: parent.verticalCenter }
+                            width: parent.width - 160 - playButton.width
+                        }
+                        Button {
+                            id: playButton
+                            text: "Zagraj"
+                            enabled: modelData.inProgress()
+                            onClicked: {
+                                var game_sessionId = modelData.getGameForPlayer(api.user.username);
+                                stack.push("qrc:/Pages/GamePage.qml")
+                                gameClient.join_game(modelData.getGameForPlayer(game_sessionId));
+                            }
+                        }
+                    }
+                }
+                model: gameClient.currentTournament ? gameClient.currentTournament.rounds : null
             }
         }
     }

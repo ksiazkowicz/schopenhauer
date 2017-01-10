@@ -89,7 +89,7 @@ public slots:
     void invalidateSockets();
 
     void parseTournaments(QString content);
-    void parseRounds(QString content);
+    void parseRounds(QString reply);
     void parseScoreboard(QString reply);
 
     void endTournament(QString sessionId, QString winner, int roundCount);

@@ -177,20 +177,23 @@ void SchopenhauerClient::parseTournaments(QString reply) {
     QJsonDocument jsonResponse = QJsonDocument::fromJson(reply.toUtf8());
     QJsonObject jsonObject = jsonResponse.object();
 
-    // reset tournament map
-    tournaments.clear();
-
     // iterate through all tournaments in array
     QJsonArray array = jsonObject["tournaments"].toArray();
     for (int i=0; i<array.size(); i++) {
         // get json for specific position
         QJsonObject json = array.at(i).toObject();
 
-        // create new tournament object
-        TournamentModel* tournament = new TournamentModel();
-
         // move session id to another string, cause we're going to use it as key later
         QString sessionId = json["session_id"].toString();
+
+        TournamentModel* tournament = 0;
+        // check if already exists and create new one if doesn't
+        if (tournaments.keys().contains(sessionId)) {
+            tournament = (TournamentModel*)tournaments.value(sessionId);
+        } else {
+            tournament = new TournamentModel();
+            tournaments.insert(sessionId, tournament);
+        }
 
         // add values from JSON to our model
         tournament->setName(json["name"].toString());
@@ -204,8 +207,7 @@ void SchopenhauerClient::parseTournaments(QString reply) {
             tournament->setPlayer(players.at(i).toString(), 0, false, true);
         }
 
-        // add to our map and push out a signal
-        tournaments.insert(sessionId, tournament);
+        // push signal
         emit tournamentsChanged();
 
         // update tournament view
@@ -353,6 +355,37 @@ void SchopenhauerClient::parseScoreboard(QString reply) {
 }
 
 
-void SchopenhauerClient::parseRounds(QString content) {
-    qDebug() << "rounds lol" << content;
+void SchopenhauerClient::parseRounds(QString reply) {
+    // parse reply as JSON document
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(reply.toUtf8());
+    QJsonObject jsonObject = jsonResponse.object();
+
+    QString sessionId = jsonObject["session_id"].toString();
+
+    // check if tournament exists
+    if (tournaments.keys().contains(sessionId)) {
+        TournamentModel *tournament = ((TournamentModel*)(tournaments.value(sessionId)));
+
+        // parse the list of rounds
+        QJsonArray rounds = jsonObject["rounds"].toArray();
+        for (int i=0; i < rounds.size(); i++) {
+            // get round json
+            QJsonObject round = rounds.at(i).toObject();
+            QString status = round["status"].toString();
+            QString winner = round["winner"].toString();
+            int pk = round["id"].toInt();
+            // update round
+            tournament->updateRound(pk, status, winner);
+
+            // iterate through all games and add them too
+            QJsonArray games = round["games"].toArray();
+            for (int i=0; i < games.size(); i++) {
+                QJsonObject game = games.at(i).toObject();
+                QString sessionId = game["session_id"].toString();
+                QString player = game["player"].toString();
+                // update game
+                tournament->updateRoundGame(pk, sessionId, player);
+            }
+        }
+    }
 }
