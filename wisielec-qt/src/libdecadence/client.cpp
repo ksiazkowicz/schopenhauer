@@ -7,6 +7,8 @@ SchopenhauerClient::SchopenhauerClient(SchopenhauerApi *api, QObject *parent) : 
     connect(api, &SchopenhauerApi::updatedSessionData, this, &SchopenhauerClient::invalidateSockets);
     connect(api, &SchopenhauerApi::foundTournaments, this, &SchopenhauerClient::parseTournaments);
     connect(api, &SchopenhauerApi::tournamentEnded, this, &SchopenhauerClient::endTournament);
+    connect(api, &SchopenhauerApi::tournamentRoundsFound, this, &SchopenhauerClient::parseRounds);
+    connect(api, &SchopenhauerApi::tournamentScoresFound, this, &SchopenhauerClient::parseScoreboard);
 
     // connect sockets to signals and slots
     connect(&socket, &QWebSocket::textMessageReceived,
@@ -198,13 +200,9 @@ void SchopenhauerClient::parseTournaments(QString reply) {
 
         // parse players array
         QJsonArray players = json["players"].toArray();
-        QStringList playerList;
         for (int i=0; i < players.size(); i++) {
-            playerList.append(players.at(i).toString());
+            tournament->setPlayer(players.at(i).toString(), 0, false, true);
         }
-
-        // set players list
-        tournament->setPlayerList(playerList);
 
         // add to our map and push out a signal
         tournaments.insert(sessionId, tournament);
@@ -266,10 +264,18 @@ QString SchopenhauerClient::getChannelName() {
 }
 
 void SchopenhauerClient::joinTournament(QString sessionId) {
+    // ask API for some things
     api->getTournamentList();
+    api->getTournamentRounds(sessionId);
+    api->getTournamentScoreboard(sessionId);
+
+    // swtich channel to tournament chat
     this->switchChatChannel("tournament-" + sessionId);
+
+    // update session id
     currentTournamentId = sessionId;
 
+    // connect to tournament lobby
     tournament_socket.open(QUrl(api->getUrl(SchopenhauerApi::Websocket, "/tournament/"+sessionId)));
 }
 
@@ -310,4 +316,43 @@ void SchopenhauerClient::endTournament(QString sessionId, QString winner, int ro
         tournament->setInProgress(false);
         tournament->setWinner(winner);
     }
+}
+
+TournamentModel* SchopenhauerClient::getCurrentTournament() {
+    if (tournaments.keys().contains(currentTournamentId)) {
+        return (TournamentModel*)(tournaments.value(currentTournamentId));
+    } else return 0;
+}
+
+void SchopenhauerClient::parseScoreboard(QString reply) {
+    // parse reply as JSON document
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(reply.toUtf8());
+    QJsonObject jsonObject = jsonResponse.object();
+
+    QString sessionId = jsonObject["session_id"].toString();
+
+    // check if tournament exists
+    if (tournaments.keys().contains(sessionId)) {
+        TournamentModel *tournament = ((TournamentModel*)(tournaments.value(sessionId)));
+
+        // save winner username for reference
+        QString winner = jsonObject["winner"].toString();
+
+        // parse the list of players
+        QJsonArray players = jsonObject["players"].toArray();
+        for (int i=0; i < players.size(); i++) {
+            // get player json
+            QJsonObject player = players.at(i).toObject();
+            QString username = player["username"].toString();
+            int score = player["score"].toInt();
+
+            // update scoreboard
+            tournament->setPlayer(username, score, winner == username, false);
+        }
+    }
+}
+
+
+void SchopenhauerClient::parseRounds(QString content) {
+    qDebug() << "rounds lol" << content;
 }

@@ -46,6 +46,8 @@ public:
     Q_INVOKABLE void getTournamentList();
     Q_INVOKABLE void getTournament(QString sessionId);
     Q_INVOKABLE void invitePlayerToTournament(QString tournament, QString username);
+    Q_INVOKABLE void getTournamentScoreboard(QString sessionId);
+    Q_INVOKABLE void getTournamentRounds(QString sessionId);
 
     Q_INVOKABLE void attemptLogin(QString login, QString password);
 
@@ -67,6 +69,9 @@ signals:
     void gameCreated(QString sessionId);
     void tournamentCreated(QString sessionId);
     void tournamentEnded(QString sessionId, QString winner, int roundCount);
+
+    void tournamentScoresFound(QString content);
+    void tournamentRoundsFound(QString content);
 
 public slots:
     void setSessionToken(QString token);

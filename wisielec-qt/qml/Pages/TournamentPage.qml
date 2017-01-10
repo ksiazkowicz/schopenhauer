@@ -25,7 +25,7 @@ Page {
         onTournamentInfoFound: {
             label1.text = gameClient.currentTournament.name;
             label2.text = gameClient.currentTournament.modes;
-            playersList.model = gameClient.currentTournament.playerList;
+            playersList.model = gameClient.currentTournament.scoreboard;
             finalHeader.visible = !gameClient.currentTournament.inProgress
             finalHeader.title = "Turniej wygrał " + gameClient.currentTournament.winner
             tournamentManagementHeader.visible = !finalHeader.visible
@@ -155,7 +155,7 @@ Page {
                 interactive: false
                 delegate: ItemDelegate {
                     width: parent.width
-                    height:20 + playerDelegateHeader.height
+                    height: 20 + scoreColumn.implicitHeight
                     clip: true
                     Rectangle {
                         height: 1
@@ -163,23 +163,37 @@ Page {
                         anchors { left: parent.left; right: parent.right }
                     }
                     Column {
-                        id: playerDelegateHeader
                         anchors { left: parent.left; right: parent.right; margins: 10; top: parent.top }
-                        height: playerLabel.paintedHeight + player2Label.paintedHeight
                         Label {
                             id: playerLabel
-                            text: modelData
+                            text: modelData.username
                             font.pixelSize: 16
                         }
                         Label {
                             id: player2Label
-                            text: "Wygrywa życie" //todo pobieraj statystyki
+                            text: modelData.winner ? "Wygrywa życie" : ""
                             font.pixelSize: 16
                             color: "#555"
                         }
                     }
+                    Column {
+                        id: scoreColumn
+                        anchors { right: parent.right; margins: 5; top: parent.top }
+                        Label {
+                            font.pixelSize: 24
+                            anchors.right: parent.right
+                            horizontalAlignment: Text.AlignRight
+                            text: modelData.score
+                        }
+                        Label {
+                            text: "wygranych"
+                            anchors.right: parent.right
+                            horizontalAlignment: Text.AlignRight
+                            font.pixelSize: 12
+                        }
+                    }
                 }
-                model: gameClient.currentTournament ? gameClient.currentTournament.playerList : null
+                model: gameClient.currentTournament ? gameClient.currentTournament.scoreboard : null
             }
             Rectangle {
                 height: 1

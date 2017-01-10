@@ -8,7 +8,7 @@ class ScoreboardModel : public QObject
     Q_OBJECT
     Q_PROPERTY(QString username READ getUsername WRITE setUsername NOTIFY usernameChanged)
     Q_PROPERTY(float score READ getScore WRITE setScore NOTIFY scoreChanged)
-    Q_PROPERTY(bool isWinner READ getIsWinner write setIsWinner NOTIFY isWinnerChanged)
+    Q_PROPERTY(bool isWinner READ getIsWinner WRITE setIsWinner NOTIFY isWinnerChanged)
 
 public:
     explicit ScoreboardModel(QObject *parent = 0) : QObject(parent) {

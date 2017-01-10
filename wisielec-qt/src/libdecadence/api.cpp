@@ -136,6 +136,21 @@ void SchopenhauerApi::parseReply(QNetworkReply *reply) {
         return;
     }
 
+    if (url.contains("/api/v1/tournament") && url.contains("/scoreboard")) {
+        if (jsonObject.keys().contains("session_id")) {
+            emit tournamentScoresFound(content);
+        }
+        return;
+    }
+
+    if (url.contains("/api/v1/tournament") && url.contains("/rounds")) {
+        if (jsonObject.keys().contains("session_id")) {
+            emit tournamentRoundsFound(content);
+        }
+        return;
+    }
+
+
     if (url.contains("/api/v1/tournament") && url.contains("/invite")) {
         if (jsonObject.keys().contains("username") && jsonObject.keys().contains("session_id")) {
             this->getTournamentList();
@@ -279,6 +294,14 @@ void SchopenhauerApi::getTournamentList() {
 
 void SchopenhauerApi::getTournament(QString sessionId) {
     manager->get(QNetworkRequest(QUrl(getUrl(Http, "/api/v1/tournament/"+sessionId, true))));
+}
+
+void SchopenhauerApi::getTournamentScoreboard(QString sessionId) {
+    manager->get(QNetworkRequest(QUrl(getUrl(Http, "/api/v1/tournament/"+sessionId+"/scoreboard/", true))));
+}
+
+void SchopenhauerApi::getTournamentRounds(QString sessionId) {
+    manager->get(QNetworkRequest(QUrl(getUrl(Http, "/api/v1/tournament/"+sessionId+"/rounds/", true))));
 }
 
 void SchopenhauerApi::invitePlayerToTournament(QString tournament, QString username) {

@@ -58,11 +58,7 @@ public:
     Q_INVOKABLE QString currentTournamentName();
     Q_INVOKABLE QString currentTournamentModes();
     Q_INVOKABLE QString getTournamentId() { return currentTournamentId; }
-    Q_INVOKABLE TournamentModel* getCurrentTournament() {
-        if (tournaments.keys().contains(currentTournamentId)) {
-            return (TournamentModel*)(tournaments.value(currentTournamentId));
-        } else return false;
-    }
+    Q_INVOKABLE TournamentModel* getCurrentTournament();
 
 signals:
     void score_changed();
@@ -93,6 +89,9 @@ public slots:
     void invalidateSockets();
 
     void parseTournaments(QString content);
+    void parseRounds(QString content);
+    void parseScoreboard(QString reply);
+
     void endTournament(QString sessionId, QString winner, int roundCount);
 
 private:
