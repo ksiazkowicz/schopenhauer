@@ -17,7 +17,8 @@ urlpatterns = [
     url(r'^tournament/(?P<session_id>.*)$', tournament_api, name='tournament_api'),
     url(r'^tournament/', tournament_api, name='tournament_api'),
 
-    url(r'^game/create/', game_create_api, name = 'game_create_api'),
+    url(r'^game/create/', game_create_api, name='game_create_api'),
+    url(r'^game/(?P<session_id>.*)/$', game_info_api, name='game_info_api'),
 
     url(r'^decadence/template/$', generate_html, name='decadence_template'),
 ]

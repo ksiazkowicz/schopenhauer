@@ -222,6 +222,26 @@ def game_create_api(request):
         return HttpResponseServerError("<h1>Server Error</h1>")
 
 
+def game_info_api(request, session_id):
+    """
+    Gives info about game
+    :param request:
+    :param session_id: ID of the game
+    :return: JSON with game info
+    """
+    game = get_object_or_404(Game, session_id=session_id)
+
+    response = {
+        "session_id": game.session_id,
+        "progress": game.progress,
+        "mistakes": game.mistakes,
+        "modes": game.verbose_mode(),
+        "player": game.player.username if game.player else "",
+        "score": game.score,
+    }
+    return HttpResponse(json.dumps(response), content_type="application/json")
+
+
 def achievement_api(request, username):
     """
     Returns a list of achievements, count and progress for player.

@@ -46,7 +46,7 @@ class Game(models.Model):
     score = models.IntegerField(_("Score"), default=0)
     mistakes = models.IntegerField(_("Mistakes"), default=0)
     player = models.ForeignKey(UserProfile, null=True)
-    modifiers = models.CharField(_("Modifiers"), max_length=256, blank=True, null=True)
+    modifiers = models.CharField(_("Modifiers"), max_length=256, default="")
 
     @property
     def is_ranking_game(self):
@@ -86,7 +86,7 @@ class Game(models.Model):
         else:
             game_round = all_rounds[0]
             for game in game_round.games.all():
-                if game.state == GAME_STATES[2]:
+                if game.state == GAME_STATES[2] and game != self:
                     return
             if self.state == GAME_STATES[2]:
                 game_round.winner = self.player
@@ -264,7 +264,7 @@ class Tournament(models.Model):
     current_round = models.IntegerField(_("Current round"), default=0)
     session_id = models.CharField(_("Session ID"), max_length=128, blank=False)
     in_progress = models.BooleanField(_("Is in progress?"), default=True)
-    modifiers = models.CharField(_("Modifiers"), max_length=256, blank=True, null=True)
+    modifiers = models.CharField(_("Modifiers"), max_length=256, default="")
 
     def verbose_mode(self):
         return get_verbose_modifiers(self.modifiers)
