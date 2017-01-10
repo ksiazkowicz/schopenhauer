@@ -41,6 +41,7 @@ public:
     Q_INVOKABLE void createGame(QString modifiers);
     Q_INVOKABLE void createTournament(QString modifiers, QString name);
     Q_INVOKABLE void newRoundTournament(QString sessionId);
+    Q_INVOKABLE void endTournament(QString sessionId);
 
     Q_INVOKABLE void getTournamentList();
     Q_INVOKABLE void getTournament(QString sessionId);
@@ -65,6 +66,7 @@ signals:
 
     void gameCreated(QString sessionId);
     void tournamentCreated(QString sessionId);
+    void tournamentEnded(QString sessionId, QString winner, int roundCount);
 
 public slots:
     void setSessionToken(QString token);

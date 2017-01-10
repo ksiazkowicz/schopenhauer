@@ -1,9 +1,24 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.0
+import "../Components"
 
 Page {
     id: tournamentPage
+
+    Connections {
+        target: api
+        onTournamentEnded: {
+            finalHeader.visible = true
+            if (winner) {
+                finalHeader.title = "Turniej wygrał " + winner + " po " + roundCount + " rundach"
+            } else {
+                finalHeader.title = "Turniej zakończył się po " + roundCount + " rundach. Nikt nie wygrał."
+            }
+            tournamentManagementHeader.visible = false
+            tournamentManagementSeparator.visible = false
+        }
+    }
 
     Connections {
         target: gameClient
@@ -11,6 +26,10 @@ Page {
             label1.text = gameClient.currentTournament.name;
             label2.text = gameClient.currentTournament.modes;
             playersList.model = gameClient.currentTournament.playerList;
+            finalHeader.visible = !gameClient.currentTournament.inProgress
+            finalHeader.title = "Turniej wygrał " + gameClient.currentTournament.winner
+            tournamentManagementHeader.visible = !finalHeader.visible
+            tournamentManagementSeparator.visible = !finalHeader.visible
         }
         onGameFound: {
             busyOverlay.visible = false
@@ -57,6 +76,7 @@ Page {
             anchors.fill: parent
 
             Rectangle {
+                id: tournamentManagementSeparator
                 height: 1
                 color: "#8f8f8f"
                 anchors { right: parent.right; left: parent.left; }
@@ -83,7 +103,7 @@ Page {
                 }
                 Button {
                     text: qsTr("Zakończ")
-                    onClicked: console.log("Nie zaimplementowane")
+                    onClicked: api.endTournament(gameClient.tournamentId)
                 }
 
                 Label {
@@ -91,6 +111,12 @@ Page {
                     font.family: "Segoe MDL2 Assets"
                     font.pixelSize: 24
                 }
+            }
+
+            BlockHeader {
+                id: finalHeader
+                visible: gameClient.currentTournament ? !gameClient.currentTournament.inProgress : false
+                title: gameClient.currentTournament ? "Turniej wygrał " + gameClient.currentTournament.winner : ""
             }
 
             Rectangle {
@@ -153,7 +179,7 @@ Page {
                         }
                     }
                 }
-                model: gameClient.currentTournament.playerList
+                model: gameClient.currentTournament ? gameClient.currentTournament.playerList : null
             }
             Rectangle {
                 height: 1

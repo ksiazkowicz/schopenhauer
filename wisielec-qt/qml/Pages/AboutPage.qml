@@ -234,11 +234,11 @@ Page {
                     model: viewingMe ? api.user.achievements : api.viewedUser.achievements
                     interactive: false
 
-                    cellWidth: parent.width / 3
+                    cellWidth: (parent.width-12) / 3
                     cellHeight: 160
 
                     delegate: ItemDelegate {
-                        width: parent.width / 3
+                        width: (parent.width-12) / 3
                         height: 160
                         clip: true
                         Column {
@@ -247,7 +247,7 @@ Page {
                             anchors { fill: parent; }
                             Image {
                                 id: achievementIcon
-                                source: "http://schopenhauer.krojony.pl/"+modelData.icon
+                                source: modelData.icon ? "http://schopenhauer.krojony.pl/"+modelData.icon : "qrc:/img/achievement_locked.png"
                                 anchors { horizontalCenter: parent.horizontalCenter; }
                             }
                             Label {

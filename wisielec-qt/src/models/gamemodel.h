@@ -12,6 +12,7 @@ class GameModel : public QObject
     //Q_PROPERTY(float score READ getScore WRITE setScore NOTIFY scoreChanged)
     //Q_PROPERTY(int position READ getPosition WRITE setPosition NOTIFY positionChanged)
     Q_PROPERTY(QVariant playerList READ getPlayerList NOTIFY playerListChanged)
+    Q_PROPERTY(QString modes READ getModes NOTIFY modesChanged)
 public:
     explicit GameModel(QObject *parent = 0) : QObject(parent) {}
     void setSessionId(QString sessionId) { this->sessionId = sessionId; emit sessionIdChanged(); }
@@ -24,6 +25,8 @@ public:
 
     const QVariant getPlayerList() { return QVariant::fromValue(this->playerList); }
     void setPlayerList(QStringList list) { this->playerList = list; emit playerListChanged(); }
+    const QString getModes() { return this->modes; }
+    void setModes(QString modes) { this->modes = modes; emit modesChanged(); }
 
 signals:
     void sessionIdChanged();
@@ -32,11 +35,14 @@ signals:
     //void scoreChanged();
     //void positionChanged();
 
+    void modesChanged();
+
 public slots:
 
 private:
     QString sessionId;
     QStringList playerList;
+    QString modes;
 };
 
 #endif // GAMEMODEL_H

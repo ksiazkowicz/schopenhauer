@@ -6,6 +6,7 @@ SchopenhauerClient::SchopenhauerClient(SchopenhauerApi *api, QObject *parent) : 
     this->api = api;
     connect(api, &SchopenhauerApi::updatedSessionData, this, &SchopenhauerClient::invalidateSockets);
     connect(api, &SchopenhauerApi::foundTournaments, this, &SchopenhauerClient::parseTournaments);
+    connect(api, &SchopenhauerApi::tournamentEnded, this, &SchopenhauerClient::endTournament);
 
     // connect sockets to signals and slots
     connect(&socket, &QWebSocket::textMessageReceived,
@@ -298,5 +299,15 @@ void SchopenhauerClient::onTournamentContentReceived(QString message) {
             QString sessionId = jsonObject["game"].toString();
             emit gameFound(sessionId);
         }
+    }
+}
+
+void SchopenhauerClient::endTournament(QString sessionId, QString winner, int roundCount) {
+    // check if tournament is on our list
+    if (tournaments.keys().contains(sessionId)) {
+        // sure, let's begin doing weird things
+        TournamentModel *tournament = ((TournamentModel*)(tournaments.value(sessionId)));
+        tournament->setInProgress(false);
+        tournament->setWinner(winner);
     }
 }

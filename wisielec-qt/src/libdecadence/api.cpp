@@ -5,7 +5,7 @@ SchopenhauerApi::SchopenhauerApi(Settings *appSettings, QObject *parent) : QObje
 {
     // initialize api things
     apiUrl = "127.0.0.1:8000";
-    apiUrl = "schopenhauer.krojony.pl";
+    //apiUrl = "schopenhauer.krojony.pl";
     sessionToken = "";
 
     // and auth things
@@ -124,6 +124,16 @@ void SchopenhauerApi::parseReply(QNetworkReply *reply) {
     if (url.contains("/api/v1/game/create/")) {
         QString sessionId = jsonObject["session_id"].toString();
         emit gameCreated(sessionId);
+    }
+
+    if (url.contains("/api/v1/tournament") && url.contains("/end")) {
+        if (jsonObject.keys().contains("session_id")) {
+            QString sessionId = jsonObject["session_id"].toString();
+            QString winner = jsonObject["winner"].toString();
+            int lastRound = jsonObject["rounds"].toInt();
+            emit tournamentEnded(sessionId, winner, lastRound);
+        }
+        return;
     }
 
     if (url.contains("/api/v1/tournament") && url.contains("/invite")) {
@@ -299,6 +309,12 @@ void SchopenhauerApi::newRoundTournament(QString sessionId) {
     QUrlQuery postData;
     postData.addQueryItem("csrfmiddlewaretoken", auth->getCachedCsrftoken());
     auth->sendPostRequest(QUrl(getUrl(Http,"/api/v1/tournament/"+sessionId+"/new_round/",true)),postData);
+}
+
+void SchopenhauerApi::endTournament(QString sessionId) {
+    QUrlQuery postData;
+    postData.addQueryItem("csrfmiddlewaretoken", auth->getCachedCsrftoken());
+    auth->sendPostRequest(QUrl(getUrl(Http,"/api/v1/tournament/"+sessionId+"/end/",true)),postData);
 }
 
 void SchopenhauerApi::handleFailure(QString reason) {

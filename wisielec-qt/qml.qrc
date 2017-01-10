@@ -12,6 +12,7 @@
         <file alias="avatar.jpg">img/schopenhauer.jpg</file>
         <file alias="suicide_rabbit.png">img/suicide_rabbit.png</file>
         <file alias="arthurlogo_small.png">img/arthurlogo_small.png</file>
+        <file alias="achievement_locked.png">img/achievement_locked.png</file>
     </qresource>
     <qresource prefix="/img/modes">
         <file alias="born_to_die.png">img/modes/born_to_die.png</file>

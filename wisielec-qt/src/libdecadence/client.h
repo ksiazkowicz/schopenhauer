@@ -93,6 +93,7 @@ public slots:
     void invalidateSockets();
 
     void parseTournaments(QString content);
+    void endTournament(QString sessionId, QString winner, int roundCount);
 
 private:
     QWebSocket socket;
