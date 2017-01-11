@@ -35,7 +35,7 @@ def chat_connect(message):
     context_id = message.content['path'].strip("/chat/")
     message.channel_session['context'] = context_id
     # Send last 10 messages
-    messages = ChatMessage.objects.filter(context=context_id).order_by("pk")[:10]
+    messages = ChatMessage.objects.filter(context=context_id).order_by("pk")[10:]
     for chat_message in messages:
         message.reply_channel.send({
             "text": json.dumps({
