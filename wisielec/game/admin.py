@@ -17,7 +17,7 @@ class RoundAdmin(admin.ModelAdmin):
 
 class ChatMessageAdmin(admin.ModelAdmin):
     model = ChatMessage
-    list_display = ["author", "message", "context"]
+    list_display = ["author", "message", "context", "timestamp", ]
 
 
 admin.site.register(Game, GameAdmin)
