@@ -72,12 +72,11 @@ Page {
             top: label2.bottom
             topMargin: 20;
             bottom: parent.bottom
-            bottomMargin: 20
             right: parent.right
             left: parent.left
         }
 
-        contentHeight: column1.height
+        contentHeight: column1.implicitHeight
         Column {
             id: column1
             anchors.fill: parent

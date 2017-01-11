@@ -5,6 +5,16 @@ import "../Components"
 
 Page {
     id: welcomePage
+
+    Connections {
+        target: gameClient
+        onTournamentInfoFound: {
+            if (busyOverlay.visible)
+                stack.push("qrc:/Pages/TournamentPage.qml")
+            busyOverlay.visible = false;
+        }
+    }
+
     Label {
         id: label1
         text: qsTr("Witaj")
@@ -79,8 +89,7 @@ Page {
                         }
                     }
                     onClicked: {
-                        busyOverlay.visible = false;
-                        stack.push("qrc:/Pages/TournamentPage.qml")
+                        busyOverlay.visible = true;
                         gameClient.joinTournament(modelData.sessionId)
                     }
                 }

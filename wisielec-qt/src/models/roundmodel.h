@@ -25,6 +25,9 @@ public:
     const int getRoundId() { return this->roundId; }
 
     void setGame(QString player, QString sessionId) {
+        if (this->status != "ROUND_IN_PROGRESS")
+            return;
+
         GameModel *game = 0;
         for (int i=0; i < games.count(); i++) {
             GameModel *foundGame = (GameModel*)games.at(i);
@@ -44,6 +47,9 @@ public:
     }
 
     Q_INVOKABLE QString getGameForPlayer(QString player) {
+        if (this->status != "ROUND_IN_PROGRESS")
+            return "";
+
         for (int i=0; i < games.count(); i++) {
             GameModel* game = (GameModel*)games.at(i);
             if (game->getPlayer() == player)

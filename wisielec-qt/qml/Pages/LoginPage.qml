@@ -36,7 +36,7 @@ Page {
 
         TextField {
             id: textField2
-            text: "chleb1234"
+            text: ""
             Layout.fillWidth: true
             echoMode: TextInput.PasswordEchoOnEdit
         }

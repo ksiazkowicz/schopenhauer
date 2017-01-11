@@ -58,7 +58,7 @@ Page {
             left: parent.left
             right: parent.right
         }
-        Text {
+        Label {
             anchors.centerIn: parent
             text: "Press here to enter text"
             color: "#999"

@@ -94,6 +94,7 @@ public:
             round = (RoundModel*)rounds.at(i);
             if (round->getRoundId() == pk) {
                 round->setGame(player, sessionId);
+                emit roundsChanged();
                 return;
             }
         }
