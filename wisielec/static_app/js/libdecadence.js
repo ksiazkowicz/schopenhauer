@@ -109,7 +109,7 @@ function include_from_template(selector, template, data, mode) {
         }
     };
     // send a request
-    xhr.send("csrfmiddlewaretoken="+readCookie("csrftoken")+"&data="+JSON.stringify(data));
+    xhr.send("csrfmiddlewaretoken="+readCookie("csrftoken")+"&data="+encodeURIComponent(JSON.stringify(data)));
 }
 
 function socket_error(e) {
