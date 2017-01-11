@@ -45,8 +45,6 @@ def check_for_spam(message, author):
     # calculate bullshit rate
     bullshit_rate = float(bullshit)/float(len(message))
 
-    print bullshit_rate
-
     if bullshit_rate > 0.5:
         print "bullshit found"
         # wow, so much bullshit
