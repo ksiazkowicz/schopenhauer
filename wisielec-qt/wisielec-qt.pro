@@ -32,6 +32,7 @@ HEADERS += \
     src/models/ChatMessageModel.h \
     src/models/AchievementModel.h \
     src/models/ScoreboardModel.h \
-    src/models/RoundModel.h
+    src/models/RoundModel.h \
+    src/models/GameOtherModel.h
 
 DISTFILES +=

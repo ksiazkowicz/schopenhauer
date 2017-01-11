@@ -61,6 +61,7 @@ void SchopenhauerClient::guess_letter(QString letter) {
 
 void SchopenhauerClient::join_game(QString _new_id) {
     this->session_id = _new_id;
+    this->otherGames.clear();
     api->getGameInfo(_new_id);
     qDebug() << this->session_id;
     socket.close();
@@ -144,10 +145,13 @@ void SchopenhauerClient::onLobbyContentReceived(QString message)
         if (!running_games.isEmpty()) {
             games.clear();
             for (int i=0; i < running_games.size(); i++) {
-                QString game = running_games.at(i).toString();
+                QJsonObject game = running_games.at(i).toObject();
+                QString game_id = game["session_id"].toString();
+                QString progress = game["progress"].toString();
                 GameModel *gameObj = new GameModel();
-                gameObj->setSessionId(game);
-                games.insert(game, gameObj);
+                gameObj->setSessionId(game_id);
+                gameObj->setProgress(progress);
+                games.insert(game_id, gameObj);
             }
             emit games_changed();
         }
@@ -421,5 +425,15 @@ void SchopenhauerClient::updateGameInfo(QString reply) {
         emit score_changed();
         emit progress_changed();
         emit score_changed();
+        if (jsonObject.keys().contains("other_games")) {
+            QJsonArray arrayOfGames = jsonObject["other_games"].toArray();
+            for (int i=0; i<arrayOfGames.count(); i++) {
+                QJsonObject game = arrayOfGames.at(i).toObject();
+                QString username = game["player"].toString();
+                QString progress = game["progress"].toString();
+                int mistakes = game["mistakes"].toInt();
+                this->setOtherGame(username, progress, mistakes);
+            }
+        }
     }
 }

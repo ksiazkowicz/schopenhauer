@@ -12,6 +12,7 @@
 #include "src/models/gamemodel.h"
 #include "src/models/TournamentModel.h"
 #include "src/models/ChatMessageModel.h"
+#include "src/models/gameothermodel.h"
 
 class SchopenhauerClient : public QObject
 {
@@ -28,6 +29,7 @@ class SchopenhauerClient : public QObject
     Q_PROPERTY(QString channelName READ getChannelName NOTIFY channelNameChanged)
     Q_PROPERTY(QString tournamentId READ getTournamentId NOTIFY tournamentIdChanged)
     Q_PROPERTY(TournamentModel* currentTournament READ getCurrentTournament NOTIFY tournamentIdChanged)
+    Q_PROPERTY(QVariant otherGames READ getOtherGames NOTIFY otherGamesChanged)
 
 public:
     explicit SchopenhauerClient(SchopenhauerApi *api, QObject *parent = 0);
@@ -61,6 +63,28 @@ public:
     Q_INVOKABLE QString getTournamentId() { return currentTournamentId; }
     Q_INVOKABLE TournamentModel* getCurrentTournament();
 
+    const QVariant getOtherGames() { return QVariant::fromValue(this->otherGames); }
+
+    void setOtherGame(QString player, QString progress, int mistakes) {
+        GameOtherModel *game = 0;
+        for (int i=0; i < otherGames.count(); i++) {
+            GameOtherModel *foundGame = (GameOtherModel*)otherGames.at(i);
+            if (foundGame->getPlayer() == player) {
+                game = foundGame;
+                break;
+            }
+        }
+
+        if (game == 0) {
+            game = new GameOtherModel();
+            game->setPlayer(player);
+            otherGames.append(game);
+        }
+        game->setProgress(progress);
+        game->setMistakes(mistakes);
+        emit otherGamesChanged();
+    }
+
 signals:
     void score_changed();
     void progress_changed();
@@ -79,6 +103,8 @@ signals:
 
     void tournamentInfoFound();
     void tournamentIdChanged();
+
+    void otherGamesChanged();
 
 public slots:
     void onContentReceived(QString message);
@@ -120,6 +146,7 @@ private:
     QString session_id;
 
     QString currentTournamentId;
+    QList<QObject*> otherGames;
 };
 
 #endif // SCHOPENHAUERCLIENT_H
