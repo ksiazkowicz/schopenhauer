@@ -12,7 +12,7 @@
 
             if (games) {
                 for (var i = 0, len = games.length; i < len; i++) {
-                  append_game(games[i]);
+                  append_game(games[i].session_id, games[i].progress);
                 }
             }
             if (game_id) {
@@ -26,9 +26,9 @@
         socket.onerror = socket_error;
         socket.onclose = socket_reconnect_silent;
 
-        function append_game(session_id) {
+        function append_game(session_id, progress) {
             if (!document.getElementById("game-" + session_id)) {
-                include_from_template("#running-games-list", "includes/decadence/lobby_game.html", {"session_id": session_id}, "beforeend");
+                include_from_template("#running-games-list", "includes/decadence/lobby_game.html", {"session_id": session_id, "progress": progress}, "beforeend");
             }
         }
     </script>
@@ -38,7 +38,7 @@
         <div class="col-md-8">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    Trwające gry
+                    Wróć do tych gier
                     <div class="pull-right">
                         <a href="{% url "new_game_view" %}" type="submit" class="btn btn-sm btn-info"><i class="fa fa-plus"></i> Nowa</a>
                     </div>

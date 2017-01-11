@@ -239,6 +239,15 @@ def game_info_api(request, session_id):
         "player": game.player.username if game.player else "",
         "score": game.score,
     }
+
+    # should add info about other games
+    if game.round_set.all():
+        response["other_games"] = [{
+            "mistakes": x.mistakes,
+            "progress": x.progress_string,
+            "username": x.player.username if x.player else "",
+        } for x in game.round_set.all()[0].games.all()]
+
     return HttpResponse(json.dumps(response), content_type="application/json")
 
 

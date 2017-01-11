@@ -10,11 +10,14 @@ lobby_players = []
 game_players = {}
 
 
-def push_list_current_games(channel):
-    games = Game.objects.all()
+def push_list_current_games(channel, user):
+    try:
+        games = Game.objects.filter(player=user)
+    except:
+        games = []
     channel.send({
         "text": json.dumps({
-            "running_games": [x.session_id for x in games if x.state == "IN_PROGRESS" and x.round_set.count() == 0]
+            "running_games": [{ "session_id": x.session_id, "progress": x.progress, } for x in games if x.state == "IN_PROGRESS" and x.round_set.count() == 0]
         })
     })
 
@@ -32,12 +35,13 @@ def push_list_current_players():
 
 
 def push_list_current_players_game(game_id):
-    try:
+    """try:
         game = Game.objects.get(session_id=game_id)
 
         Group("lobby").send({
             "text": json.dumps({
                 "session_id": game_id,
+                "progress": game.progress,
                 "players": game_players.get(game_id, [])
             }),
         })
@@ -49,7 +53,8 @@ def push_list_current_players_game(game_id):
             })
         })
     except:
-        pass
+        pass"""
+    pass
 
 @channel_session_user_from_http
 def lobby_connect(message):
@@ -57,7 +62,7 @@ def lobby_connect(message):
     Group("lobby").add(message.reply_channel)
 
     # send out a list of running games
-    push_list_current_games(message.reply_channel)
+    push_list_current_games(message.reply_channel, message.user)
 
     try:
         lobby_players.append(unicode(message.user))
