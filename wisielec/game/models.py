@@ -390,3 +390,4 @@ class ChatMessage(models.Model):
     author = models.ForeignKey(UserProfile)
     message = models.CharField(_("Message"), max_length=255)
     context = models.CharField(_("Context"), max_length=255)
+    timestamp = models.DateTimeField(_("Time"), auto_now=True)

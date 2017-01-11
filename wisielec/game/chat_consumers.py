@@ -1,7 +1,59 @@
+# -*- coding: utf-8 -*-
 from channels import Group
 from channels.auth import channel_session_user, channel_session_user_from_http
 from models import ChatMessage
 import json
+from pytz import utc
+import datetime
+
+auto_ban = {}
+
+
+def check_for_spam(message, author):
+    """
+    I would have never possibly thought I'd possibly have to implement this. I mean, it's university project... -_-
+    :param message:
+    :return:
+    """
+    # check if message is shorther than 3 chars
+    if len(message) < 3:
+        return True
+
+    # check if author is flooding the chat
+    if len(author.chatmessage_set.all()) > 0:
+        timedelta = datetime.datetime.now(utc) - author.chatmessage_set.last().timestamp
+        min_time = datetime.timedelta(seconds=20)
+        if timedelta < min_time:
+            # yeah, flooding
+            auto_ban[author.username] = auto_ban.get(author.username, 0) + 1
+
+            # ban user if flooded for too long
+            if auto_ban.get(author.username, 0) > 20:
+                author.allow_chat = False
+                author.save()
+
+            return True
+
+    # calculate random bullshit rate
+    alphabet = u"aąbcćdeęfghijklłmnńoprsśtuówyzżź"
+    bullshit = 0
+    for index, i in enumerate(message.lower()):
+        print index, i
+        if i not in alphabet and index > 0 and message.lower()[index-1] != i:
+            bullshit += 1
+
+    # calculate bullshit rate
+    bullshit_rate = float(bullshit)/float(len(message))
+
+    print bullshit_rate
+
+    if bullshit_rate > 0.5:
+        print "bullshit found"
+        # wow, so much bullshit
+        return True
+
+    # nothing checks out I guess
+    return False
 
 
 @channel_session_user
@@ -19,7 +71,9 @@ def chat_receive(message):
     context = message.channel_session['context']
     content = content.replace("[[ message ]]", "")
     if content != "":
-        ChatMessage.objects.create(author=author, context=context, message=content)
+        # ignore requests if user is banned or message is spam
+        if author.allow_chat and not check_for_spam(content, author):
+            ChatMessage.objects.create(author=author, context=context, message=content)
 
         # send updated game status to group
         Group("chat-%s" % context).send({

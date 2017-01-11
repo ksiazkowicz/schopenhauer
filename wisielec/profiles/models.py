@@ -38,6 +38,7 @@ class UserProfile(AbstractUser):
     lost_games = models.IntegerField(verbose_name=u"Games (lost)", default=0)
     won_tournaments = models.IntegerField(verbose_name=u"Tournaments (won)", default=0)
     lost_tournaments = models.IntegerField(verbose_name=u"Tournaments (lost)", default=0)
+    allow_chat = models.BooleanField(verbose_name=u"Allow chat", default=True)
     objects = UserManager()
 
     @property
