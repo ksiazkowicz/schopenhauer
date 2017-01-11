@@ -11,8 +11,7 @@ function update_players(block_id, players) {
                 new_players += ", ";
             players_list.innerHTML = new_players;
         }
-    } else
-        players_list.innerHTML = "nie żyją!";
+    } else if (players_list) players_list.innerHTML = "nie żyją!";
 }
 
 function show_info_block(error_level, string, options) {
