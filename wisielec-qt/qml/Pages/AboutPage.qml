@@ -247,7 +247,7 @@ Page {
                             anchors { fill: parent; }
                             Image {
                                 id: achievementIcon
-                                source: modelData.icon ? "http://schopenhauer.krojony.pl/"+modelData.icon : "qrc:/img/achievement_locked.png"
+                                source: modelData.icon ? api.getUrl(modelData.icon) : "qrc:/img/achievement_locked.png"
                                 anchors { horizontalCenter: parent.horizontalCenter; }
                             }
                             Label {

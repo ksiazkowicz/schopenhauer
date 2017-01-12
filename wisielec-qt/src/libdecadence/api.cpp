@@ -366,3 +366,11 @@ void SchopenhauerApi::handleFailure(QString reason) {
     settings->clearAuthCredentials();
     emit authFailed(reason);
 }
+
+QString SchopenhauerApi::getUrl(QString path) {
+    return this->getUrl(Http, path, true);
+}
+
+void SchopenhauerApi::logout() {
+    settings->clearAuthCredentials();
+}

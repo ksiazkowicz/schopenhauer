@@ -27,6 +27,7 @@ public:
 
     explicit SchopenhauerApi(Settings *appSettings, QObject *parent = 0);
 
+    Q_INVOKABLE QString getUrl(QString path);
     QString getUrl(Protocol proto, QString path);
     QString getUrl(Protocol proto, QString path, bool ignoreSessionToken);
 
@@ -57,6 +58,8 @@ public:
     QVariant getRankingModel() { return QVariant::fromValue(bestPlayers); }
     UserModel *getUser() { return me; }
     UserModel *getViewedUser() { return viewedUser; }
+
+    Q_INVOKABLE void logout();
 
 signals:
     void updatedSessionData();

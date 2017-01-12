@@ -8,7 +8,7 @@ ApplicationWindow {
     visible: true
     width: 540
     height: 720
-    title: qsTr("wisielec schopenhauera")
+    title: qsTr("Wisielec Schopenhauera")
 
     Item {
         id: busyOverlay
@@ -55,6 +55,18 @@ ApplicationWindow {
                 onClicked: stack.pop()
             }
             Item { Layout.fillWidth: true }
+            ToolButton {
+                id: logoutButton
+                text: qsTr("\uE8BB")
+                enabled: api.user.username != "AnonymousUser"
+                visible: enabled
+                font.family: "Segoe MDL2 Assets"
+                onClicked: {
+                    api.logout()
+                    stack.replace("qrc:/Pages/LoginPage.qml")
+                }
+            }
+
             ToolButton {
                 id: chatButton
                 text: qsTr("\uE8F2")
