@@ -234,6 +234,7 @@ def game_info_api(request, session_id):
     response = {
         "session_id": game.session_id,
         "progress": game.progress,
+        "progress_string": game.progress_string,
         "mistakes": game.mistakes,
         "modes": game.verbose_mode(),
         "player": game.player.username if game.player else "",
