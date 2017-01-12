@@ -104,11 +104,25 @@ void SchopenhauerClient::onContentReceived(QString message)
                 score = jsonObject["score"].toInt();
                 QString letter = jsonObject["letter"].toString();
                 mistakes = jsonObject["mistakes"].toInt();
+                hangmanPic = jsonObject["hangman_pic"].toInt();
                 used_chars.append(letter);
+                QString progress_string = jsonObject["progress_string"].toString();
+                this->setOtherGame(api->getUser()->getUsername(), progress_string, mistakes);
                 emit progress_changed();
                 emit score_changed();
                 emit mistakes_changed();
+                emit hangmanChanged();
             }
+        }
+    }
+    if (jsonObject.keys().contains("updates")) {
+        QJsonArray updates = jsonObject["updates"].toArray();
+        for (int i=0; i<updates.count(); i++) {
+            QJsonObject update = updates.at(i).toObject();
+            QString username = update["player"].toString();
+            QString progress = update["progress"].toString();
+            int mistakes = update["mistakes"].toInt();
+            this->setOtherGame(username, progress, mistakes);
         }
     }
 }
@@ -422,14 +436,18 @@ void SchopenhauerClient::updateGameInfo(QString reply) {
         this->progress = jsonObject["progress"].toString();
         this->score = jsonObject["score"].toInt();
         this->mistakes = jsonObject["mistakes"].toInt();
+        this->hangmanPic = this->mistakes;
+        QString progress_string = jsonObject["progress_string"].toString();
+        this->setOtherGame(api->getUser()->getUsername(), progress_string, mistakes);
         emit score_changed();
         emit progress_changed();
         emit score_changed();
+        emit hangmanChanged();
         if (jsonObject.keys().contains("other_games")) {
             QJsonArray arrayOfGames = jsonObject["other_games"].toArray();
             for (int i=0; i<arrayOfGames.count(); i++) {
                 QJsonObject game = arrayOfGames.at(i).toObject();
-                QString username = game["player"].toString();
+                QString username = game["username"].toString();
                 QString progress = game["progress"].toString();
                 int mistakes = game["mistakes"].toInt();
                 this->setOtherGame(username, progress, mistakes);

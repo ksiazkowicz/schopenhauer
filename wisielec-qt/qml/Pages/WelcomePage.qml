@@ -114,11 +114,15 @@ Page {
                 id: lobbyContainer
                 anchors { left: parent.left; right: parent.right; }
                 height: playersRow.implicitHeight + 40
+                Rectangle {
+                    height: 1
+                    color: "#aaa"
+                    anchors { left: parent.left; right: parent.right }
+                }
                 Row {
                     id: playersRow
-                    anchors.topMargin: 10
                     spacing: 10;
-                    anchors { left: parent.left; right: parent.right; margins: 20; }
+                    anchors { left: parent.left; right: parent.right; margins: 10; topMargin: 20; top: parent.top }
                     Repeater {
                         id: playersList
                         model: gameClient.lobbyPlayers
@@ -163,11 +167,17 @@ Page {
                 id: gamesList
                 interactive: false
                 model: gameClient.games
+                height: contentHeight
                 anchors { left: parent.left; right: parent.right; }
                 delegate: ItemDelegate {
                     width: parent.width
                     height: 64
-                    anchors { left: parent.left; leftMargin: 20; right: parent.right; rightMargin: 20 }
+                    anchors { left: parent.left; right: parent.right; }
+                    Rectangle {
+                        height: 1
+                        color: "#aaa"
+                        anchors { left: parent.left; right: parent.right }
+                    }
                     onClicked: {
                         stack.push("qrc:/Pages/GamePage.qml")
                         gameClient.join_game(modelData.sessionId)

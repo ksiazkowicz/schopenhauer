@@ -19,6 +19,7 @@ class SchopenhauerClient : public QObject
     Q_OBJECT
     Q_PROPERTY(int score READ get_score NOTIFY score_changed)
     Q_PROPERTY(int mistakes READ get_mistakes NOTIFY mistakes_changed)
+    Q_PROPERTY(int hangman READ getHangman NOTIFY hangmanChanged)
     Q_PROPERTY(QString progress READ get_progress NOTIFY progress_changed)
     Q_PROPERTY(QStringList used_chars READ get_used_chars NOTIFY used_chars_changed)
     Q_PROPERTY(QString session_id READ get_session_id WRITE set_session_id NOTIFY session_id_changed)
@@ -41,6 +42,8 @@ public:
     QString get_session_id() { return session_id; }
     void set_session_id(QString _new) { session_id = _new; emit session_id_changed(); }
     QStringList get_used_chars() { return used_chars; }
+
+    int getHangman() { return this->hangmanPic; }
 
     Q_INVOKABLE void guess_letter(QString letter);
     Q_INVOKABLE void join_game(QString session_id);
@@ -106,6 +109,8 @@ signals:
 
     void otherGamesChanged();
 
+    void hangmanChanged();
+
 public slots:
     void onContentReceived(QString message);
     void onLobbyContentReceived(QString message);
@@ -130,6 +135,7 @@ private:
 
     int score = 0;
     int mistakes = 0;
+    int hangmanPic = 0;
     QString progress = "____";
     QStringList used_chars;
     QStringList lobbyPlayers;

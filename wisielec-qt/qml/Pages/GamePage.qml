@@ -5,7 +5,7 @@ import QtQuick.Layouts 1.0
 Page {
     Connections {
         target: gameClient
-        onMistakesChanged: wisielecImicz.source = "qrc:/img/wis0"+(gameClient.mistakes+1)+".png"
+        onHangmanChanged: wisielecImicz.source = "qrc:/img/wis0"+(gameClient.hangman+1)+".png"
         onRoundEnded: stack.pop()
     }
 
@@ -16,13 +16,60 @@ Page {
         fillMode: Image.PreserveAspectFit
     }
 
+    GridView {
+        id: otherGamesGrid
+        model: gameClient.otherGames
+        interactive: false
+
+        anchors {
+            left: parent.left; right: parent.right; top: parent.top; margins: 10;
+        }
+
+        cellWidth: parent.width / 4
+        cellHeight: count > 0 ? 54 : 0
+
+        height: contentHeight
+
+        delegate: ItemDelegate {
+            width: parent.width /4
+            height: 54
+            Rectangle {
+                radius: 4
+                color: "#efefef"
+                anchors { fill: parent; margins: 5 }
+                Column {
+                    spacing: 5
+                    anchors { fill: parent; margins: 5 }
+                    RowLayout {
+                        anchors { left: parent.left; right: parent.right; }
+                        Label {
+                            text: modelData.player
+                            font.pixelSize: 12
+                            Layout.fillWidth: true
+                        }
+                        Label {
+                            text: modelData.mistakes
+                            font.bold: true
+                            font.pixelSize: 12
+                            horizontalAlignment: Text.AlignRight
+                        }
+                    }
+                    Label {
+                        font.pixelSize: 12
+                        text: modelData.progress
+                    }
+                }
+            }
+        }
+    }
+
     Text {
         id: progress_label
         font.pixelSize: 20
         wrapMode: Text.WordWrap
         text: gameClient.progress
         anchors {
-            top: parent.top
+            top: otherGamesGrid.bottom
             left: parent.left
             right: parent.right
             margins: 20
@@ -31,7 +78,7 @@ Page {
 
     Label {
         id: score_label
-        text: gameClient.score
+        text: ""
         anchors {
             horizontalCenter: parent.horizontalCenter;
             top: progress_label.bottom
@@ -41,7 +88,7 @@ Page {
 
     Label {
         id: mistakes_label
-        text: gameClient.mistakes
+        text: ""
         anchors {
             horizontalCenter: parent.horizontalCenter;
             top: score_label.bottom

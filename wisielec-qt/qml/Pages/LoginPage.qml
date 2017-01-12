@@ -9,6 +9,7 @@ Page {
         target: api
         onAuthSuccess: {
             gameClient.switchChatChannel("lobby")
+            gameClient.refresh_lobby()
             stack.replace("qrc:/Pages/MainPage.qml")
             busyOverlay.visible = false
         }
