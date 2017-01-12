@@ -7,6 +7,14 @@ Page {
         target: gameClient
         onHangmanChanged: wisielecImicz.source = "qrc:/img/wis0"+(gameClient.hangman+1)+".png"
         onRoundEnded: stack.pop()
+        onGameEnded: {
+            keyboardLabel.font.pixelSize = 24
+            if (won) {
+                keyboardLabel.text = "Wygrałeś życie!"
+            } else {
+                keyboardLabel.text = "Anielski orszak niech Twą duszę przyjmie"
+            }
+        }
     }
 
     Image {
@@ -106,6 +114,7 @@ Page {
             right: parent.right
         }
         Label {
+            id: keyboardLabel
             anchors.centerIn: parent
             text: "Press here to enter text"
             color: "#999"

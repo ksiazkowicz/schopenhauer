@@ -119,6 +119,13 @@ void SchopenhauerApi::parseReply(QNetworkReply *reply) {
     if (url.contains("/api/v1/tournament") && url.contains("/create")) {
         QString sessionId = jsonObject["session_id"].toString();
         emit tournamentCreated(sessionId);
+        return;
+    }
+
+    if (url.contains("/api/v1/tournament") && url.contains("/new_round")) {
+        if (jsonObject.keys().contains("current_round"))
+            emit roundCreated();
+        return;
     }
 
     if (url.contains("/api/v1/game/create/")) {

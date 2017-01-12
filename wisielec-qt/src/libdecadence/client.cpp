@@ -112,6 +112,12 @@ void SchopenhauerClient::onContentReceived(QString message)
                 emit score_changed();
                 emit mistakes_changed();
                 emit hangmanChanged();
+
+                QString state = jsonObject["state"].toString();
+                if (state == "WIN")
+                    emit gameEnded(true);
+                else if (state == "FAIL")
+                    emit gameEnded(false);
             }
         }
     }

@@ -171,7 +171,7 @@ Page {
                 anchors { left: parent.left; right: parent.right; }
                 delegate: ItemDelegate {
                     width: parent.width
-                    height: 64
+                    height: gameProgress.paintedHeight + 30
                     anchors { left: parent.left; right: parent.right; }
                     Rectangle {
                         height: 1
@@ -183,6 +183,7 @@ Page {
                         gameClient.join_game(modelData.sessionId)
                     }
                     Label {
+                        id: gameProgress
                         text: modelData.progress
                         anchors { fill: parent; margins: 15; }
                         wrapMode: Text.WordWrap

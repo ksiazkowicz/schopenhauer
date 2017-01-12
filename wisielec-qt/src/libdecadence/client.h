@@ -104,6 +104,8 @@ signals:
     void gameFound(QString sessionId);
     void roundEnded();
 
+    void gameEnded(bool won);
+
     void tournamentInfoFound();
     void tournamentIdChanged();
 

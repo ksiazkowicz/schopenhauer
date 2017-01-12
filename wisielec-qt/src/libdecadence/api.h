@@ -76,6 +76,8 @@ signals:
     void tournamentRoundsFound(QString content);
     void gameInfoFound(QString content);
 
+    void roundCreated();
+
 public slots:
     void setSessionToken(QString token);
     void parseReply(QNetworkReply *reply);

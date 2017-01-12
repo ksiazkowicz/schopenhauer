@@ -18,6 +18,10 @@ Page {
             tournamentManagementHeader.visible = false
             tournamentManagementSeparator.visible = false
         }
+        onRoundCreated: {
+            busyOverlay.visible = false
+            api.getTournamentRounds(gameClient.currentTournament.sessionId)
+        }
     }
 
     Component.onCompleted: {
@@ -143,9 +147,19 @@ Page {
                     font.pointSize: 11
                 }
 
+                TextField {
+                    id: usernameField
+                    placeholderText: "Nazwa..."
+                    Layout.maximumWidth: 114
+                    Layout.minimumWidth: 114
+                }
+
                 Button {
                     text: qsTr("Zaproś")
-                    onClicked: stack.push("qrc:/Pages/TournamentInvitePage.qml")
+                    onClicked: {
+                        api.invitePlayerToTournament(gameClient.currentTournament.sessionId, usernameField.text)
+                        api.getTournamentScoreboard(gameClient.currentTournament.sessionId)
+                    }
                 }
 
                 Label {
