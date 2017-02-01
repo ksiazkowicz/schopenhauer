@@ -42,9 +42,10 @@
                     document.getElementById("mistakes").innerText = bread.mistakes;
                     document.getElementById("progress").innerText = bread.progress;
 
-                    var img_mistakes = bread.hangman_pic < 5 ? bread.hangman_pic+1 : 6;
-
-                    document.getElementById("pikczer").setAttribute("src", "/static/img/wis0"+(img_mistakes)+".png");
+                    if (bread.hangman_pic) {
+                        var img_mistakes = bread.hangman_pic < 5 ? bread.hangman_pic + 1 : 6;
+                        document.getElementById("pikczer").setAttribute("src", "/static/img/wis0" + (img_mistakes) + ".png");
+                    }
                 }
             }
         };
