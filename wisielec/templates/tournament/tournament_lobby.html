@@ -96,7 +96,7 @@
                     <tr {% if round.round_id == tournament.current_round %}class="current"{% endif %}>
                         <td>{{ round.round_id }}</td>
                         <td>{{ round.status_verbose }}</td>
-                        <td {% if round.winner == request.user %}class="me"{% endif %}>{{ round.winner|default:"Nikt" }}</td>
+                        <td {% if round.winner == request.user %}class="me"{% endif %}>{{ round.get_winner|default:"Nikt" }}</td>
                         <td>{% if round.status == "ROUND_IN_PROGRESS" %}{% for game in round.games.all %}{% if game in my_games %}
                             <a class="btn btn-sm btn-default" href="{% url 'game_view' game.session_id %}">Dołącz</a>
                             {% endif %}{% endfor %}{% endif %}</td>

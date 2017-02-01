@@ -79,7 +79,7 @@ def tournament_rounds_api(request, session_id):
         "session_id": session_id,
         "rounds": [{
             "id": x.round_id,
-            "winner": x.winner.username if x.winner else "",
+            "winner": x.get_winner(),
             "status": x.status,
             "games": [{
                 "session_id": y.session_id,

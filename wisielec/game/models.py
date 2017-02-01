@@ -168,6 +168,9 @@ class Game(models.Model):
         # assume we failed
         outcome = False
 
+        # make sure letter is lowercase
+        letter = letter.lower()
+
         # check if character is already used
         if letter in self.used_characters:
             # well, it's obviously a fail, but check mode before counting it as mistake
@@ -179,7 +182,7 @@ class Game(models.Model):
             self.used_characters += letter
 
             # check if letter is guessed
-            guessed = letter in self.phrase
+            guessed = letter in self.phrase.lower()
 
             # update game progress data if guessed
             if guessed:
@@ -356,6 +359,16 @@ class Round(models.Model):
     tournament = models.ForeignKey(Tournament)
     games = models.ManyToManyField(Game)
     winner = models.ForeignKey(UserProfile, null=True, blank=True)
+
+    def get_winner(self):
+        # really stupid workaround
+        if "cooperation" in self.tournament.modifiers:
+            if self.games.all().count > 0:
+                if self.games.all()[0].state == "WIN":
+                    return "Wszyscy"
+            return "Nikt"
+        else:
+            return self.winner.username if self.winner else ""
 
     @property
     def status(self):
