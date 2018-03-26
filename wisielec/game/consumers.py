@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from models import Game, Tournament
+from .models import Game, Tournament
 from channels import Group
 from channels.sessions import channel_session
 from channels.auth import http_session_user, channel_session_user, channel_session_user_from_http

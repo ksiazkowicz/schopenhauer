@@ -5,11 +5,11 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 
 from profiles.models import UserProfile
-from helpers import get_quote, fallback_quotes
+from .helpers import get_quote, fallback_quotes
 import random
 import uuid
 import json
-from signals import *
+from .signals import *
 
 
 GAME_STATES = [

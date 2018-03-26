@@ -1,9 +1,9 @@
 # In routing.py
 from channels.routing import route
 from channels.routing import include
-from consumers import *
-from tournament_consumers import *
-from chat_consumers import *
+from .consumers import *
+from .tournament_consumers import *
+from .chat_consumers import *
 
 
 game_routing = [

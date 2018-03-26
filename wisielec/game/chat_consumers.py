@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from channels import Group
 from channels.auth import channel_session_user, channel_session_user_from_http
-from models import ChatMessage
+from .models import ChatMessage
 import json
 from pytz import utc
 import datetime
@@ -15,6 +15,9 @@ def check_for_spam(message, author):
     :param message:
     :return:
     """
+    # this code is broken anyway
+    return False
+
     # check if message is shorther than 3 chars
     if len(message) < 3:
         return True
@@ -38,7 +41,7 @@ def check_for_spam(message, author):
     alphabet = u"aąbcćdeęfghijklłmnńoprsśtuówyzżź"
     bullshit = 0
     for index, i in enumerate(message.lower()):
-        print index, i
+        print(index, i)
         if i not in alphabet and index > 0 and message.lower()[index-1] != i:
             bullshit += 1
 
@@ -46,7 +49,7 @@ def check_for_spam(message, author):
     bullshit_rate = float(bullshit)/float(len(message))
 
     if bullshit_rate > 0.5:
-        print "bullshit found"
+        print("bullshit found")
         # wow, so much bullshit
         return True
 

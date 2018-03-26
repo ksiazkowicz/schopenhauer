@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from views import lobby_view, new_game, current_game, tournament_view, new_tournament_view, tournament_invite_view
+from .views import lobby_view, new_game, current_game, tournament_view, new_tournament_view, tournament_invite_view
 
 urlpatterns = [
     url(r'^lobby', lobby_view, name='lobby_view'),

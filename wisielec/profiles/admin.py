@@ -1,5 +1,5 @@
 from django.contrib import admin
-from models import UserProfile, Achievement
+from .models import UserProfile, Achievement
 
 
 class UserAdmin(admin.ModelAdmin):

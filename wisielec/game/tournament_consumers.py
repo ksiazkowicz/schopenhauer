@@ -2,8 +2,8 @@ from channels import Group
 from channels.sessions import channel_session
 from channels.auth import channel_session_user, channel_session_user_from_http
 import json
-from signals import *
-from models import Tournament
+from .signals import *
+from .models import Tournament
 from django.dispatch.dispatcher import receiver
 
 

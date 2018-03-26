@@ -1,42 +1,12 @@
 # -*- coding: utf-8 -*-
 import json
-from django.http import HttpResponse, HttpResponseServerError
-from profiles.models import UserProfile, Achievement
-from game.models import Tournament, Game, create_game
-from django.shortcuts import get_object_or_404
-
-from django.views.decorators.csrf import csrf_exempt
-from django.template import Context, Template, loader
 import uuid
 
+from django.http import HttpResponse, HttpResponseServerError
+from django.shortcuts import get_object_or_404
 
-def generate_html(request):
-    """
-    Generates HTML code from request. You should send a JSON through post this way:
-
-    csrfmiddlewaretoken=token&data={"template": "includes/decadence/cancer.html", ...}
-
-    Data should have a template + context.
-    """
-    # get request data from JSON first
-    request_data = request.POST.get("data", "{}")
-    # parse as JSON
-    request_data = json.loads(request_data)
-
-    # get template file path
-    template_file = request_data.get("template", "")
-
-    # check if path is valid
-    if not template_file.startswith("includes/decadence/"):
-        return HttpResponseServerError("<h1>Invalid template</h1>")
-
-    # load the template
-    t = loader.get_template(template_file)
-    c = Context(request_data)
-    # render and return as response
-    rendered = t.render(c)
-
-    return HttpResponse(rendered, content_type="text/html")
+from profiles.models import UserProfile, Achievement
+from game.models import Tournament, Game, create_game
 
 
 def tournament_invite_api(request, session_id=None):
@@ -48,16 +18,19 @@ def tournament_invite_api(request, session_id=None):
         if session_id:
             tournament = get_object_or_404(Tournament, session_id=session_id)
         else:
-            tournament = get_object_or_404(Tournament, session_id=request.POST.get("tournament_id"))
+            tournament = get_object_or_404(
+                Tournament, session_id=request.POST.get("tournament_id"))
 
         # check permissions
         if request.user != tournament.admin:
             return HttpResponseServerError("<h1>Server Error</h1>")
 
         # try to get user by username and add to tournament
-        user = get_object_or_404(UserProfile, username=request.POST.get("username"))
+        user = get_object_or_404(
+            UserProfile, username=request.POST.get("username"))
         tournament.players.add(user)
-        response = {"session_id": tournament.session_id, "username": user.username}
+        response = {"session_id": tournament.session_id,
+                    "username": user.username}
     else:
         return HttpResponseServerError("<h1>Invalid template</h1>")
 
@@ -175,15 +148,17 @@ def tournament_create_api(request):
         name = request.POST.get("name", "")
         modifiers = request.POST.get("modifiers", "")
 
-        tournament = Tournament.objects.create(session_id=uuid.uuid1().hex, name=name,
-                                               modifiers=modifiers, admin=request.user)
+        tournament = Tournament.objects.create(session_id=uuid.uuid1().hex,
+                                               name=name,
+                                               modifiers=modifiers,
+                                               admin=request.user)
         tournament.players.add(request.user)
         response = {
             "session_id": tournament.session_id,
         }
-        return HttpResponse(json.dumps(response), content_type="application/json")
-    else:
-        return HttpResponseServerError("<h1>Server Error</h1>")
+        return HttpResponse(json.dumps(response),
+                            content_type="application/json")
+    return HttpResponseServerError("<h1>Server Error</h1>")
 
 
 def tournament_new_round_api(request, session_id):
@@ -217,9 +192,9 @@ def game_create_api(request):
         response = {
             "session_id": game.session_id,
         }
-        return HttpResponse(json.dumps(response), content_type="application/json")
-    else:
-        return HttpResponseServerError("<h1>Server Error</h1>")
+        return HttpResponse(json.dumps(response),
+                            content_type="application/json")
+    return HttpResponseServerError("<h1>Server Error</h1>")
 
 
 def game_info_api(request, session_id):
@@ -263,7 +238,9 @@ def achievement_api(request, username):
         unlocked_achievements = [x for x in achievements if x.evaluate(user)]
         # calculate achievement unlock percentage
         try:
-            percentage = int(100 * float(len(unlocked_achievements)) / float(len(achievements)))
+            percentage = int(
+                100 * float(
+                    len(unlocked_achievements)) / float(len(achievements)))
         except:
             percentage = 0
         response = {
@@ -318,9 +295,10 @@ def ranking_api(request):
     """
     Returns list of players and their scores.
     """
-    users = sorted(UserProfile.objects.all(), key=lambda t: t.ranking_score, reverse=True)
+    users = sorted(UserProfile.objects.all(),
+                   key=lambda t: t.ranking_score, reverse=True)
 
-    response = { "players": [{
+    response = {"players": [{
         "position": index+1,
         "username": user.username,
         "score": user.ranking_score,

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import random
-from wikiquotes import openSearch, queryTitles, getSectionsForPage, getQuotesForSection
+from .wikiquotes import openSearch, queryTitles, getSectionsForPage, getQuotesForSection
 
 
 # ugh, you should totally get that from wikiquotes

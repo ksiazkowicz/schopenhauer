@@ -12,7 +12,7 @@ urlpatterns = [
     url(r'^api/v1/', include('api.urls')),
     url(r'^game/', include("game.urls")),
     url(r'^profiles/', include("profiles.urls")),
-    url(r'^$', include("home.urls")),
+    url(r'', include("home.urls")),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^accounts/profile/$', profile_view, name='your_profile_view'),
 ]

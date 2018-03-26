@@ -37,12 +37,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_decadence',
+    'pipeline',
+    'channels',
+
+    # schopenhauer apps
+    'api',
     'home',
     'profiles',
     'game',
-    'pipeline',
-    'channels',
-    'api',
+
+    # social auth
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -179,7 +184,7 @@ CHANNEL_LAYERS = {
 AUTH_USER_MODEL = "profiles.UserProfile"
 
 try:
-    from local_settings import *
+    from .local_settings import *
 except ImportError as e:
     if "local_settings" not in str(e):
         raise e

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from models import Game, Tournament, Round, ChatMessage
+from .models import Game, Tournament, Round, ChatMessage
 
 
 class GameAdmin(admin.ModelAdmin):
