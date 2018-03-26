@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+import uuid
 
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 
 from profiles.models import UserProfile
-from .helpers import get_quote, fallback_quotes
-import random
-import uuid
-import json
-from .signals import *
+from .helpers import get_quote
+from .signals import new_tournament_round
 
 
 GAME_STATES = [
@@ -32,17 +29,18 @@ def get_verbose_modifiers(modifiers):
         modifier_list = modifiers.split(";")
         if not modifier_list:
             return MODIFIERS_VERBOSE["no_modifiers"]
-        else:
-            return ", ".join([MODIFIERS_VERBOSE.get(x, "") for x in modifier_list if x in MODIFIERS_VERBOSE.keys()])
-    else:
-        return "Eutanazol"
+        return ", ".join([MODIFIERS_VERBOSE.get(x, "")
+                          for x in modifier_list
+                          if x in MODIFIERS_VERBOSE.keys()])
+    return "Eutanazol"
 
 
 class Game(models.Model):
     session_id = models.CharField(_("Session ID"), max_length=128, blank=False)
     phrase = models.CharField(_("Phrase"), max_length=128, blank=False)
     progress = models.CharField(_("Progress"), max_length=128, blank=False)
-    used_characters = models.CharField(_("Used letters"), max_length=128, blank=False)
+    used_characters = models.CharField(
+        _("Used letters"), max_length=128, blank=False)
     score = models.IntegerField(_("Score"), default=0)
     mistakes = models.IntegerField(_("Mistakes"), default=0)
     player = models.ForeignKey(UserProfile, null=True)
@@ -69,12 +67,12 @@ class Game(models.Model):
         """
         if "only_one_mistake" in self.modifiers:
             return 1
-        else:
-            return 5
+        return 5
 
     @property
     def progress_string(self):
-        return "%s/%s" % (len(self.progress)-self.progress.count("_"), len(self.progress))
+        guessed = len(self.progress)-self.progress.count("_")
+        return "%s/%s" % (guessed, len(self.progress))
 
     def update_round(self):
         """
@@ -114,15 +112,16 @@ class Game(models.Model):
             if self.phrase == self.progress:
                 # you're not supposed to guess phrases
                 return "FAIL"
-            # ok, this is complicated, cause we need to check if ALL LETTERS THAT AREN'T IN THAT PHRASE ARE USED
-            # let's make a set of all letters, the ones that are in the phrase and substract them
+            # ok, this is complicated, cause we need to check if ALL LETTERS
+            # THAT AREN'T IN THAT PHRASE ARE USED let's make a set of all
+            # letters, the ones that are in the phrase and substract them
             remaining_letters = set(u"aąbcćdeęfghijklłmnńoprsśtuówyzżź")
             phrase_letters = set(self.phrase)
             # this should give us letters that aren't in the phrase
             remaining_letters.difference_update(phrase_letters)
             # substract used characters
             remaining_letters.difference_update(set(self.used_characters))
-            if len(remaining_letters) == 0:
+            if not remaining_letters:
                 # yay we won
                 return "WIN"
         else:
@@ -137,16 +136,17 @@ class Game(models.Model):
         """
         Check if user has permission to guess letters in this game.
         """
-        if len(self.round_set.all()) > 0:
-            # if we have cooperation enabled, every tournament participant can guess
+        if self.round_set.all().count():
+            # if we have cooperation enabled, every tournament participant can
+            # guess
             if "cooperation" in self.modifiers:
                 this_round = self.round_set.all().first()
                 return user in this_round.tournament.players.all()
-        # if player is defined, compare given user to that, otherwise let the shitfest begin
+        # if player is defined, compare given user to that, otherwise let the
+        # shitfest begin
         if self.player:
             return self.player == user
-        else:
-            return True
+        return True
 
     def guess(self, user, letter):
         """
@@ -173,8 +173,9 @@ class Game(models.Model):
 
         # check if character is already used
         if letter in self.used_characters:
-            # well, it's obviously a fail, but check mode before counting it as mistake
-            if not "inverse_death" in self.modifiers:
+            # well, it's obviously a fail, but check mode before counting it
+            # as mistake
+            if "inverse_death" not in self.modifiers:
                 # because it would be way to easy to finish inverse_death mode
                 self.mistakes += 1
         else:
@@ -243,10 +244,7 @@ def create_game(user, modifiers=None, phrase=None):
     Returns game object.
     """
     if not phrase:
-        try:
-            phrase = get_quote()
-        except:
-            phrase = fallback_quotes[random.randint(0, len(fallback_quotes) - 1)]
+        phrase = get_quote()
 
     game_progress = ""
     for x in phrase:
@@ -255,15 +253,17 @@ def create_game(user, modifiers=None, phrase=None):
         else:
             game_progress += x
 
-    game = Game.objects.create(session_id=uuid.uuid1().hex, phrase=phrase, progress=game_progress,
-                               used_characters="", player=user, modifiers=modifiers)
+    game = Game.objects.create(session_id=uuid.uuid1().hex, phrase=phrase,
+                               progress=game_progress, used_characters="",
+                               player=user, modifiers=modifiers)
     return game
 
 
 class Tournament(models.Model):
     name = models.CharField(_("Tournament name"), max_length=255)
     players = models.ManyToManyField(UserProfile)
-    admin = models.ForeignKey(UserProfile, related_name="tournament_admin", default=True)
+    admin = models.ForeignKey(
+        UserProfile, related_name="tournament_admin", default=True)
     current_round = models.IntegerField(_("Current round"), default=0)
     session_id = models.CharField(_("Session ID"), max_length=128, blank=False)
     in_progress = models.BooleanField(_("Is in progress?"), default=True)
@@ -286,21 +286,20 @@ class Tournament(models.Model):
         Creates a new round and games that are a part of it.
         """
         # create a new round object
-        new_round = Round.objects.create(round_id=self.current_round+1, tournament=self)
+        new_round = Round.objects.create(round_id=self.current_round+1,
+                                         tournament=self)
         self.current_round += 1
         self.save()
 
         # generate a common phrase
-        try:
-            phrase = get_quote()
-        except:
-            phrase = fallback_quotes[random.randint(0, len(fallback_quotes) - 1)]
+        phrase = get_quote()
 
         # if cooperation enabled, create just one game
         game = None
         coop_game = None
         if "cooperation" in self.modifiers:
-            coop_game = create_game(None, phrase=phrase, modifiers=self.modifiers)
+            coop_game = create_game(None, phrase=phrase,
+                                    modifiers=self.modifiers)
             new_round.games.add(coop_game)
             game = coop_game
 
@@ -308,11 +307,14 @@ class Tournament(models.Model):
         for player in self.players.all():
             # create new game if we're not in coop mode
             if not coop_game:
-                game = create_game(player, phrase=phrase, modifiers=self.modifiers)
+                game = create_game(player, phrase=phrase,
+                                   modifiers=self.modifiers)
                 new_round.games.add(game)
 
             # push out info to everyone
-            new_tournament_round.send(sender=self.__class__, instance=self, game_id=game.session_id, player=player)
+            new_tournament_round.send(
+                sender=self.__class__, instance=self, game_id=game.session_id,
+                player=player)
 
     def end_tournament(self):
         """
@@ -395,8 +397,7 @@ class Round(models.Model):
     def status_verbose(self):
         if self.status == "ROUND_IN_PROGRESS":
             return u"W trakcie"
-        else:
-            return u"Zakończona"
+        return u"Zakończona"
 
 
 class ChatMessage(models.Model):
