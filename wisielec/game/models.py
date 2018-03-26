@@ -363,7 +363,7 @@ class Round(models.Model):
     def get_winner(self):
         # really stupid workaround
         if "cooperation" in self.tournament.modifiers:
-            if self.games.all().count > 0:
+            if self.games.all().count() > 0:
                 if self.games.all()[0].state == "WIN":
                     return "Wszyscy"
             return "Nikt"
