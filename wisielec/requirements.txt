@@ -3,14 +3,22 @@ autobahn==0.16.0
 channels==0.17.3
 daphne==0.15.0
 Django==1.10.2
-lxml==3.6.4
+lxml==4.2.1
 requests==2.11.1
 six==1.10.0
 Twisted==16.4.1
 txaio==2.5.1
 wikiquote==0.1.4
 zope.interface==4.3.2
-pillow==3.4.2
 django-pipeline==1.6.9
 psycopg2==2.6.2
 django-allauth==0.30.0
+-e git://github.com/ksiazkowicz/django-decadence.git#egg=django-decadence
+
+# these can be even latest I guess
+pytz
+pillow
+
+# for development
+pylint
+pylint_django
