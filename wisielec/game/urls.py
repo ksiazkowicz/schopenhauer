@@ -1,3 +1,4 @@
+"""Game App urls"""
 from django.conf.urls import url
 from .views import lobby_view, new_game, current_game, tournament_view, \
     tournament_invite_view

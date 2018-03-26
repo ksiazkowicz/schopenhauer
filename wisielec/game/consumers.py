@@ -18,7 +18,7 @@ AUTO_BAN = {}
 
 def check_for_spam(author):
     """
-    I would have never possibly thought I'd possibly have to implement this. 
+    I would have never possibly thought I'd possibly have to implement this.
     I mean, it's university project... -_-
     :param message:
     :return:
@@ -47,6 +47,7 @@ def check_for_spam(author):
     return False
 
 
+# pylint: disable=redefined-builtin
 class ChatConsumer(WebsocketConsumer):
     """
     Chat Consumer
@@ -54,9 +55,15 @@ class ChatConsumer(WebsocketConsumer):
     http_user = True
 
     def connect(self, message, **kwargs):
+        if not message.user.allow_chat:
+            message.reply_channel.send({'close': True})
+            return
+        message.reply_channel.send({'accept': True})
+
         context_id = message.content['path'].strip("/chat/")
         message.channel_session['context'] = context_id
         # Send last 10 messages
+        # TODO: prerender this
         messages = reversed(ChatMessage.objects.filter(
             context=context_id).order_by("-pk")[:10])
         for chat_message in messages:
@@ -68,7 +75,7 @@ class ChatConsumer(WebsocketConsumer):
             })
         Group("chat-%s" % context_id).add(message.reply_channel)
 
-    def receive(self, text, **kwargs):
+    def receive(self, text=None, bytes=None, **kwargs):
         author = self.message.user
         context = self.message.channel_session['context']
         text = text.replace("[[ message ]]", "")
@@ -103,14 +110,15 @@ class TournamentConsumer(WebsocketConsumer):
         tournament_id = message.content['path'].replace("/tournament/", "")
         message.channel_session['tournament'] = tournament_id
         Group("tournament-%s" % tournament_id).add(message.reply_channel)
+        message.reply_channel.send({'accept': True})
 
-    def receive(self, text, **kwargs):
+    def receive(self, text=None, bytes=None, **kwargs):
         pass
 
     def disconnect(self, message, **kwargs):
         try:
             tournament_id = message.channel_session['tournament']
-        except:
+        except KeyError:
             tournament_id = message.content['path'].replace("/tournament/", "")
         Group("tournament-%s" % tournament_id).discard(message.reply_channel)
 
@@ -133,6 +141,7 @@ class LobbyConsumer(WebsocketConsumer):
     def connect(self, message, **kwargs):
         # add player to lobby
         Group("lobby").add(message.reply_channel)
+        message.reply_channel.send({'accept': True})
 
         # send out a list of running games
         # TODO: prerender this
@@ -152,7 +161,7 @@ class LobbyConsumer(WebsocketConsumer):
             LOBBY_PLAYERS.append(username)
         LobbyConsumer.update_player_list()
 
-    def receive(self, text, **kwargs):
+    def receive(self, text=None, bytes=None, **kwargs):
         pass
 
     def disconnect(self, message, **kwargs):
@@ -163,10 +172,14 @@ class LobbyConsumer(WebsocketConsumer):
 
 
 class GameConsumer(WebsocketConsumer):
+    """
+    Game consumer
+    """
     http_user = True
 
     @staticmethod
     def update_player_list(game_id):
+        """Helper method, updates list of players in a game"""
         Group("game-%s" % game_id).send({
             "text": json.dumps({
                 "session_id": game_id,
@@ -179,6 +192,7 @@ class GameConsumer(WebsocketConsumer):
         game_id = message.content['path'].strip("/game/")
         game = Game.objects.get(session_id=game_id)
         message.channel_session['game'] = game_id
+        message.reply_channel.send({'accept': True})
         Group("game-%s" % game_id).add(message.reply_channel)
         Group("game-%s" % game_id).send({
             "text": json.dumps({
@@ -193,7 +207,7 @@ class GameConsumer(WebsocketConsumer):
         GAME_PLAYERS.setdefault(game_id, []).append(message.user.username)
         GameConsumer.update_player_list(game_id)
 
-    def receive(self, text, **kwargs):
+    def receive(self, text=None, bytes=None, **kwargs):
         content = json.loads(text)
 
         session_id = content['session_id']
@@ -212,10 +226,10 @@ class GameConsumer(WebsocketConsumer):
             # prepare status update
             status_updates = []
             for game in this_round.games.all():
+                player = game.player
                 status_updates.append({
                     "session_id": game.session_id,
-                    "player": game.player.username if game.player else
-                    "Wszyscy",
+                    "player": player.username if player else "Wszyscy",
                     "mistakes": game.mistakes,
                     "progress": game.progress_string
                 })
@@ -223,8 +237,7 @@ class GameConsumer(WebsocketConsumer):
             # push status update to all players
             for game in this_round.games.all():
                 Group("game-%s" % game.session_id).send({
-                    "text": json.dumps({
-                        "updates": status_updates})
+                    "text": json.dumps({"updates": status_updates})
                 })
 
             # if round ended, send redirect packet
