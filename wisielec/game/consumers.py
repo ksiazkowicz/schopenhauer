@@ -17,7 +17,7 @@ def push_list_current_games(channel, user):
         games = []
     channel.send({
         "text": json.dumps({
-            "running_games": [{ "session_id": x.session_id, "progress": x.progress, } for x in games if x.state == "IN_PROGRESS" and x.round_set.count() == 0]
+            "running_games": [{"session_id": x.session_id, "progress": x.progress, } for x in games if x.state == "IN_PROGRESS" and x.round_set.count() == 0]
         })
     })
 
@@ -56,6 +56,7 @@ def push_list_current_players_game(game_id):
         pass"""
     pass
 
+
 @channel_session_user_from_http
 def lobby_connect(message):
     # add player to lobby
@@ -65,7 +66,7 @@ def lobby_connect(message):
     push_list_current_games(message.reply_channel, message.user)
 
     try:
-        lobby_players.append(unicode(message.user))
+        lobby_players.append(str(message.user))
     except:
         pass
 
@@ -76,7 +77,7 @@ def lobby_connect(message):
 def lobby_disconnect(message):
     Group("lobby").discard(message.reply_channel)
     try:
-        lobby_players.remove(unicode(message.user))
+        lobby_players.remove(str(message.user))
     except:
         pass
 
@@ -168,10 +169,10 @@ def ws_connect(message):
     push_game_status("game-%s" % game_id)
 
     if not game_players.get(game_id):
-        game_players[game_id] = [unicode(message.user)]
+        game_players[game_id] = [str(message.user)]
     else:
         try:
-            game_players.get(game_id, []).append(unicode(message.user))
+            game_players.get(game_id, []).append(str(message.user))
         except:
             pass
 
@@ -229,7 +230,7 @@ def ws_disconnect(message):
     game_id = message.channel_session['game']
     Group("game-%s" % game_id).discard(message.reply_channel)
     try:
-        game_players.get(game_id, []).remove(unicode(message.user))
+        game_players.get(game_id, []).remove(str(message.user))
     except:
         pass
 

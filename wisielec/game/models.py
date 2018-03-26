@@ -97,7 +97,7 @@ class Game(models.Model):
         condition = self.get_winning_condition()
         return condition
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s [%s]" % (self.progress, self.session_id)
 
     def get_winning_condition(self):
