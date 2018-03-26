@@ -4,8 +4,8 @@
 SchopenhauerApi::SchopenhauerApi(Settings *appSettings, QObject *parent) : QObject(parent)
 {
     // initialize api things
-    apiUrl = "127.0.0.1:8000";
-    //apiUrl = "schopenhauer.krojony.pl";
+    //apiUrl = "127.0.0.1:8000";
+    apiUrl = "wieszam.krojony.pl";
     sessionToken = "";
 
     // and auth things

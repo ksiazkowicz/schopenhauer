@@ -104,7 +104,7 @@ Page {
         }
     }
 
-    Rectangle {
+    /*Rectangle {
         id: keyboard
         height: 200
         color: "#eee"
@@ -136,9 +136,9 @@ Page {
                 textfield.text = "";
             }
         }
-    }
+    }*/
 
-    /*Rectangle {
+    Rectangle {
         id: keyboard
         height: keyboardGrid.contentHeight
         anchors {
@@ -165,7 +165,7 @@ Page {
                 }
             }
         }
-    }*/
+    }
 
 
     ListModel {
