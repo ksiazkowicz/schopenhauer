@@ -268,6 +268,11 @@ class Tournament(models.Model):
     session_id = models.CharField(_("Session ID"), max_length=128, blank=False)
     in_progress = models.BooleanField(_("Is in progress?"), default=True)
     modifiers = models.CharField(_("Modifiers"), max_length=256, default="")
+    public = models.BooleanField(_("Is public?"), default=False)
+
+    def __str__(self):
+        return "[%s] %s" % (
+            "Trwający" if self.in_progress else "Zakończony", self.name)
 
     def verbose_mode(self):
         return get_verbose_modifiers(self.modifiers)

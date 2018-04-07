@@ -1,0 +1,32 @@
+{% load widget_tweaks i18n %}
+
+{% for field in form %}
+<div class="form-group{% if field.errors %} form-errors{% endif %}">
+    {% if not field.is_hidden %}{{ field.errors }}{% endif %}
+    {% if field|field_type == "booleanfield" %}
+        <label class="checkbox" style="margin-left: 20px;" for="{{ field.name }}">
+            {{ field }}
+            {% if not field.is_hidden %}{{ field.label }} {% if field.field.required %}*{% endif %}{% endif %}
+        </label>
+    {% elif field|field_type == "imagefield" %}
+        <div class="form-imagefield">
+            <label>
+                <div class="upload-field-cta">
+                    <p><i class="fa fa-3x fa-upload"></i></p>
+                    <p>{% trans "Drop files you want to upload here or click to browse" %}</p>
+                    <p class="result">{% trans "No files selected" %}</p>
+                </div>
+                {{ field }}
+            </label>
+        </div>
+    {% else %}
+        <div class="manuo-form-{{ field|field_type }}">
+        {% if not field.is_hidden %}
+            <label for="{{ field.name }}">{{ field.label }} {% if field.field.required %}*{% endif %}</label>
+        {% endif %}
+        {{ field|add_class:"form-control input input-regular" }}
+        </div>
+    {% endif %}
+    {% if field.help_text %}<p class="help-text">{{ field.help_text }}</p>{% endif %}
+</div>
+{% endfor %}

@@ -6,6 +6,7 @@ requests==2.11.1
 django-pipeline==1.6.9
 psycopg2==2.6.2
 django-allauth==0.30.0
+django-widget-tweaks==1.4.2
 -e git://github.com/ksiazkowicz/django-decadence.git#egg=django-decadence
 
 # these can be even latest I guess

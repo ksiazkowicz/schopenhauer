@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django_decadence',
     'pipeline',
     'channels',
+    'widget_tweaks',
 
     # schopenhauer apps
     'api',
@@ -51,8 +52,8 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-     # Login Facebook provider
-     'allauth.socialaccount.providers.facebook',
+    # Login Facebook provider
+    'allauth.socialaccount.providers.facebook',
 ]
 
 MIDDLEWARE = [
@@ -123,18 +124,15 @@ AUTHENTICATION_BACKENDS = (
 )
 
 ACCOUNT_LOGOUT_ON_GET = True
+ACCOUNT_EMAIL_REQUIRED = True
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
-
+LANGUAGE_CODE = 'pl-pl'
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 
@@ -145,7 +143,7 @@ STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
 PIPELINE = {
     'PIPELINE_ENABLED': True,
     'COMPILERS': (
-      'pipeline.compilers.sass.SASSCompiler',
+        'pipeline.compilers.sass.SASSCompiler',
     ),
     'CSS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
     'JS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',

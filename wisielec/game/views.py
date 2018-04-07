@@ -27,7 +27,7 @@ def current_game(request, session_id, template="game/game.html"):
 @login_required
 def tournament_invite_view(request, username,
                            template="tournament/invite.html"):
-    tournaments = Tournament.objects.filter(in_progress=True)
+    tournaments = Tournament.objects.filter(in_progress=True, public=False)
     user = get_object_or_404(UserProfile, username=username)
 
     errors = []
@@ -44,6 +44,10 @@ def tournament_invite_view(request, username,
 def tournament_view(request, session_id,
                     template="tournament/tournament_lobby.html"):
     tournament = get_object_or_404(Tournament, session_id=session_id)
+
+    if tournament.public:
+        tournament.players.add(request.user)
+
     coop_mode = "cooperation" in tournament.modifiers
     my_games = []
     # make a list of my games

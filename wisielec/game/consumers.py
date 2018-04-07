@@ -60,7 +60,7 @@ class ChatConsumer(WebsocketConsumer):
             return
         message.reply_channel.send({'accept': True})
 
-        context_id = message.content['path'].strip("/chat/")
+        context_id = message.content['path'][len("/chat/"):]
         message.channel_session['context'] = context_id
         # Send last 10 messages
         # TODO: prerender this
@@ -189,7 +189,7 @@ class GameConsumer(WebsocketConsumer):
         })
 
     def connect(self, message, **kwargs):
-        game_id = message.content['path'].strip("/game/")
+        game_id = message.content['path'][len("/game/"):]
         game = Game.objects.get(session_id=game_id)
         message.channel_session['game'] = game_id
         message.reply_channel.send({'accept': True})

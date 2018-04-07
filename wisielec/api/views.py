@@ -124,7 +124,8 @@ def tournament_api(request, session_id=None):
         if session_id:
             tournaments = Tournament.objects.filter(session_id=session_id)
         else:
-            tournaments = request.user.tournament_set.all()
+            tournaments = (request.user.tournament_set.all() |
+                           Tournament.objects.filter(public=True)).distinct()
 
     if request.GET.get("in_progress", False):
         tournaments = tournaments.filter(in_progress=True)
@@ -295,13 +296,10 @@ def ranking_api(request):
     """
     Returns list of players and their scores.
     """
-    users = sorted(UserProfile.objects.all(),
-                   key=lambda t: t.ranking_score, reverse=True)
-
     response = {"players": [{
         "position": index+1,
         "username": user.username,
         "score": user.ranking_score,
-    } for index, user in enumerate(users)]}
+    } for index, user in enumerate(UserProfile.objects.get_ranking())]}
 
     return HttpResponse(json.dumps(response), content_type="application/json")

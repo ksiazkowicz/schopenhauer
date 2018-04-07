@@ -18,10 +18,9 @@ FALLBACK_QUOTES = [
 
 def get_quote():
     try:
-        # I'm so sad while making this "fix" ;-;
-        phrase = "a" * 210
+        phrase = []
 
-        while len(phrase) > 128:
+        while len(phrase) > 128 or len(phrase) < 4:
             # get title
             all_titles = [u"śmierć", "Artur Schopenhauer",
                           u"życie", u"nieszczęście", "niepowodzenie"]
@@ -39,5 +38,5 @@ def get_quote():
                 quotes = quotes['response']
                 phrase = quotes[random.randint(0, len(quotes) - 1)]
         return phrase
-    except:
+    except KeyError:
         return FALLBACK_QUOTES[random.randint(0, len(FALLBACK_QUOTES) - 1)]

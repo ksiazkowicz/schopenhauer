@@ -1,16 +1,53 @@
-from django.shortcuts import render
-from django.shortcuts import get_object_or_404
-
-from django.shortcuts import redirect
+# -*- coding: utf-8 -*-
+import random
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
 
 from profiles.forms import ProfileForm
 from profiles.models import UserProfile, Achievement
 
-from django.contrib.auth.decorators import login_required
+
+RANDOM_USERNAMES = [
+    [
+        "Wielki", "Tani", "Szybki", "Niebezpieczny", "Niezwykły",
+        "Zachwycający", "Wyjątkowy", "Nieznośny", "Rakotwórczy",
+        "Śmierdzący", "Smakowity", "Seryjny", "Notoryczny", "Obleśny",
+        "Tęczowy", "Mroczny",
+    ], [
+        "Jeździec", "Wisielec", "Chleb", "Rak", "Dekadent", "Samobójca",
+        "Wariat", "Ryzykant", "Pesymista", "Zombie", "Obrońca", "Psychofan",
+        "Hejter", "Przegryw", "Psychopata", "Wymiatacz", "Wojownik",
+    ], [
+        "Śmierci", "Apokalipsy", "Krojony", "Mózgu", "", "Szatana",
+        "Życia", "Wyprodukowany w Chinach", "Hegla", "Schopenhauera",
+        "Przegrywu", "Freuda", "Płaskiej Ziemii", "Lewoskrętnej Witaminy C"
+    ],
+]
+
+
+def guest_login(request):
+    """Logs in as guest and returns to previous page"""
+    if not request.user.is_authenticated() and request.method == "POST":
+        # generate random username
+        exists = True
+        while exists:
+            username = " ".join(
+                filter(None, [random.choice(x) for x in RANDOM_USERNAMES]))
+            exists = UserProfile.objects.filter(username=username)
+
+        # create a new user and log in
+        guest = UserProfile.objects.create_user(
+            "", "", username=username, guest=True)
+        login(request, guest,
+              backend='django.contrib.auth.backends.ModelBackend')
+
+    # redirect to previous page
+    return redirect(request.META.get('HTTP_REFERER'))
 
 
 @login_required
-def profile_edit_view(request, template="profiles/userprofile_form.html"):
+def profile_edit_view(request, template="account/edit.html"):
     form = ProfileForm(request.POST or None, instance=request.user)
 
     if request.POST:
@@ -22,13 +59,15 @@ def profile_edit_view(request, template="profiles/userprofile_form.html"):
     return render(request, template, locals())
 
 
-def ranking_view(request, template="profiles/ranking_view.html"):
-    users = sorted(UserProfile.objects.all(), key=lambda t: t.ranking_score, reverse=True)
-    return render(request, template, locals())
+def ranking_view(request, template="account/ranking.html"):
+    """Shows a sorted list of users"""
+    return render(request, template, {
+        "users": UserProfile.objects.get_ranking()
+    })
 
 
 @login_required
-def profile_view(request, username=None, template='profiles/profile_view.html'):
+def profile_view(request, username=None, template='account/view.html'):
     """
     Shows profile view.
     """
@@ -49,9 +88,15 @@ def profile_view(request, username=None, template='profiles/profile_view.html'):
 
     # calculate achievement unlock percentage
     try:
-        percentage = int(100 * float(len(unlocked_achievements)) / float(len(achievements)))
-    except:
+        percentage = int(100 * float(len(unlocked_achievements)
+                                     ) / float(len(achievements)))
+    except ZeroDivisionError:
         percentage = 0
 
     # render view
-    return render(request, template, locals())
+    return render(request, template, {
+        "percentage": percentage,
+        "achievements": achievements,
+        "unlocked_achievements": unlocked_achievements,
+        "username": username
+    })

@@ -9,6 +9,8 @@ class GameAdmin(admin.ModelAdmin):
 
 class TournamentAdmin(admin.ModelAdmin):
     model = Tournament
+    list_filter = ["in_progress", "public", ]
+    list_display = ["name", "in_progress", "public", ]
 
 
 class RoundAdmin(admin.ModelAdmin):
