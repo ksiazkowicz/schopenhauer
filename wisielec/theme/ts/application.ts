@@ -11,6 +11,10 @@ import { SchopenhauerGame } from "./schopenhauer/game";
 import { csrfPOST, replaceLink, query, queryInElement, ReconnectingWebsocketHandler } from "./modules/utils";
 import { include_from_template, ErrorOptions, show_info_block } from "./modules/decadence";
 
+// polyfills
+import Promise from 'promise-polyfill';
+import 'whatwg-fetch';
+
 function fake_tournament_invite() {
     var options = new ErrorOptions({
         "has_button": true,
