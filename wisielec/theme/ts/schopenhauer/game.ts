@@ -5,7 +5,7 @@ import { show_info_block, ErrorOptions, include_from_template } from "../modules
 export class SchopenhauerGame extends ReconnectingWebsocketHandler {
     letters: Array<Element>;
     session_id: string = "";
-    keyboard_input: Element;
+    keyboard_input: HTMLInputElement;
     mistakes: Element;
 
     used_letters: Array<string> = new Array<string>();
@@ -37,9 +37,17 @@ export class SchopenhauerGame extends ReconnectingWebsocketHandler {
         this.keyboard_input.addEventListener("keypress", (evt: any) => {
             this.uniCharCode(evt);
         });
-        this.keyboard_input.addEventListener("focusout", function (evt: any) {
-            if (screen.width <= 991)
-                this.focus();
+        if (screen.width <= 991) {
+            this.keyboard_input.focus();
+            this.keyboard_input.setAttribute("autofocus", "");
+        }
+        this.keyboard_input.addEventListener("focusout", (evt: any) => {
+            if (screen.width > 991) {
+                this.keyboard_input.focus();
+                this.keyboard_input.setAttribute("autofocus", "");
+            } else {
+                this.keyboard_input.removeAttribute("autofocus");
+            }
         });
         this.letters = queryInElement(f, "a");
         this.letters.map((e: Element) => {
