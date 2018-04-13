@@ -129,3 +129,40 @@ a { color: $blood-red; }
     }
   }
 }
+
+.pull-left-responsive {
+  float: left;
+  @media screen and (max-width: 991px) {
+    float: none !important;
+  }
+}
+
+.pull-right-responsive {
+  float: right;
+  @media screen and (max-width: 991px) {
+    float: none !important;
+  }
+}
+
+@media screen and (max-width: 991px) {
+  #pikczer {
+    height: 30vh;
+  }
+  .headerbar {
+    .pull-left, .pull-right {
+      float: none !important;
+      text-align: center;
+      margin-top: 0px;
+    }
+    img {
+      height: 60px;
+    }
+    h4 {
+      font-size: 12pt;
+    }
+    .login-block { display: none; }
+  }
+  #progress {
+    font-size: 16px;
+  }
+}

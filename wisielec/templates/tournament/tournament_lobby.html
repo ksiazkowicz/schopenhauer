@@ -11,7 +11,38 @@
         </h4>
     </div>
 
-    <div class="col-md-4 pull-right">
+    <div class="col-md-8">
+        <div class="panel panel-default">
+            <div class="panel-heading">Rundy</div>
+            <div class="panel-body">
+                <table class="table round-table">
+                    <tr>
+                        <th style="width: 32px;">Numer</th>
+                        <th style="width: 120px;"></th>
+                        <th>Zwycięzca</th>
+                    </tr>
+                {% for round in tournament.round_set.all %}
+                    <tr {% if round.round_id == tournament.current_round %}class="current"{% endif %}>
+                        <td>{{ round.round_id }}</td>
+                        <td>{% if round.status == "ROUND_IN_PROGRESS" %}{% for game in round.games.all %}{% if game in my_games %}
+                                <a class="btn btn-sm btn-default" href="{% url 'game_view' game.session_id %}">Dołącz</a>
+                                {% endif %}{% endfor %}{% else %}{{ round.status_verbose }}{% endif %}</td>
+                        <td {% if round.winner == request.user %}class="me"{% endif %}>{{ round.get_winner|default:"Nikt" }}</td>
+                    </tr>
+                    {% if round.status != "ROUND_IN_PROGRESS" %}
+                    <tr>
+                        <td colspan="3"><b>Hasło: </b>{{ round.games.first.phrase }}</td>
+                    </tr>
+                    {% endif %}
+                {% endfor %}
+                </table>
+            </div>
+        </div>
+        {% with tournament.session_id|stringformat:"s" as session_id %}
+        {% include "includes/chatbox.html" with chat_context="tournament-"|add:session_id  %}
+        {% endwith %}
+    </div>
+    <div class="col-md-4">
         {% if tournament.in_progress %}
         {% if request.user == tournament.get_admin %}
         <div class="panel panel-default">
@@ -67,38 +98,5 @@
                 {% endif %}
             </div>
         </div>
-    </div>
-    <div class="col-md-8">
-        <div class="panel panel-default">
-            <div class="panel-heading">Rundy</div>
-            <div class="panel-body">
-                <table class="table round-table">
-                    <tr>
-                        <th>Numer</th>
-                        <th>Status</th>
-                        <th>Zwycięzca</th>
-                        <th>Akcje</th>
-                    </tr>
-                {% for round in tournament.round_set.all %}
-                    <tr {% if round.round_id == tournament.current_round %}class="current"{% endif %}>
-                        <td>{{ round.round_id }}</td>
-                        <td>{{ round.status_verbose }}</td>
-                        <td {% if round.winner == request.user %}class="me"{% endif %}>{{ round.get_winner|default:"Nikt" }}</td>
-                        <td>{% if round.status == "ROUND_IN_PROGRESS" %}{% for game in round.games.all %}{% if game in my_games %}
-                            <a class="btn btn-sm btn-default" href="{% url 'game_view' game.session_id %}">Dołącz</a>
-                            {% endif %}{% endfor %}{% endif %}</td>
-                    </tr>
-                    {% if round.status != "ROUND_IN_PROGRESS" %}
-                    <tr>
-                        <td colspan="4"><b>Hasło: </b>{{ round.games.first.phrase }}</td>
-                    </tr>
-                    {% endif %}
-                {% endfor %}
-                </table>
-            </div>
-        </div>
-        {% with tournament.session_id|stringformat:"s" as session_id %}
-        {% include "includes/chatbox.html" with chat_context="tournament-"|add:session_id  %}
-        {% endwith %}
     </div>
 {% endblock %}

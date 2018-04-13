@@ -5,7 +5,7 @@
 
 {% block content %}
     <div class="clearfix">
-        <div class="col-md-4 pull-right">
+        <div class="col-md-4 pull-right-responsive">
             {% if request.user.is_authenticated %}
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -29,7 +29,7 @@
             </div>
             {% include "includes/chatbox.html" with chat_context="lobby" %}
         </div>
-        <div class="col-md-8 pull-left">
+        <div class="col-md-8 pull-left-responsive">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     Wróć do tych gier
@@ -42,5 +42,6 @@
                 </div>
             </div>
         </div>
+        <div class="clearfix"></div>
     </div>
 {% endblock %}

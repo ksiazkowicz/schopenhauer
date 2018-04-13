@@ -38,7 +38,8 @@ export class SchopenhauerGame extends ReconnectingWebsocketHandler {
             this.uniCharCode(evt);
         });
         this.keyboard_input.addEventListener("focusout", function (evt: any) {
-            this.focus();
+            if (screen.width <= 991)
+                this.focus();
         });
         this.letters = queryInElement(f, "a");
         this.letters.map((e: Element) => {
