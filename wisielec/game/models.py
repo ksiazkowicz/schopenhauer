@@ -44,7 +44,8 @@ class Game(models.Model):
     score = models.IntegerField(_("Score"), default=0)
     mistakes = models.IntegerField(_("Mistakes"), default=0)
     player = models.ForeignKey(UserProfile, null=True)
-    modifiers = models.CharField(_("Modifiers"), max_length=256, default="")
+    modifiers = models.CharField(
+        _("Modifiers"), max_length=256, default="", blank=True)
 
     @property
     def is_ranking_game(self):
@@ -264,7 +265,8 @@ class Tournament(models.Model):
     current_round = models.IntegerField(_("Current round"), default=0)
     session_id = models.CharField(_("Session ID"), max_length=128, blank=False)
     in_progress = models.BooleanField(_("Is in progress?"), default=True)
-    modifiers = models.CharField(_("Modifiers"), max_length=256, default="")
+    modifiers = models.CharField(
+        _("Modifiers"), max_length=256, default="", blank=True)
     public = models.BooleanField(_("Is public?"), default=False)
 
     def __str__(self):
