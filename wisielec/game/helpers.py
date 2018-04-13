@@ -39,9 +39,10 @@ def get_quote():
                 quotes = getQuotesForSection(
                     pages['response'], sections['response'][0])
 
-                quotes = quotes['response']
-                phrase = random.choice(
-                    [x for x in quotes if 4 < len(x) <= 128])
+                quotes = [x for x in quotes.get(
+                    "response", []) if 4 < len(x) <= 128]
+                if quotes:
+                    phrase = random.choice(quotes)
         return phrase
     except KeyError:
         return FALLBACK_QUOTES[random.randint(0, len(FALLBACK_QUOTES) - 1)]

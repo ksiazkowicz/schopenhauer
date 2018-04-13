@@ -2,37 +2,30 @@
 {% load static %}
 
 {% block content %}
-    <h3 id="progress">{{ game.progress }}</h3>
-
-    <div class="pull-right">
-        <img id="pikczer" src="/static/img/wis0{{ game.mistakes|add:"1" }}.png">
+    {% if game.state != "IN_PROGRESS" %}
+    <div class="alert alert-body alert-info alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        Ta gra została już zakończona.
     </div>
-
-    <input class="keyboard-input" type="text" style="color: #000; background-color: #000; height: 0; opacity: 0;" autofocus id="wpisywacz">
-
-    <div class="schopenhauer-game" data-game="{{ game.session_id }}">
-        {% if game.get_mistake_count < 5 %}
-        {% for x in alphabet %}
-        <a href="#">{{ x }}</a>
-        {% endfor %}{% else %}PRZEGRALES ZYCIE LOL{% endif %}
-        <p id="used_letters">
-            Wykorzystane literki: {% if game.used_characters %}{% for x in game.used_characters %}{{ x }}{% if not forloop.last %},{% endif %} {% endfor %}{% endif %}
-        </p>
-    </div>
-    <div>
-        <label>Punkty</label> <p id="score">{{ game.score }}</p>
-        <label>Błędy</label> <p id="mistakes">{{ game.mistakes }}</p>
-        <label>Tryb</label> <p>{{ game.verbose_mode }}</p>
-    </div>
-    <div><b>Lista uczestników:</b> <div id="players-list">nie żyją</div></div>
-
-    {% if game.player %}<br/>
-    <div><b>Gra</b> {{ game.player }}</div>
     {% endif %}
 
-    {% if game.round_set.all %}
+    <div class="text-center">
+        <img id="pikczer" src="/static/img/hangman/0{{ game.mistakes|add:"1" }}.png">
+        <h3 id="progress">{{ game.progress }}</h3>
+        {% if game.state != "IN_PROGRESS" %}<h4>{{ game.phrase }}</h4>{% endif %}
+
+    </div>
+
+    <input class="keyboard-input" type="text" style="height: 0; opacity: 0;" autofocus id="wpisywacz">
+
+    <div class="schopenhauer-game text-center" data-game="{{ game.session_id }}">
+        {% for x in alphabet %}
+        <a href="#">{{ x }}</a>
+        {% endfor %}
+    </div>
+
+    
     <div class="tournament-status-line">
-        <h4>Pozostali gracze</h4>
         {% for round in game.round_set.all %}
             {% for game in round.games.all %}
                 <div class="tournament-status" id="game-{{ game.session_id }}">
@@ -41,7 +34,14 @@
                     <div class="game-progress" id="game-progress-{{ game.session_id }}">{{ game.progress_string }}</div>
                 </div>
             {% endfor %}
+            {% empty %}
+            <div class="tournament-status-line">
+                <div class="tournament-status" id="game-{{ game.session_id }}">
+                    <div class="game-mistakes" id="mistakes">({{ game.mistakes }})</div>
+                    <span class="player-name">{{ game.player }}</span>
+                    <div class="game-progress" id="score">{{ game.score }}</div>
+                </div>
+            </div>
         {% endfor %}
     </div>
-    {% endif %}
 {% endblock %}

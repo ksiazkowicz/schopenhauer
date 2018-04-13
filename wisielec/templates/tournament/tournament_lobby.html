@@ -88,6 +88,11 @@
                             <a class="btn btn-sm btn-default" href="{% url 'game_view' game.session_id %}">Dołącz</a>
                             {% endif %}{% endfor %}{% endif %}</td>
                     </tr>
+                    {% if round.status != "ROUND_IN_PROGRESS" %}
+                    <tr>
+                        <td colspan="4"><b>Hasło: </b>{{ round.games.first.phrase }}</td>
+                    </tr>
+                    {% endif %}
                 {% endfor %}
                 </table>
             </div>

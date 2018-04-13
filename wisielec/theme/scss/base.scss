@@ -103,3 +103,29 @@ a { color: $blood-red; }
 .restore-pointer {
   cursor: pointer;
 }
+
+.schopenhauer-game { 
+  cursor: default;
+  a {
+    font-size: 20pt;
+    border: 2px solid #a11b1b;
+    font-size: 14pt;
+    line-height: 48px;
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 10px;
+    &.disabled {
+      border: 2px solid #aaa;
+      background-color: transparent;
+      color: #aaa;
+      &:hover {
+        background-color: transparent;
+        cursor: default;
+      }
+    }
+    &:hover {
+      background-color: #f7cccc;
+      cursor: pointer;
+    }
+  }
+}
