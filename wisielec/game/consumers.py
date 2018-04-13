@@ -31,7 +31,7 @@ def check_for_spam(author):
     if author.chatmessage_set.all().count() > 0:
         timedelta = datetime.datetime.now(
             utc) - author.chatmessage_set.last().timestamp
-        min_time = datetime.timedelta(seconds=20)
+        min_time = datetime.timedelta(microseconds=500000)
         if timedelta < min_time:
             # yeah, flooding
             AUTO_BAN[author.username] = AUTO_BAN.get(author.username, 0) + 1
@@ -78,6 +78,7 @@ class ChatConsumer(WebsocketConsumer):
     def receive(self, text=None, bytes=None, **kwargs):
         author = self.message.user
         context = self.message.channel_session['context']
+        text = json.loads(text).get("message", "")
         text = text.replace("[[ message ]]", "")
         if text != "":
             # ignore requests if user is banned or message is spam
@@ -248,7 +249,7 @@ class GameConsumer(WebsocketConsumer):
                         "text": json.dumps({
                             "tournament": this_round.tournament.session_id,
                             "winner": winner.username if winner else "",
-                            "round": round.round_id,
+                            "round": this_round.round_id,
                             "redirect": True,
                         })
                     })

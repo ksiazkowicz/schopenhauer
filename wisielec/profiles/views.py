@@ -13,7 +13,7 @@ RANDOM_USERNAMES = [
         "Wielki", "Tani", "Szybki", "Niebezpieczny", "Niezwykły",
         "Zachwycający", "Wyjątkowy", "Nieznośny", "Rakotwórczy",
         "Śmierdzący", "Smakowity", "Seryjny", "Notoryczny", "Obleśny",
-        "Tęczowy", "Mroczny",
+        "Tęczowy", "Mroczny", "Apatyczny",
     ], [
         "Jeździec", "Wisielec", "Chleb", "Rak", "Dekadent", "Samobójca",
         "Wariat", "Ryzykant", "Pesymista", "Zombie", "Obrońca", "Psychofan",
@@ -21,7 +21,8 @@ RANDOM_USERNAMES = [
     ], [
         "Śmierci", "Apokalipsy", "Krojony", "Mózgu", "", "Szatana",
         "Życia", "Wyprodukowany w Chinach", "Hegla", "Schopenhauera",
-        "Przegrywu", "Freuda", "Płaskiej Ziemii", "Lewoskrętnej Witaminy C"
+        "Przegrywu", "Freuda", "Płaskiej Ziemii", "Lewoskrętnej Witaminy C",
+        "Depresji"
     ],
 ]
 

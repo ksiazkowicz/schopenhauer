@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from game.models import Game, Tournament
 from profiles.models import UserProfile
-from django.shortcuts import redirect
-from django.contrib.auth.decorators import login_required
 
 
 @login_required
@@ -13,7 +12,7 @@ def lobby_view(request, template="game/lobby.html"):
 
 
 @login_required
-def new_game(request, template="new_game.html", is_tournament=False):
+def new_game(request, template="game/new.html", is_tournament=False):
     return render(request, template, {"is_tournament": is_tournament})
 
 
@@ -21,7 +20,7 @@ def new_game(request, template="new_game.html", is_tournament=False):
 def current_game(request, session_id, template="game/game.html"):
     game = get_object_or_404(Game, session_id=session_id)
     alphabet = u"aąbcćdeęfghijklłmnńoprsśtuówyzżź"
-    return render(request, template, locals())
+    return render(request, template, {"game": game, "alphabet": alphabet})
 
 
 @login_required

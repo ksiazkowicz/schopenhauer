@@ -1,23 +1,10 @@
 {% extends "base.html" %}
 {% load tournament_tags %}
 
-{% block content %}
-    <script>
-        // Note that the path doesn't matter right now; any WebSocket
-        // connection gets bumped over to WebSocket consumers
-        socket = new WebSocket("ws://" + window.location.host + "/tournament/{{ tournament.session_id }}");
-        socket.onmessage = function(e) {
-            var bread = JSON.parse(e.data);
-            if (bread.redirect && bread.player == "{{ request.user }}") {
-                location.href = "/game/g/" + bread.game + "/";
-            }
-        };
-        socket.onopen = socket_connect;
-        socket.onerror = socket_error;
-        socket.onclose = socket_reconnect;
-    </script>
+{% block body_class %}{{ tournament.session_id }}{% endblock %}
 
-    <div class="col-md-8">
+{% block content %}
+    <div class="col-md-8 schopenhauer-tournament" data-tournament="{{ tournament.session_id }}" data-player="{{ request.user }}">
         <h1>{{ tournament.name }}</h1>
         <h4>
             {{ tournament.verbose_mode }} {% if not tournament.in_progress %}(zakończony){% endif %}
@@ -30,9 +17,9 @@
         <div class="panel panel-default">
             <div class="panel-heading">Zarządzaj turniejem</div>
             <div class="panel-body">
+                <button id="new_round_button" style="margin-right: 10px;" class="pull-left btn btn-info">Nowa runda</button>
                 <form action="" method="post">
                     {% csrf_token %}
-                    <button id="new_round_button" class="btn btn-info">Nowa runda</button>
                     <input type="submit" name="end-tournament" class="btn btn-info" value="Zakończ" />
                 </form>
             </div>
@@ -109,18 +96,4 @@
         {% include "includes/chatbox.html" with chat_context="tournament-"|add:session_id  %}
         {% endwith %}
     </div>
-
-    <script>
-        var session_id = "{{ tournament.session_id }}";
-
-        {% if request.user == tournament.get_admin %}
-        document.getElementById("invite_button").onclick = function() {
-            var username = document.getElementById("invite_name_input").value;
-            invite_to_tournament(session_id, username);
-        };
-        document.getElementById("new_round_button").onclick = function() {
-            new_round_tournament(session_id);
-        };
-        {% endif %}
-    </script>
 {% endblock %}

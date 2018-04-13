@@ -50,22 +50,14 @@ def getQuotesForSection(page_id, section):
 
     if result.status_code == 200:
         quotes_text = ""
-        quotes_array = []
         try:
             result_json = result.json()
             quotes_text = result_json['parse']['text']["*"]
+            quotes_html = html.fromstring(quotes_text)
         except:
-            result_repsonse = "Parsing error"
+            quotes_html = html.fromstring("<div></div>")
 
-        quotes_html = html.fromstring(quotes_text)
-        quote_objects = quotes_html.xpath('//li/text()')
-
-        ignored = ["Autor: ", "\n", ", ", u"Zobacz też: ", ]
-
-        for obj in quote_objects:
-            if obj not in ignored:
-                quotes_array += [obj, ]
-        result_response = quotes_array
+        result_response = quotes_html.xpath('//div/ul/li/text()')
     else:
         result_response = ""
 

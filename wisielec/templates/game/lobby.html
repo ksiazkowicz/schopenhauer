@@ -1,39 +1,9 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block body_class %}lobby{% endblock %}
+
 {% block content %}
-    <script>
-        socket = new WebSocket("ws://" + window.location.host + "/lobby/");
-        socket.onmessage = function(e) {
-            var data_json = JSON.parse(e.data);
-            var games = data_json.running_games;
-            var players = data_json.players;
-            var game_id = data_json.session_id;
-
-            if (games) {
-                for (var i = 0, len = games.length; i < len; i++) {
-                  append_game(games[i].session_id, games[i].progress);
-                }
-            }
-            if (game_id) {
-                append_game(game_id);
-                update_players("players-for-"+game_id, String(players).split(","));
-            }
-            if (players && !game_id) {
-                update_players("players-list", String(players).split(","));
-            }
-        };
-        socket.onerror = socket_error;
-        socket.onclose = socket_reconnect_silent;
-
-        function append_game(session_id, progress) {
-            if (!document.getElementById("game-" + session_id)) {
-                include_from_template("#running-games-list", "includes/decadence/lobby_game.html", {"session_id": session_id, "progress": progress}, "beforeend");
-            }
-        }
-    </script>
-
-
     <div class="clearfix">
         <div class="col-md-8">
             <div class="panel panel-default">
@@ -73,8 +43,4 @@
             {% include "includes/chatbox.html" with chat_context="lobby" %}
         </div>
     </div>
-
-    <script>
-        refresh_your_tournaments();
-    </script>
 {% endblock %}

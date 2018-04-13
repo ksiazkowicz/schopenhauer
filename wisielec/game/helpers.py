@@ -15,19 +15,23 @@ FALLBACK_QUOTES = [
     "Zimno mi psychicznie.",
 ]
 
+ALL_TITLES = [
+    "śmierć",
+    "Artur Schopenhauer",
+    "porażka",
+    "życie",
+    "nieszczęście",
+    "niepowodzenie"
+]
+
 
 def get_quote():
     try:
-        phrase = []
+        phrase = ""
 
-        while len(phrase) > 128 or len(phrase) < 4:
-            # get title
-            all_titles = [u"śmierć", "Artur Schopenhauer",
-                          u"życie", u"nieszczęście", "niepowodzenie"]
-            title = all_titles[random.randint(0, len(all_titles) - 1)]
-
+        while not phrase:
             # search
-            search_results = openSearch(title)
+            search_results = openSearch(random.choice(ALL_TITLES))
 
             pages = queryTitles(search_results['response'][0])
             if pages['response'] != "":
@@ -36,7 +40,8 @@ def get_quote():
                     pages['response'], sections['response'][0])
 
                 quotes = quotes['response']
-                phrase = quotes[random.randint(0, len(quotes) - 1)]
+                phrase = random.choice(
+                    [x for x in quotes if 4 < len(x) <= 128])
         return phrase
     except KeyError:
         return FALLBACK_QUOTES[random.randint(0, len(FALLBACK_QUOTES) - 1)]

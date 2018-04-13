@@ -171,14 +171,11 @@ class Game(models.Model):
         # make sure letter is lowercase
         letter = letter.lower()
 
+        if letter not in "aąbcćdeęfghijklłmnńoprsśtuówyzżź":
+            return False
+
         # check if character is already used
-        if letter in self.used_characters:
-            # well, it's obviously a fail, but check mode before counting it
-            # as mistake
-            if "inverse_death" not in self.modifiers:
-                # because it would be way to easy to finish inverse_death mode
-                self.mistakes += 1
-        else:
+        if letter not in self.used_characters:
             # ok, we can do stuff, count the letter as used first
             self.used_characters += letter
 

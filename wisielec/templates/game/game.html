@@ -2,87 +2,18 @@
 {% load static %}
 
 {% block content %}
-    <script>
-        // Note that the path doesn't matter right now; any WebSocket
-        // connection gets bumped over to WebSocket consumers
-        socket = new WebSocket("ws://" + window.location.host + "/game/{{ game.session_id }}");
-        socket.onmessage = function(e) {
-            var bread = JSON.parse(e.data);
-            if (bread.redirect) {
-                location.href = "/game/t/" + bread.tournament + "/";
-            }
-
-            if (bread.updates) {
-                for (i=0; i<bread.updates.length; i++) {
-                    var update = bread.updates[i];
-                    if (document.getElementById("game-"+update.session_id)) {
-                        document.getElementById("game-mistakes-"+update.session_id).innerText = update.mistakes;
-                        document.getElementById("game-progress-"+update.session_id).innerText = "("+update.progress+")";
-                    } else {
-                        alert("NOT_IMPLEMENTED");
-                    }
-                }
-            }
-
-            if (bread.session_id == "{{ game.session_id }}") {
-                if (bread.letter) {
-                    document.getElementById("used_letters").innerHTML += bread.letter + ", ";
-                }
-                if (bread.used_chars) {
-                    document.getElementById("used_letters").innerHTML = "Wykorzystane literki: "
-                    for (var i=0; i < bread.used_chars.length; i++) {
-                        document.getElementById("used_letters").innerHTML += bread.used_chars[i] + ", ";
-                    }
-                }
-                if (bread.players)
-                    update_players("players-list", bread.players);
-                
-                if (!bread.player_list_only) {
-                    document.getElementById("score").innerText = bread.score;
-                    document.getElementById("mistakes").innerText = bread.mistakes;
-                    document.getElementById("progress").innerText = bread.progress;
-
-                    if (bread.hangman_pic) {
-                        var img_mistakes = bread.hangman_pic < 5 ? bread.hangman_pic + 1 : 6;
-                        document.getElementById("pikczer").setAttribute("src", "/static/img/wis0" + (img_mistakes) + ".png");
-                    }
-                }
-            }
-        };
-        socket.onopen = socket_connect;
-        socket.onerror = socket_error;
-        socket.onclose = socket_reconnect;
-        // Call onopen directly if socket is already open
-        if (socket.readyState == WebSocket.OPEN) socket.onopen();
-
-        function test(letter) {
-            socket.send(JSON.stringify({
-                session_id: "{{ game.session_id }}",
-                letter: letter
-            }));
-        }
-
-        function uniCharCode(event) {
-            var char = event.which || event.keyCode; // event.keyCode is used for IE8 and earlier
-            test(String.fromCharCode(char));
-        }
-        function zaznacz_rzeczy() {
-            document.getElementById("wpisywacz").focus();
-        }
-    </script>
-
     <h3 id="progress">{{ game.progress }}</h3>
 
     <div class="pull-right">
         <img id="pikczer" src="/static/img/wis0{{ game.mistakes|add:"1" }}.png">
     </div>
 
-    <input type="text" style="color: #000; background-color: #000; height: 0; opacity: 0;" onkeypress="uniCharCode(event)" onfocusout="zaznacz_rzeczy()" autofocus id="wpisywacz">
+    <input class="keyboard-input" type="text" style="color: #000; background-color: #000; height: 0; opacity: 0;" autofocus id="wpisywacz">
 
-    <div>
+    <div class="schopenhauer-game" data-game="{{ game.session_id }}">
         {% if game.get_mistake_count < 5 %}
         {% for x in alphabet %}
-        <a href="javascript:test('{{x}}');">{{ x }}</a>
+        <a href="#">{{ x }}</a>
         {% endfor %}{% else %}PRZEGRALES ZYCIE LOL{% endif %}
         <p id="used_letters">
             Wykorzystane literki: {% if game.used_characters %}{% for x in game.used_characters %}{{ x }}{% if not forloop.last %},{% endif %} {% endfor %}{% endif %}
@@ -111,12 +42,6 @@
                 </div>
             {% endfor %}
         {% endfor %}
-    </div>
-
-    <div class="col-md-12">
-        {% with game.round_set.all.0.tournament.session_id|stringformat:"s" as session_id %}
-        {% include "includes/chatbox.html" with chat_context="tournament-"|add:session_id  %}
-        {% endwith %}
     </div>
     {% endif %}
 {% endblock %}

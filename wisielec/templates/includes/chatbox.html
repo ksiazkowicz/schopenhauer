@@ -1,40 +1,14 @@
 <div class="panel panel-default">
     <div class="panel-heading">Czat</div>
-    <div class="panel-body">
+    <div class="panel-body schopenhauer-chat" data-context="{{ chat_context }}">
         <div class="chat-list-container" style="height: 200px; margin-bottom: 10px; overflow-y: scroll;">
-            <table class="table round-table" id="chat_list"></table>
+            <table class="table round-table chat-list" id="chat_list"></table>
         </div>
         <div class="input-group">
             <input type="text" name="name" placeholder="Wpisz wiadomość" class="form-control" id="message_input">
             <div class="input-group-btn">
-                <input type="submit" class="btn btn-info" value="Wyślij" onclick="send_message()" />
+                <input type="submit" class="btn btn-info" />
             </div>
         </div>
     </div>
 </div>
-
-<script>
-    var chat_context = "{{ chat_context }}";
-    var chat_template = "<tr><td><a href='/profiles/view/[[ author ]]' style='font-weight: bold;'>[[ author ]]</a>: [[ message ]]</td></tr>";
-    var chat_block = "#chat_list";
-
-    function send_message() {
-        var message_input = document.getElementById("message_input");
-        chat_socket.send(message_input.value);
-        message_input.value = "";
-    }
-
-    document.getElementById('message_input').onkeypress = function(e) {
-        if(e.keyCode == 13)
-            send_message()
-    };
-
-    chat_socket = new WebSocket("ws://" + window.location.host + "/chat/"+chat_context);
-    chat_socket.addEventListener("message", function(e) {
-        var data = JSON.parse(e.data);
-        // use API to insert a message into chat block
-        include_from_template(chat_block, "includes/decadence/chat_message.html", {
-            "author": data.author, "message": data.message
-        }, "afterbegin");
-    });
-</script>

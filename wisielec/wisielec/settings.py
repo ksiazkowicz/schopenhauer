@@ -38,13 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_decadence',
-    'pipeline',
     'channels',
     'widget_tweaks',
+    'webpack_loader',
 
     # schopenhauer apps
     'api',
-    'home',
     'profiles',
     'game',
 
@@ -138,39 +137,30 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
-STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
-
-PIPELINE = {
-    'PIPELINE_ENABLED': True,
-    'COMPILERS': (
-        'pipeline.compilers.sass.SASSCompiler',
-    ),
-    'CSS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
-    'JS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
-    'STYLESHEETS': {
-        'application': {
-            'source_filenames': (
-                # main scss file
-                'css/schopenhauer/main.scss',
-            ),
-            'output_filename': 'css/application.css',
-        },
-    }
-}
-
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static_app'), )
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'theme'), )
 
 STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-    'pipeline.finders.PipelineFinder',
 )
+
+# Webpack Config
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'CACHE': not DEBUG,
+        'BUNDLE_DIR_NAME': 'bundles/',
+        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
+        'POLL_INTERVAL': 0.1,
+        'TIMEOUT': None,
+        'IGNORE': ['.+\.hot-update.js', '.+\.map']
+    }
+}
 
 CHANNEL_LAYERS = {
     "default": {
@@ -186,3 +176,5 @@ try:
 except ImportError as e:
     if "local_settings" not in str(e):
         raise e
+
+WEBPACK_LOADER["DEFAULT"]["CACHE"] = not DEBUG
