@@ -226,26 +226,26 @@ class GameConsumer(WebsocketConsumer):
             # let all clients know that the round in tournament has finished
             # prepare status update
             status_updates = []
-            for game in this_round.games.all():
-                player = game.player
+            for other_game in this_round.games.all():
+                player = other_game.player
                 status_updates.append({
-                    "session_id": game.session_id,
+                    "session_id": other_game.session_id,
                     "player": player.username if player else "Wszyscy",
-                    "mistakes": game.mistakes,
-                    "progress": game.progress_string
+                    "mistakes": other_game.mistakes,
+                    "progress": other_game.progress_string
                 })
 
             # push status update to all players
-            for game in this_round.games.all():
-                Group("game-%s" % game.session_id).send({
+            for other_game in this_round.games.all():
+                Group("game-%s" % other_game.session_id).send({
                     "text": json.dumps({"updates": status_updates})
                 })
 
             # if round ended, send redirect packet
             if this_round.status != "ROUND_IN_PROGRESS":
-                for game in this_round.games.all():
+                for other_game in this_round.games.all():
                     winner = this_round.winner
-                    Group("game-%s" % game.session_id).send({
+                    Group("game-%s" % other_game.session_id).send({
                         "text": json.dumps({
                             "tournament": this_round.tournament.session_id,
                             "winner": winner.username if winner else "",
